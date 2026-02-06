@@ -1,0 +1,71 @@
+{
+  "_metadata": {
+    "major_version": 2,
+    "minor_version": 1
+  },
+  "display_information": {
+    "name": "Slack MCP",
+    "description": "MCP server for Slack API via user token",
+    "long_description": "A Model Context Protocol (MCP) server that exposes Slack Web API methods as tools for AI assistants. Uses user tokens (xoxp) to act on behalf of the authenticated user. Supports conversations, messaging, search, files, reactions, reminders, and more.",
+    "background_color": "#4A154B"
+  },
+  "settings": {
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": false,
+    "token_rotation_enabled": false
+  },
+  "features": {},
+  "oauth_config": {
+    "scopes": {
+      "user": [
+        "channels:history",
+        "channels:read",
+        "channels:write",
+        "groups:history",
+        "groups:read",
+        "groups:write",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "mpim:write",
+        "chat:write",
+        "files:read",
+        "files:write",
+        "search:read",
+        "reactions:read",
+        "reactions:write",
+        "pins:read",
+        "pins:write",
+        "stars:read",
+        "stars:write",
+        "reminders:read",
+        "reminders:write",
+        "dnd:read",
+        "dnd:write",
+        "users:read",
+        "users:read.email",
+        "users:write",
+        "users.profile:read",
+        "users.profile:write",
+        "team:read",
+        "team.billing:read",
+        "team.preferences:read",
+        "usergroups:read",
+        "usergroups:write",
+        "emoji:read",
+        "bookmarks:read",
+        "bookmarks:write",
+        "calls:read",
+        "calls:write",
+        "canvases:read",
+        "canvases:write",
+        "lists:read",
+        "lists:write"
+      ],
+      "bot": []
+    },
+    "redirect_urls": []
+  }
+}
