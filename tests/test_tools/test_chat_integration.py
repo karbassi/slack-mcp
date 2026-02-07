@@ -114,41 +114,49 @@ async def test_chat_scheduled_messages_list_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires active AI assistant stream")
+@pytest.mark.skip(reason="not_allowed_token_type: requires bot token (xoxb)")
 async def test_chat_append_stream_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires active AI assistant stream")
+@pytest.mark.skip(reason="not_allowed_token_type: requires bot token (xoxb)")
 async def test_chat_start_stream_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires active AI assistant stream")
+@pytest.mark.skip(reason="not_allowed_token_type: requires bot token (xoxb)")
 async def test_chat_stop_stream_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires active AI assistant stream")
+@pytest.mark.skip(reason="not_allowed_token_type: requires bot token (xoxb)")
 async def test_chat_stream_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires a trigger_id and URL to unfurl")
+@pytest.mark.skip(reason="missing_scope: requires links:write")
 async def test_chat_unfurl_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires a specific user in the channel for ephemeral")
-async def test_chat_post_ephemeral_live(live_client):
-    pass
+async def test_chat_post_ephemeral_live(live_client, temp_channel):
+    """Post an ephemeral message to ourselves."""
+    from slack_mcp.tools.auth import auth_test
+
+    auth = await auth_test(client=live_client)
+    user_id = auth["user_id"]
+
+    result = await chat_post_ephemeral(
+        channel=temp_channel, user=user_id, text="ephemeral test", client=live_client
+    )
+    assert result["ok"] is True

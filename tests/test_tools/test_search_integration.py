@@ -16,9 +16,9 @@ async def test_search_all_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="read-only but duplicates search_all coverage")
 async def test_search_files_live(live_client):
-    pass
+    result = await search_files(query="test", client=live_client)
+    assert result["ok"] is True
 
 
 @pytest.mark.integration

@@ -17,7 +17,7 @@ async def test_views_open_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires a trigger_id and a valid view payload")
+@pytest.mark.skip(reason="not_allowed_token_type: views.publish requires bot token (xoxb)")
 async def test_views_publish_live(live_client):
     pass
 

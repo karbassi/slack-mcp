@@ -73,37 +73,59 @@ async def test_users_set_presence_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would delete the user's profile photo")
 async def test_users_delete_photo_live(live_client):
-    pass
+    """Delete user's profile photo (safe on test workspace)."""
+    result = await users_delete_photo(client=live_client)
+    assert result["ok"] is True
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires Slack Connect discovery enabled")
+@pytest.mark.skip(reason="not_allowed_token_type: requires Slack Connect discovery")
 async def test_users_discoverable_contacts_lookup_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires Sign in with Slack scopes")
+@pytest.mark.skip(reason="missing_scope: requires identity.basic (Sign in with Slack)")
 async def test_users_identity_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires a known email address in the workspace")
 async def test_users_lookup_by_email_live(live_client):
-    pass
+    """Look up our own user by email."""
+    profile = await users_profile_get(client=live_client)
+    email = profile["profile"]["email"]
+
+    result = await users_lookup_by_email(email=email, client=live_client)
+    assert result["ok"] is True
+    assert result["user"]["profile"]["email"] == email
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would modify user profile fields")
 async def test_users_profile_set_live(live_client):
-    pass
+    """Set status text then restore it."""
+    # Read current status
+    profile = await users_profile_get(client=live_client)
+    old_text = profile["profile"].get("status_text", "")
+    old_emoji = profile["profile"].get("status_emoji", "")
+
+    try:
+        # Set a test status
+        result = await users_profile_set(
+            profile='{"status_text": "integration test", "status_emoji": ":test_tube:"}',
+            client=live_client,
+        )
+        assert result["ok"] is True
+    finally:
+        # Restore original status
+        import json
+        restore = json.dumps({"status_text": old_text, "status_emoji": old_emoji})
+        await users_profile_set(profile=restore, client=live_client)
 
 
 @pytest.mark.integration

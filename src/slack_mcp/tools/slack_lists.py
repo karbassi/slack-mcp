@@ -19,7 +19,7 @@ async def slack_lists_access_delete(
         kwargs["channel_ids"] = channel_ids
     if user_ids is not None:
         kwargs["user_ids"] = user_ids
-    return await client.api_call("slackLists.access.delete", **kwargs)
+    return await client.api_call_json("slackLists.access.delete", **kwargs)
 
 
 @mcp.tool
@@ -36,34 +36,34 @@ async def slack_lists_access_set(
         kwargs["channel_ids"] = channel_ids
     if user_ids is not None:
         kwargs["user_ids"] = user_ids
-    return await client.api_call("slackLists.access.set", **kwargs)
+    return await client.api_call_json("slackLists.access.set", **kwargs)
 
 
 @mcp.tool
 async def slack_lists_create(
-    title: str,
+    name: str,
     description: Optional[str] = None,
     columns: Optional[list] = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a new list."""
-    kwargs = {"title": title}
+    kwargs = {"name": name}
     if description is not None:
         kwargs["description"] = description
     if columns is not None:
         kwargs["columns"] = columns
-    return await client.api_call("slackLists.create", **kwargs)
+    return await client.api_call_json("slackLists.create", **kwargs)
 
 
 @mcp.tool
 async def slack_lists_download_get(
-    download_id: str,
+    job_id: str,
     list_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get a list download."""
-    return await client.api_call(
-        "slackLists.download.get", download_id=download_id, list_id=list_id
+    return await client.api_call_json(
+        "slackLists.download.get", job_id=job_id, list_id=list_id
     )
 
 
@@ -73,7 +73,7 @@ async def slack_lists_download_start(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Start a list download."""
-    return await client.api_call("slackLists.download.start", list_id=list_id)
+    return await client.api_call_json("slackLists.download.start", list_id=list_id)
 
 
 @mcp.tool
@@ -86,7 +86,7 @@ async def slack_lists_items_create(
     kwargs = {"list_id": list_id}
     if column_values is not None:
         kwargs["column_values"] = column_values
-    return await client.api_call("slackLists.items.create", **kwargs)
+    return await client.api_call_json("slackLists.items.create", **kwargs)
 
 
 @mcp.tool
@@ -96,8 +96,8 @@ async def slack_lists_items_delete(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Delete a list item."""
-    return await client.api_call(
-        "slackLists.items.delete", item_id=item_id, list_id=list_id
+    return await client.api_call_json(
+        "slackLists.items.delete", id=item_id, list_id=list_id
     )
 
 
@@ -108,8 +108,8 @@ async def slack_lists_items_delete_multiple(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Delete multiple list items."""
-    return await client.api_call(
-        "slackLists.items.deleteMultiple", item_ids=item_ids, list_id=list_id
+    return await client.api_call_json(
+        "slackLists.items.deleteMultiple", ids=item_ids, list_id=list_id
     )
 
 
@@ -120,8 +120,8 @@ async def slack_lists_items_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get info about a list item."""
-    return await client.api_call(
-        "slackLists.items.info", item_id=item_id, list_id=list_id
+    return await client.api_call_json(
+        "slackLists.items.info", id=item_id, list_id=list_id
     )
 
 
@@ -138,7 +138,7 @@ async def slack_lists_items_list(
         kwargs["cursor"] = cursor
     if limit is not None:
         kwargs["limit"] = limit
-    return await client.api_call("slackLists.items.list", **kwargs)
+    return await client.api_call_json("slackLists.items.list", **kwargs)
 
 
 @mcp.tool
@@ -149,23 +149,23 @@ async def slack_lists_items_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update a list item."""
-    kwargs = {"item_id": item_id, "list_id": list_id}
+    kwargs = {"id": item_id, "list_id": list_id}
     if column_values is not None:
         kwargs["column_values"] = column_values
-    return await client.api_call("slackLists.items.update", **kwargs)
+    return await client.api_call_json("slackLists.items.update", **kwargs)
 
 
 @mcp.tool
 async def slack_lists_update(
     list_id: str,
-    title: Optional[str] = None,
+    name: Optional[str] = None,
     description: Optional[str] = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update a list."""
-    kwargs = {"list_id": list_id}
-    if title is not None:
-        kwargs["title"] = title
+    kwargs = {"id": list_id}
+    if name is not None:
+        kwargs["name"] = name
     if description is not None:
         kwargs["description"] = description
-    return await client.api_call("slackLists.update", **kwargs)
+    return await client.api_call_json("slackLists.update", **kwargs)

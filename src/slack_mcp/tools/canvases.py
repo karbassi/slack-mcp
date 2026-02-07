@@ -19,7 +19,7 @@ async def canvases_access_delete(
         kwargs["channel_ids"] = channel_ids
     if user_ids is not None:
         kwargs["user_ids"] = user_ids
-    return await client.api_call("canvases.access.delete", **kwargs)
+    return await client.api_call_json("canvases.access.delete", **kwargs)
 
 
 @mcp.tool
@@ -36,7 +36,7 @@ async def canvases_access_set(
         kwargs["channel_ids"] = channel_ids
     if user_ids is not None:
         kwargs["user_ids"] = user_ids
-    return await client.api_call("canvases.access.set", **kwargs)
+    return await client.api_call_json("canvases.access.set", **kwargs)
 
 
 @mcp.tool
@@ -51,7 +51,7 @@ async def canvases_create(
         kwargs["title"] = title
     if document_content is not None:
         kwargs["document_content"] = document_content
-    return await client.api_call("canvases.create", **kwargs)
+    return await client.api_call_json("canvases.create", **kwargs)
 
 
 @mcp.tool
@@ -70,7 +70,7 @@ async def canvases_edit(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Edit a canvas."""
-    return await client.api_call("canvases.edit", canvas_id=canvas_id, changes=changes)
+    return await client.api_call_json("canvases.edit", canvas_id=canvas_id, changes=changes)
 
 
 @mcp.tool
@@ -80,6 +80,6 @@ async def canvases_sections_lookup(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Find sections matching criteria in a canvas."""
-    return await client.api_call(
+    return await client.api_call_json(
         "canvases.sections.lookup", canvas_id=canvas_id, criteria=criteria
     )

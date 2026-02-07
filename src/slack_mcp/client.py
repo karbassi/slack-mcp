@@ -48,6 +48,16 @@ class SlackClient:
         resp.raise_for_status()
         return resp.json()
 
+    async def session_call_form(self, method: str, **kwargs) -> dict:
+        """Call an undocumented Slack endpoint with form-encoded data.
+
+        Some legacy endpoints (e.g. files.edit) require form-encoded data
+        rather than JSON.
+        """
+        resp = await self.session_client.post(method, data=kwargs)
+        resp.raise_for_status()
+        return resp.json()
+
     async def close(self) -> None:
         await self.session_client.aclose()
 

@@ -54,10 +54,10 @@ async def test_commands_list(mock_client):
 
 @pytest.mark.asyncio
 async def test_files_edit(mock_client):
-    mock_client.session_call.return_value = {"ok": True}
+    mock_client.session_call_form.return_value = {"ok": True}
     result = await files_edit(file="F123", title="Updated", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
+    mock_client.session_call_form.assert_called_once_with(
         "files.edit", file="F123", title="Updated"
     )
 

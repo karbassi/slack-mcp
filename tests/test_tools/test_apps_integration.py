@@ -46,7 +46,7 @@ async def test_apps_manifest_delete_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires app configuration token")
+@pytest.mark.skip(reason="missing_scope: requires app_configurations:read")
 async def test_apps_manifest_export_live(live_client):
     pass
 
@@ -60,7 +60,7 @@ async def test_apps_manifest_update_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires app configuration token")
+@pytest.mark.skip(reason="missing_scope: requires app_configurations:read")
 async def test_apps_manifest_validate_live(live_client):
     pass
 
