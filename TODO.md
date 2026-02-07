@@ -8,7 +8,7 @@
 - [x] tests/conftest.py
 
 ## Phase 2: Official API Tools
-- [ ] api.test
+- [x] api.test
 - [ ] apps.connections.open
 - [ ] apps.event.authorizations.list
 - [ ] apps.manifest.create
