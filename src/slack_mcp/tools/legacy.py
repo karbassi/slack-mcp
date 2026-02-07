@@ -1,15 +1,13 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def bots_list(
-    cursor: Optional[str] = None,
-    limit: Optional[int] = None,
+    cursor: str | None = None,
+    limit: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all bots in a workspace (legacy undocumented)."""
@@ -34,7 +32,7 @@ async def channels_delete(
 async def chat_command(
     channel: str,
     command: str,
-    text: Optional[str] = None,
+    text: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Execute a slash command (legacy undocumented)."""
@@ -55,9 +53,9 @@ async def commands_list(
 @mcp.tool
 async def files_edit(
     file: str,
-    title: Optional[str] = None,
-    filetype: Optional[str] = None,
-    content: Optional[str] = None,
+    title: str | None = None,
+    filetype: str | None = None,
+    content: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Edit a file (legacy undocumented)."""
@@ -92,8 +90,8 @@ async def team_prefs_get(
 @mcp.tool
 async def users_admin_invite(
     email: str,
-    channels: Optional[str] = None,
-    real_name: Optional[str] = None,
+    channels: str | None = None,
+    real_name: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Invite a user to the workspace as admin (legacy undocumented)."""

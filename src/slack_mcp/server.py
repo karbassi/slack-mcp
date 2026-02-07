@@ -32,6 +32,7 @@ import slack_mcp.tools.emoji
 import slack_mcp.tools.entity
 import slack_mcp.tools.files
 import slack_mcp.tools.functions
+import slack_mcp.tools.legacy
 import slack_mcp.tools.migration
 import slack_mcp.tools.oauth
 import slack_mcp.tools.openid
@@ -44,13 +45,11 @@ import slack_mcp.tools.slack_lists
 import slack_mcp.tools.stars
 import slack_mcp.tools.team
 import slack_mcp.tools.tooling
+import slack_mcp.tools.undocumented
 import slack_mcp.tools.usergroups
 import slack_mcp.tools.users
 import slack_mcp.tools.views
 import slack_mcp.tools.workflows
-import slack_mcp.tools.undocumented
-import slack_mcp.tools.legacy
-
 
 if __name__ == "__main__":
     mcp.run()

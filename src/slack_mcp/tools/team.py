@@ -1,19 +1,17 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def team_access_logs(
-    before: Optional[int] = None,
-    count: Optional[int] = None,
-    cursor: Optional[str] = None,
-    limit: Optional[int] = None,
-    page: Optional[int] = None,
-    team_id: Optional[str] = None,
+    before: int | None = None,
+    count: int | None = None,
+    cursor: str | None = None,
+    limit: int | None = None,
+    page: int | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get the access logs for the current team."""
@@ -35,10 +33,10 @@ async def team_access_logs(
 
 @mcp.tool
 async def team_billable_info(
-    cursor: Optional[str] = None,
-    limit: Optional[int] = None,
-    team_id: Optional[str] = None,
-    user: Optional[str] = None,
+    cursor: str | None = None,
+    limit: int | None = None,
+    team_id: str | None = None,
+    user: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get billable users information for the current team."""
@@ -75,13 +73,13 @@ async def team_external_teams_disconnect(
 
 @mcp.tool
 async def team_external_teams_list(
-    connection_status_filter: Optional[str] = None,
-    cursor: Optional[str] = None,
-    limit: Optional[int] = None,
-    slack_connect_pref_filter: Optional[list] = None,
-    sort_direction: Optional[str] = None,
-    sort_field: Optional[str] = None,
-    workspace_filter: Optional[list] = None,
+    connection_status_filter: str | None = None,
+    cursor: str | None = None,
+    limit: int | None = None,
+    slack_connect_pref_filter: list | None = None,
+    sort_direction: str | None = None,
+    sort_field: str | None = None,
+    workspace_filter: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List external teams and their statuses."""
@@ -105,8 +103,8 @@ async def team_external_teams_list(
 
 @mcp.tool
 async def team_info(
-    team: Optional[str] = None,
-    domain: Optional[str] = None,
+    team: str | None = None,
+    domain: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get information about the current team."""
@@ -120,13 +118,13 @@ async def team_info(
 
 @mcp.tool
 async def team_integration_logs(
-    app_id: Optional[str] = None,
-    change_type: Optional[str] = None,
-    count: Optional[int] = None,
-    page: Optional[int] = None,
-    service_id: Optional[str] = None,
-    team_id: Optional[str] = None,
-    user: Optional[str] = None,
+    app_id: str | None = None,
+    change_type: str | None = None,
+    count: int | None = None,
+    page: int | None = None,
+    service_id: str | None = None,
+    team_id: str | None = None,
+    user: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get the integration activity logs for the current team."""
@@ -158,7 +156,7 @@ async def team_preferences_list(
 
 @mcp.tool
 async def team_profile_get(
-    visibility: Optional[str] = None,
+    visibility: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve a team's profile."""

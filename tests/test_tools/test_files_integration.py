@@ -83,7 +83,9 @@ async def test_files_upload_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="not_allowed_token_type: files.remote.* requires bot token (xoxb)")
+@pytest.mark.skip(
+    reason="not_allowed_token_type: files.remote.* requires bot token (xoxb)"
+)
 async def test_files_remote_lifecycle_live(live_client):
     pass
 

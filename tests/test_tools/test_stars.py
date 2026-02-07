@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.stars import stars_add, stars_list, stars_remove
 
 

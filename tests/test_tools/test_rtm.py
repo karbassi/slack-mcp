@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.rtm import rtm_connect, rtm_start
 
 

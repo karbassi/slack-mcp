@@ -32,9 +32,7 @@ async def test_stars_lifecycle_live(live_client):
         ts = posted["ts"]
 
         # Star it
-        starred = await stars_add(
-            channel=channel_id, timestamp=ts, client=live_client
-        )
+        starred = await stars_add(channel=channel_id, timestamp=ts, client=live_client)
         assert starred["ok"] is True
 
         # Remove star

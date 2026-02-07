@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.workflows import (
     workflows_featured_add,
     workflows_featured_list,
@@ -13,9 +14,7 @@ from slack_mcp.tools.workflows import (
 @pytest.mark.asyncio
 async def test_workflows_featured_add(mock_client):
     mock_client.api_call.return_value = {"ok": True}
-    result = await workflows_featured_add(
-        workflow_ids=["W123"], client=mock_client
-    )
+    result = await workflows_featured_add(workflow_ids=["W123"], client=mock_client)
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with(
         "workflows.featured.add", workflow_ids=["W123"]
@@ -33,9 +32,7 @@ async def test_workflows_featured_list(mock_client):
 @pytest.mark.asyncio
 async def test_workflows_featured_remove(mock_client):
     mock_client.api_call.return_value = {"ok": True}
-    result = await workflows_featured_remove(
-        workflow_ids=["W123"], client=mock_client
-    )
+    result = await workflows_featured_remove(workflow_ids=["W123"], client=mock_client)
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with(
         "workflows.featured.remove", workflow_ids=["W123"]

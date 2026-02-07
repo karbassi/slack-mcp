@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -11,8 +9,8 @@ async def oauth_access(
     client_id: str,
     client_secret: str,
     code: str,
-    redirect_uri: Optional[str] = None,
-    single_channel: Optional[bool] = None,
+    redirect_uri: str | None = None,
+    single_channel: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Exchange a temporary OAuth verifier code for an access token (V1)."""
@@ -29,9 +27,9 @@ async def oauth_v2_access(
     client_id: str,
     client_secret: str,
     code: str,
-    grant_type: Optional[str] = None,
-    redirect_uri: Optional[str] = None,
-    refresh_token: Optional[str] = None,
+    grant_type: str | None = None,
+    redirect_uri: str | None = None,
+    refresh_token: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Exchange a temporary OAuth verifier code for an access token (V2)."""

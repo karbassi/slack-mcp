@@ -1,19 +1,17 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def usergroups_create(
     name: str,
-    channels: Optional[str] = None,
-    description: Optional[str] = None,
-    handle: Optional[str] = None,
-    include_count: Optional[bool] = None,
-    team_id: Optional[str] = None,
+    channels: str | None = None,
+    description: str | None = None,
+    handle: str | None = None,
+    include_count: bool | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a User Group."""
@@ -34,8 +32,8 @@ async def usergroups_create(
 @mcp.tool
 async def usergroups_disable(
     usergroup: str,
-    include_count: Optional[bool] = None,
-    team_id: Optional[str] = None,
+    include_count: bool | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Disable an existing User Group."""
@@ -50,8 +48,8 @@ async def usergroups_disable(
 @mcp.tool
 async def usergroups_enable(
     usergroup: str,
-    include_count: Optional[bool] = None,
-    team_id: Optional[str] = None,
+    include_count: bool | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Enable a User Group."""
@@ -65,10 +63,10 @@ async def usergroups_enable(
 
 @mcp.tool
 async def usergroups_list(
-    include_count: Optional[bool] = None,
-    include_disabled: Optional[bool] = None,
-    include_users: Optional[bool] = None,
-    team_id: Optional[str] = None,
+    include_count: bool | None = None,
+    include_disabled: bool | None = None,
+    include_users: bool | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all User Groups for a team."""
@@ -87,12 +85,12 @@ async def usergroups_list(
 @mcp.tool
 async def usergroups_update(
     usergroup: str,
-    channels: Optional[str] = None,
-    description: Optional[str] = None,
-    handle: Optional[str] = None,
-    include_count: Optional[bool] = None,
-    name: Optional[str] = None,
-    team_id: Optional[str] = None,
+    channels: str | None = None,
+    description: str | None = None,
+    handle: str | None = None,
+    include_count: bool | None = None,
+    name: str | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update an existing User Group."""
@@ -115,8 +113,8 @@ async def usergroups_update(
 @mcp.tool
 async def usergroups_users_list(
     usergroup: str,
-    include_disabled: Optional[bool] = None,
-    team_id: Optional[str] = None,
+    include_disabled: bool | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all users in a User Group."""
@@ -132,8 +130,8 @@ async def usergroups_users_list(
 async def usergroups_users_update(
     usergroup: str,
     users: str,
-    include_count: Optional[bool] = None,
-    team_id: Optional[str] = None,
+    include_count: bool | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update the list of users for a User Group."""

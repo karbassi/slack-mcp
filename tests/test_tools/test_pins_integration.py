@@ -25,9 +25,7 @@ async def test_pins_lifecycle_live(live_client):
         ts = posted["ts"]
 
         # Pin it
-        pinned = await pins_add(
-            channel=channel_id, timestamp=ts, client=live_client
-        )
+        pinned = await pins_add(channel=channel_id, timestamp=ts, client=live_client)
         assert pinned["ok"] is True
 
         # List pins

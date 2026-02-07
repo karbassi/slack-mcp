@@ -1,19 +1,17 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def conversations_accept_shared_invite(
     channel_name: str,
-    channel_id: Optional[str] = None,
-    free_trial_accepted: Optional[bool] = None,
-    invite_id: Optional[str] = None,
-    is_private: Optional[bool] = None,
-    team_id: Optional[str] = None,
+    channel_id: str | None = None,
+    free_trial_accepted: bool | None = None,
+    invite_id: str | None = None,
+    is_private: bool | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Accept an invitation to a Slack Connect channel."""
@@ -34,7 +32,7 @@ async def conversations_accept_shared_invite(
 @mcp.tool
 async def conversations_approve_shared_invite(
     invite_id: str,
-    target_team: Optional[str] = None,
+    target_team: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Approve an invitation to a Slack Connect channel."""
@@ -56,7 +54,7 @@ async def conversations_archive(
 @mcp.tool
 async def conversations_canvases_create(
     channel_id: str,
-    document_content: Optional[dict] = None,
+    document_content: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a canvas in a channel."""
@@ -78,8 +76,8 @@ async def conversations_close(
 @mcp.tool
 async def conversations_create(
     name: str,
-    is_private: Optional[bool] = None,
-    team_id: Optional[str] = None,
+    is_private: bool | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a new channel."""
@@ -94,7 +92,7 @@ async def conversations_create(
 @mcp.tool
 async def conversations_decline_shared_invite(
     invite_id: str,
-    target_team: Optional[str] = None,
+    target_team: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Decline an invitation to a Slack Connect channel."""
@@ -119,12 +117,12 @@ async def conversations_external_invite_permissions_set(
 @mcp.tool
 async def conversations_history(
     channel: str,
-    cursor: Optional[str] = None,
-    inclusive: Optional[bool] = None,
-    latest: Optional[str] = None,
-    limit: Optional[int] = None,
-    oldest: Optional[str] = None,
-    include_all_metadata: Optional[bool] = None,
+    cursor: str | None = None,
+    inclusive: bool | None = None,
+    latest: str | None = None,
+    limit: int | None = None,
+    oldest: str | None = None,
+    include_all_metadata: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Fetch a conversation's history of messages and events."""
@@ -147,8 +145,8 @@ async def conversations_history(
 @mcp.tool
 async def conversations_info(
     channel: str,
-    include_locale: Optional[bool] = None,
-    include_num_members: Optional[bool] = None,
+    include_locale: bool | None = None,
+    include_num_members: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve information about a conversation."""
@@ -164,7 +162,7 @@ async def conversations_info(
 async def conversations_invite(
     channel: str,
     users: str,
-    force: Optional[bool] = None,
+    force: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Invite users to a channel."""
@@ -177,9 +175,9 @@ async def conversations_invite(
 @mcp.tool
 async def conversations_invite_shared(
     channel: str,
-    emails: Optional[list] = None,
-    external_limited: Optional[bool] = None,
-    user_ids: Optional[list] = None,
+    emails: list | None = None,
+    external_limited: bool | None = None,
+    user_ids: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Send a shared channel invite."""
@@ -223,11 +221,11 @@ async def conversations_leave(
 
 @mcp.tool
 async def conversations_list(
-    cursor: Optional[str] = None,
-    exclude_archived: Optional[bool] = None,
-    limit: Optional[int] = None,
-    team_id: Optional[str] = None,
-    types: Optional[str] = None,
+    cursor: str | None = None,
+    exclude_archived: bool | None = None,
+    limit: int | None = None,
+    team_id: str | None = None,
+    types: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all channels in a Slack team."""
@@ -247,9 +245,9 @@ async def conversations_list(
 
 @mcp.tool
 async def conversations_list_connect_invites(
-    count: Optional[int] = None,
-    cursor: Optional[str] = None,
-    team_id: Optional[str] = None,
+    count: int | None = None,
+    cursor: str | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List shared channel invites."""
@@ -276,8 +274,8 @@ async def conversations_mark(
 @mcp.tool
 async def conversations_members(
     channel: str,
-    cursor: Optional[str] = None,
-    limit: Optional[int] = None,
+    cursor: str | None = None,
+    limit: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve members of a conversation."""
@@ -291,10 +289,10 @@ async def conversations_members(
 
 @mcp.tool
 async def conversations_open(
-    channel: Optional[str] = None,
-    prevent_creation: Optional[bool] = None,
-    return_im: Optional[bool] = None,
-    users: Optional[str] = None,
+    channel: str | None = None,
+    prevent_creation: bool | None = None,
+    return_im: bool | None = None,
+    users: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Open or resume a direct message or multi-party DM."""
@@ -324,12 +322,12 @@ async def conversations_rename(
 async def conversations_replies(
     channel: str,
     ts: str,
-    cursor: Optional[str] = None,
-    inclusive: Optional[bool] = None,
-    latest: Optional[str] = None,
-    limit: Optional[int] = None,
-    oldest: Optional[str] = None,
-    include_all_metadata: Optional[bool] = None,
+    cursor: str | None = None,
+    inclusive: bool | None = None,
+    latest: str | None = None,
+    limit: int | None = None,
+    oldest: str | None = None,
+    include_all_metadata: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve a thread of messages from a conversation."""
@@ -352,9 +350,9 @@ async def conversations_replies(
 @mcp.tool
 async def conversations_request_shared_invite_approve(
     invite_id: str,
-    channel_id: Optional[str] = None,
-    is_approved: Optional[bool] = None,
-    message: Optional[dict] = None,
+    channel_id: str | None = None,
+    is_approved: bool | None = None,
+    message: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Approve a shared channel invite request."""
@@ -371,7 +369,7 @@ async def conversations_request_shared_invite_approve(
 @mcp.tool
 async def conversations_request_shared_invite_deny(
     invite_id: str,
-    message: Optional[dict] = None,
+    message: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Deny a shared channel invite request."""
@@ -383,13 +381,13 @@ async def conversations_request_shared_invite_deny(
 
 @mcp.tool
 async def conversations_request_shared_invite_list(
-    cursor: Optional[str] = None,
-    include_approved: Optional[bool] = None,
-    include_denied: Optional[bool] = None,
-    include_expired: Optional[bool] = None,
-    invite_ids: Optional[list] = None,
-    limit: Optional[int] = None,
-    user_id: Optional[str] = None,
+    cursor: str | None = None,
+    include_approved: bool | None = None,
+    include_denied: bool | None = None,
+    include_expired: bool | None = None,
+    invite_ids: list | None = None,
+    limit: int | None = None,
+    user_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List shared channel invite requests."""
@@ -430,9 +428,7 @@ async def conversations_set_topic(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set the topic for a conversation."""
-    return await client.api_call(
-        "conversations.setTopic", channel=channel, topic=topic
-    )
+    return await client.api_call("conversations.setTopic", channel=channel, topic=topic)
 
 
 @mcp.tool

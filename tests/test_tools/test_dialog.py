@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.dialog import dialog_open
 
 

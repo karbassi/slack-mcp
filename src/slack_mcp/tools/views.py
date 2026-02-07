@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -20,7 +18,7 @@ async def views_open(
 async def views_publish(
     user_id: str,
     view: dict,
-    hash: Optional[str] = None,
+    hash: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Publish a static view for a user."""
@@ -43,9 +41,9 @@ async def views_push(
 @mcp.tool
 async def views_update(
     view: dict,
-    external_id: Optional[str] = None,
-    hash: Optional[str] = None,
-    view_id: Optional[str] = None,
+    external_id: str | None = None,
+    hash: str | None = None,
+    view_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update an existing view."""

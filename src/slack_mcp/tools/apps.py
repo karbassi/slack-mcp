@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -17,8 +15,8 @@ async def apps_connections_open(
 @mcp.tool
 async def apps_event_authorizations_list(
     event_context: str,
-    cursor: Optional[str] = None,
-    limit: Optional[int] = None,
+    cursor: str | None = None,
+    limit: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get a list of authorizations for the given event context."""
@@ -64,13 +62,15 @@ async def apps_manifest_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update an app from an app manifest."""
-    return await client.api_call("apps.manifest.update", app_id=app_id, manifest=manifest)
+    return await client.api_call(
+        "apps.manifest.update", app_id=app_id, manifest=manifest
+    )
 
 
 @mcp.tool
 async def apps_manifest_validate(
     manifest: str,
-    app_id: Optional[str] = None,
+    app_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Validate an app manifest."""

@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.entity import entity_present_details
 
 

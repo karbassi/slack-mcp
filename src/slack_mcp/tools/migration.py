@@ -1,16 +1,14 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def migration_exchange(
     users: str,
-    team_id: Optional[str] = None,
-    to_old: Optional[bool] = None,
+    team_id: str | None = None,
+    to_old: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Exchange a legacy ID for a new ID, or vice versa."""

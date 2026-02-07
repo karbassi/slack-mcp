@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.undocumented import (
     client_boot,
     client_counts,

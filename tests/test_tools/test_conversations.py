@@ -71,9 +71,7 @@ async def test_conversations_archive(mock_client):
 @pytest.mark.asyncio
 async def test_conversations_canvases_create(mock_client):
     mock_client.api_call.return_value = {"ok": True}
-    result = await conversations_canvases_create(
-        channel_id="C123", client=mock_client
-    )
+    result = await conversations_canvases_create(channel_id="C123", client=mock_client)
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with(
         "conversations.canvases.create", channel_id="C123"
@@ -85,9 +83,7 @@ async def test_conversations_close(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await conversations_close(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.close", channel="C123"
-    )
+    mock_client.api_call.assert_called_once_with("conversations.close", channel="C123")
 
 
 @pytest.mark.asyncio
@@ -141,9 +137,7 @@ async def test_conversations_info(mock_client):
     mock_client.api_call.return_value = {"ok": True, "channel": {}}
     result = await conversations_info(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.info", channel="C123"
-    )
+    mock_client.api_call.assert_called_once_with("conversations.info", channel="C123")
 
 
 @pytest.mark.asyncio
@@ -177,17 +171,13 @@ async def test_conversations_join(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await conversations_join(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.join", channel="C123"
-    )
+    mock_client.api_call.assert_called_once_with("conversations.join", channel="C123")
 
 
 @pytest.mark.asyncio
 async def test_conversations_kick(mock_client):
     mock_client.api_call.return_value = {"ok": True}
-    result = await conversations_kick(
-        channel="C123", user="U123", client=mock_client
-    )
+    result = await conversations_kick(channel="C123", user="U123", client=mock_client)
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with(
         "conversations.kick", channel="C123", user="U123"
@@ -199,9 +189,7 @@ async def test_conversations_leave(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await conversations_leave(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.leave", channel="C123"
-    )
+    mock_client.api_call.assert_called_once_with("conversations.leave", channel="C123")
 
 
 @pytest.mark.asyncio
@@ -247,9 +235,7 @@ async def test_conversations_open(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await conversations_open(users="U123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.open", users="U123"
-    )
+    mock_client.api_call.assert_called_once_with("conversations.open", users="U123")
 
 
 @pytest.mark.asyncio

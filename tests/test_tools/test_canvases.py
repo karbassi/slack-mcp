@@ -59,9 +59,7 @@ async def test_canvases_delete(mock_client):
 async def test_canvases_edit(mock_client):
     mock_client.api_call_json.return_value = {"ok": True}
     changes = [{"operation": "insert_at_end", "document_content": {"markdown": "hi"}}]
-    result = await canvases_edit(
-        canvas_id="F123", changes=changes, client=mock_client
-    )
+    result = await canvases_edit(canvas_id="F123", changes=changes, client=mock_client)
     assert result["ok"] is True
     mock_client.api_call_json.assert_called_once_with(
         "canvases.edit", canvas_id="F123", changes=changes

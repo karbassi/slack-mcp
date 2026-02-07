@@ -1,16 +1,14 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def slack_lists_access_delete(
     list_id: str,
-    channel_ids: Optional[list] = None,
-    user_ids: Optional[list] = None,
+    channel_ids: list | None = None,
+    user_ids: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove access to a list for specified entities."""
@@ -26,8 +24,8 @@ async def slack_lists_access_delete(
 async def slack_lists_access_set(
     list_id: str,
     access_level: str,
-    channel_ids: Optional[list] = None,
-    user_ids: Optional[list] = None,
+    channel_ids: list | None = None,
+    user_ids: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set access level to a list for specified entities."""
@@ -42,8 +40,8 @@ async def slack_lists_access_set(
 @mcp.tool
 async def slack_lists_create(
     name: str,
-    description: Optional[str] = None,
-    columns: Optional[list] = None,
+    description: str | None = None,
+    columns: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a new list."""
@@ -79,7 +77,7 @@ async def slack_lists_download_start(
 @mcp.tool
 async def slack_lists_items_create(
     list_id: str,
-    column_values: Optional[dict] = None,
+    column_values: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a new list item."""
@@ -128,8 +126,8 @@ async def slack_lists_items_info(
 @mcp.tool
 async def slack_lists_items_list(
     list_id: str,
-    cursor: Optional[str] = None,
-    limit: Optional[int] = None,
+    cursor: str | None = None,
+    limit: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List items in a list."""
@@ -145,7 +143,7 @@ async def slack_lists_items_list(
 async def slack_lists_items_update(
     item_id: str,
     list_id: str,
-    column_values: Optional[dict] = None,
+    column_values: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update a list item."""
@@ -158,8 +156,8 @@ async def slack_lists_items_update(
 @mcp.tool
 async def slack_lists_update(
     list_id: str,
-    name: Optional[str] = None,
-    description: Optional[str] = None,
+    name: str | None = None,
+    description: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update a list."""

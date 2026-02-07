@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.usergroups import (
     usergroups_create,
     usergroups_disable,
@@ -15,9 +16,7 @@ async def test_usergroups_create(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await usergroups_create(name="TestGroup", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "usergroups.create", name="TestGroup"
-    )
+    mock_client.api_call.assert_called_once_with("usergroups.create", name="TestGroup")
 
 
 @pytest.mark.asyncio
@@ -25,9 +24,7 @@ async def test_usergroups_disable(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await usergroups_disable(usergroup="S123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "usergroups.disable", usergroup="S123"
-    )
+    mock_client.api_call.assert_called_once_with("usergroups.disable", usergroup="S123")
 
 
 @pytest.mark.asyncio
@@ -35,9 +32,7 @@ async def test_usergroups_enable(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await usergroups_enable(usergroup="S123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "usergroups.enable", usergroup="S123"
-    )
+    mock_client.api_call.assert_called_once_with("usergroups.enable", usergroup="S123")
 
 
 @pytest.mark.asyncio

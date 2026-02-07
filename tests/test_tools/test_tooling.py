@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.tooling import tooling_tokens_rotate
 
 

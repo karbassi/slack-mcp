@@ -1,13 +1,13 @@
 import os
 
 import pytest
+
 from slack_mcp.tools.undocumented import (
     client_boot,
     client_counts,
     client_user_boot,
     threads_get_view,
 )
-
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 

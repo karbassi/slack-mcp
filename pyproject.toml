@@ -17,6 +17,7 @@ dev = [
     "pytest",
     "pytest-asyncio",
     "respx",
+    "ruff",
 ]
 
 [tool.pytest.ini_options]
@@ -32,3 +33,26 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/slack_mcp"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+]
+ignore = [
+    "B008", # Depends() in function defaults is the FastMCP pattern
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/slack_mcp/server.py" = ["E402", "F401"]  # side-effect imports after load_dotenv()
+"tests/**" = ["F401"]  # integration tests import tools for skip-decorated test stubs

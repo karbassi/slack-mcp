@@ -117,13 +117,16 @@ async def test_users_profile_set_live(live_client):
     try:
         # Set a test status
         result = await users_profile_set(
-            profile='{"status_text": "integration test", "status_emoji": ":test_tube:"}',
+            profile=(
+                '{"status_text": "integration test", "status_emoji": ":test_tube:"}'
+            ),
             client=live_client,
         )
         assert result["ok"] is True
     finally:
         # Restore original status
         import json
+
         restore = json.dumps({"status_text": old_text, "status_emoji": old_emoji})
         await users_profile_set(profile=restore, client=live_client)
 

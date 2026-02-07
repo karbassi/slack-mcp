@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.users import (
     users_conversations,
     users_delete_photo,
@@ -78,9 +79,7 @@ async def test_users_list(mock_client):
 @pytest.mark.asyncio
 async def test_users_lookup_by_email(mock_client):
     mock_client.api_call.return_value = {"ok": True, "user": {}}
-    result = await users_lookup_by_email(
-        email="test@example.com", client=mock_client
-    )
+    result = await users_lookup_by_email(email="test@example.com", client=mock_client)
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with(
         "users.lookupByEmail", email="test@example.com"
@@ -112,9 +111,7 @@ async def test_users_set_photo(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await users_set_photo(image="/path/to/img", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "users.setPhoto", image="/path/to/img"
-    )
+    mock_client.api_call.assert_called_once_with("users.setPhoto", image="/path/to/img")
 
 
 @pytest.mark.asyncio
@@ -122,6 +119,4 @@ async def test_users_set_presence(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await users_set_presence(presence="away", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "users.setPresence", presence="away"
-    )
+    mock_client.api_call.assert_called_once_with("users.setPresence", presence="away")

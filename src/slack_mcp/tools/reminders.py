@@ -1,18 +1,16 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def reminders_add(
     text: str,
     time: str,
-    recurrence: Optional[dict] = None,
-    team_id: Optional[str] = None,
-    user: Optional[str] = None,
+    recurrence: dict | None = None,
+    team_id: str | None = None,
+    user: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a reminder."""
@@ -29,7 +27,7 @@ async def reminders_add(
 @mcp.tool
 async def reminders_complete(
     reminder: str,
-    team_id: Optional[str] = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Mark a reminder as complete."""
@@ -42,7 +40,7 @@ async def reminders_complete(
 @mcp.tool
 async def reminders_delete(
     reminder: str,
-    team_id: Optional[str] = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Delete a reminder."""
@@ -55,7 +53,7 @@ async def reminders_delete(
 @mcp.tool
 async def reminders_info(
     reminder: str,
-    team_id: Optional[str] = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get info for a reminder."""
@@ -67,7 +65,7 @@ async def reminders_info(
 
 @mcp.tool
 async def reminders_list(
-    team_id: Optional[str] = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all reminders created by or for a given user."""
