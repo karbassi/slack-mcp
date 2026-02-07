@@ -13,6 +13,7 @@ def mock_client() -> SlackClient:
     """Return a SlackClient with mocked api_call and session_call."""
     client = object.__new__(SlackClient)
     client.api_call = AsyncMock(return_value={"ok": True})
+    client.api_call_json = AsyncMock(return_value={"ok": True})
     client.session_call = AsyncMock(return_value={"ok": True})
     return client
 

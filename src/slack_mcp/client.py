@@ -29,13 +29,17 @@ class SlackClient:
         )
 
     async def api_call(self, method: str, **kwargs) -> dict:
-        """Call an official Slack Web API method via slack_sdk."""
-        # Use params for methods that need them, json for methods that
-        # accept JSON bodies. The slack_sdk handles auth headers.
-        # Most Slack methods accept either form data or JSON.
-        # Using json= works for most but some methods (like conversations.info)
-        # require form-encoded data. Use data= which works universally.
+        """Call an official Slack Web API method via slack_sdk (form-encoded)."""
         response = await self.web_client.api_call(method, data=kwargs)
+        return dict(response.data)
+
+    async def api_call_json(self, method: str, **kwargs) -> dict:
+        """Call an official Slack Web API method via slack_sdk (JSON body).
+
+        Some methods (e.g. files.completeUploadExternal) require complex
+        nested objects that must be sent as JSON rather than form-encoded.
+        """
+        response = await self.web_client.api_call(method, json=kwargs)
         return dict(response.data)
 
     async def session_call(self, method: str, **kwargs) -> dict:

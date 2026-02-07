@@ -31,11 +31,11 @@ async def test_files_comments_delete(mock_client):
 
 @pytest.mark.asyncio
 async def test_files_complete_upload_external(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
+    mock_client.api_call_json.return_value = {"ok": True}
     files = [{"id": "F123", "title": "test.txt"}]
     result = await files_complete_upload_external(files=files, client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    mock_client.api_call_json.assert_called_once_with(
         "files.completeUploadExternal", files=files
     )
 
