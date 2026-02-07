@@ -9,3 +9,11 @@ __pycache__/
 dist/
 build/
 .ruff_cache/
+
+# Working notes
+RALPH_PROMPT.md
+TECH_STACK.md
+TODO.md
+UNREADS.md
+methods.txt
+slack-api-methods-report.md
