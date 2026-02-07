@@ -9,14 +9,14 @@
 
 ## Phase 2: Official API Tools
 - [x] api.test
-- [ ] apps.connections.open
-- [ ] apps.event.authorizations.list
-- [ ] apps.manifest.create
-- [ ] apps.manifest.delete
-- [ ] apps.manifest.export
-- [ ] apps.manifest.update
-- [ ] apps.manifest.validate
-- [ ] apps.uninstall
+- [x] apps.connections.open
+- [x] apps.event.authorizations.list
+- [x] apps.manifest.create
+- [x] apps.manifest.delete
+- [x] apps.manifest.export
+- [x] apps.manifest.update
+- [x] apps.manifest.validate
+- [x] apps.uninstall
 - [ ] assistant.threads.setStatus
 - [ ] assistant.threads.setSuggestedPrompts
 - [ ] assistant.threads.setTitle
