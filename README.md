@@ -39,7 +39,34 @@ That's it. Your agent now has Slack.
 
 **Advanced** — Canvases, Lists, Reminders, Do Not Disturb, Calls, Workflows
 
-Plus undocumented endpoints like `client.counts` for unread badges and `client.boot` for workspace state — things even Slack's own app uses internally.
+### Beyond the official API
+
+This server also includes 15 undocumented and legacy endpoints — the same internal APIs that Slack's own web and desktop apps use. These require session tokens (`xoxc`+`xoxd`) from your browser.
+
+**Session endpoints** — workspace state that the official API doesn't expose:
+
+| Endpoint | What it provides |
+|----------|-----------------|
+| `client.boot` | Full workspace bootstrap — channels, users, prefs, feature flags. What Slack loads on startup. |
+| `client.counts` | Unread counts per channel/DM/thread plus mention counts. Powers the badge numbers in Slack's sidebar. |
+| `client.userBoot` | User-specific bootstrap data — lighter version of `client.boot` scoped to the authenticated user. |
+| `threads.getView` | Thread inbox data — the list of threads you see in Slack's "Threads" view with read/unread state. |
+
+**Legacy endpoints** — functionality missing from or removed from the official API:
+
+| Endpoint | What it provides |
+|----------|-----------------|
+| `chat.command` | Execute slash commands (`/shrug`, `/remind`, custom commands) programmatically. |
+| `commands.list` | List all available slash commands in the workspace, including custom ones. |
+| `files.edit` | Edit a file's title, content, or filetype in-place. No official API equivalent. |
+| `files.share` | Share a file to a channel. Simpler than the official message-with-attachment approach. |
+| `bots.list` | List all bot users in the workspace. Not available via the official API. |
+| `team.prefs.get` | Full team-level preferences — message retention, permissions, allowed domains. |
+| `users.prefs.get` | All user preferences — notifications, sidebar, theme, accessibility. Hundreds of prefs. |
+| `users.prefs.set` | Set any individual user preference by name/value. |
+| `users.admin.invite` | Invite users to the workspace by email (Enterprise Grid only). |
+| `users.admin.setInactive` | Deactivate a user account (Enterprise Grid only). |
+| `channels.delete` | Dead method — returns `unknown_method`. Included for completeness. |
 
 ### 193 tools across 35 API families
 
@@ -102,7 +129,7 @@ uv pip install git+https://github.com/karbassi/slack-mcp.git
 
 ```sh
 git clone https://github.com/karbassi/slack-mcp.git
-cd slack-api
+cd slack-mcp
 uv sync
 ```
 
@@ -135,7 +162,7 @@ uv sync
     "slack": {
       "type": "stdio",
       "command": "uv",
-      "args": ["run", "--directory", "/path/to/slack-api", "slack-mcp"]
+      "args": ["run", "--directory", "/path/to/slack-mcp", "slack-mcp"]
     }
   }
 }

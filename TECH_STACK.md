@@ -32,7 +32,7 @@
 ## Project Structure
 
 ```
-slack-api/
+slack-mcp/
 ├── manifest.json          # Slack app manifest (44 user token scopes)
 ├── methods.txt            # All 178 official + undocumented methods
 ├── pyproject.toml         # Project config and dependencies
