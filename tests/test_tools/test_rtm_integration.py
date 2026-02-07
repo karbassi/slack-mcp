@@ -8,13 +8,13 @@ from slack_mcp.tools.rtm import (
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="deprecated: RTM API is deprecated by Slack")
+@pytest.mark.skip(reason="missing_scope: requires rtm:stream")
 async def test_rtm_connect_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="deprecated: RTM API is deprecated by Slack")
+@pytest.mark.skip(reason="missing_scope: requires rtm:stream")
 async def test_rtm_start_live(live_client):
     pass

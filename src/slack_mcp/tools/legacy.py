@@ -68,7 +68,7 @@ async def files_edit(
         kwargs["filetype"] = filetype
     if content is not None:
         kwargs["content"] = content
-    return await client.session_call("files.edit", **kwargs)
+    return await client.session_call_form("files.edit", **kwargs)
 
 
 @mcp.tool
