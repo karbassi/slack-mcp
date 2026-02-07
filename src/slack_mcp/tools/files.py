@@ -32,7 +32,7 @@ async def files_complete_upload_external(
         kwargs["initial_comment"] = initial_comment
     if thread_ts is not None:
         kwargs["thread_ts"] = thread_ts
-    return await client.api_call("files.completeUploadExternal", **kwargs)
+    return await client.api_call_json("files.completeUploadExternal", **kwargs)
 
 
 @mcp.tool
