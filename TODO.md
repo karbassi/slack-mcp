@@ -40,48 +40,48 @@
 - [x] canvases.delete
 - [x] canvases.edit
 - [x] canvases.sections.lookup
-- [ ] chat.appendStream
-- [ ] chat.delete
-- [ ] chat.deleteScheduledMessage
-- [ ] chat.getPermalink
-- [ ] chat.meMessage
-- [ ] chat.postEphemeral
-- [ ] chat.postMessage
-- [ ] chat.scheduleMessage
-- [ ] chat.scheduledMessages.list
-- [ ] chat.startStream
-- [ ] chat.stopStream
-- [ ] chat.stream
-- [ ] chat.unfurl
-- [ ] chat.update
-- [ ] conversations.acceptSharedInvite
-- [ ] conversations.approveSharedInvite
-- [ ] conversations.archive
-- [ ] conversations.canvases.create
-- [ ] conversations.close
-- [ ] conversations.create
-- [ ] conversations.declineSharedInvite
-- [ ] conversations.externalInvitePermissions.set
-- [ ] conversations.history
-- [ ] conversations.info
-- [ ] conversations.invite
-- [ ] conversations.inviteShared
-- [ ] conversations.join
-- [ ] conversations.kick
-- [ ] conversations.leave
-- [ ] conversations.list
-- [ ] conversations.listConnectInvites
-- [ ] conversations.mark
-- [ ] conversations.members
-- [ ] conversations.open
-- [ ] conversations.rename
-- [ ] conversations.replies
-- [ ] conversations.requestSharedInvite.approve
-- [ ] conversations.requestSharedInvite.deny
-- [ ] conversations.requestSharedInvite.list
-- [ ] conversations.setPurpose
-- [ ] conversations.setTopic
-- [ ] conversations.unarchive
+- [x] chat.appendStream
+- [x] chat.delete
+- [x] chat.deleteScheduledMessage
+- [x] chat.getPermalink
+- [x] chat.meMessage
+- [x] chat.postEphemeral
+- [x] chat.postMessage
+- [x] chat.scheduleMessage
+- [x] chat.scheduledMessages.list
+- [x] chat.startStream
+- [x] chat.stopStream
+- [x] chat.stream
+- [x] chat.unfurl
+- [x] chat.update
+- [x] conversations.acceptSharedInvite
+- [x] conversations.approveSharedInvite
+- [x] conversations.archive
+- [x] conversations.canvases.create
+- [x] conversations.close
+- [x] conversations.create
+- [x] conversations.declineSharedInvite
+- [x] conversations.externalInvitePermissions.set
+- [x] conversations.history
+- [x] conversations.info
+- [x] conversations.invite
+- [x] conversations.inviteShared
+- [x] conversations.join
+- [x] conversations.kick
+- [x] conversations.leave
+- [x] conversations.list
+- [x] conversations.listConnectInvites
+- [x] conversations.mark
+- [x] conversations.members
+- [x] conversations.open
+- [x] conversations.rename
+- [x] conversations.replies
+- [x] conversations.requestSharedInvite.approve
+- [x] conversations.requestSharedInvite.deny
+- [x] conversations.requestSharedInvite.list
+- [x] conversations.setPurpose
+- [x] conversations.setTopic
+- [x] conversations.unarchive
 - [ ] dialog.open
 - [ ] dnd.endDnd
 - [ ] dnd.endSnooze
