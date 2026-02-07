@@ -17,29 +17,29 @@
 - [x] apps.manifest.update
 - [x] apps.manifest.validate
 - [x] apps.uninstall
-- [ ] assistant.threads.setStatus
-- [ ] assistant.threads.setSuggestedPrompts
-- [ ] assistant.threads.setTitle
-- [ ] auth.revoke
-- [ ] auth.teams.list
-- [ ] auth.test
-- [ ] bookmarks.add
-- [ ] bookmarks.edit
-- [ ] bookmarks.list
-- [ ] bookmarks.remove
-- [ ] bots.info
-- [ ] calls.add
-- [ ] calls.end
-- [ ] calls.info
-- [ ] calls.participants.add
-- [ ] calls.participants.remove
-- [ ] calls.update
-- [ ] canvases.access.delete
-- [ ] canvases.access.set
-- [ ] canvases.create
-- [ ] canvases.delete
-- [ ] canvases.edit
-- [ ] canvases.sections.lookup
+- [x] assistant.threads.setStatus
+- [x] assistant.threads.setSuggestedPrompts
+- [x] assistant.threads.setTitle
+- [x] auth.revoke
+- [x] auth.teams.list
+- [x] auth.test
+- [x] bookmarks.add
+- [x] bookmarks.edit
+- [x] bookmarks.list
+- [x] bookmarks.remove
+- [x] bots.info
+- [x] calls.add
+- [x] calls.end
+- [x] calls.info
+- [x] calls.participants.add
+- [x] calls.participants.remove
+- [x] calls.update
+- [x] canvases.access.delete
+- [x] canvases.access.set
+- [x] canvases.create
+- [x] canvases.delete
+- [x] canvases.edit
+- [x] canvases.sections.lookup
 - [ ] chat.appendStream
 - [ ] chat.delete
 - [ ] chat.deleteScheduledMessage
