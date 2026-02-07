@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from slack_mcp.tools.calls import (
@@ -12,41 +14,30 @@ from slack_mcp.tools.calls import (
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would create a call")
-async def test_calls_add_live(live_client):
-    pass
+async def test_calls_lifecycle_live(live_client):
+    """Register a call, get info, update it, then end it."""
+    ext_id = f"test-call-{uuid.uuid4().hex[:8]}"
 
+    # Add call
+    added = await calls_add(
+        external_unique_id=ext_id,
+        join_url="https://example.com/call",
+        title="Integration Test Call",
+        client=live_client,
+    )
+    assert added["ok"] is True
+    call_id = added["call"]["id"]
 
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would end a call")
-async def test_calls_end_live(live_client):
-    pass
+    # Info
+    info = await calls_info(id=call_id, client=live_client)
+    assert info["ok"] is True
 
+    # Update
+    updated = await calls_update(
+        id=call_id, title="Updated Call Title", client=live_client
+    )
+    assert updated["ok"] is True
 
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="requires existing call ID")
-async def test_calls_info_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would add participants")
-async def test_calls_participants_add_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would remove participants")
-async def test_calls_participants_remove_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would update a call")
-async def test_calls_update_live(live_client):
-    pass
+    # End call
+    ended = await calls_end(id=call_id, client=live_client)
+    assert ended["ok"] is True

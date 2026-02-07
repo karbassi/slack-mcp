@@ -1,3 +1,6 @@
+import time
+import uuid
+
 import pytest
 
 from slack_mcp.tools.chat import (
@@ -16,62 +19,90 @@ from slack_mcp.tools.chat import (
     chat_unfurl,
     chat_update,
 )
+from slack_mcp.tools.conversations import (
+    conversations_archive,
+    conversations_create,
+)
+
+
+@pytest.fixture
+async def temp_channel(live_client):
+    """Create a temp channel and archive it after the test."""
+    name = f"test-chat-{uuid.uuid4().hex[:8]}"
+    created = await conversations_create(name=name, client=live_client)
+    assert created["ok"] is True
+    channel_id = created["channel"]["id"]
+    yield channel_id
+    await conversations_archive(channel=channel_id, client=live_client)
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires active AI assistant stream")
-async def test_chat_append_stream_live(live_client):
-    pass
+async def test_chat_post_message_and_delete_live(live_client, temp_channel):
+    """Post a message, get permalink, update it, then delete it."""
+    # Post
+    posted = await chat_post_message(
+        channel=temp_channel, text="integration test message", client=live_client
+    )
+    assert posted["ok"] is True
+    ts = posted["ts"]
+
+    # Get permalink
+    permalink = await chat_get_permalink(
+        channel=temp_channel, message_ts=ts, client=live_client
+    )
+    assert permalink["ok"] is True
+    assert "permalink" in permalink
+
+    # Update
+    updated = await chat_update(
+        channel=temp_channel, ts=ts, text="updated message", client=live_client
+    )
+    assert updated["ok"] is True
+
+    # Delete
+    deleted = await chat_delete(channel=temp_channel, ts=ts, client=live_client)
+    assert deleted["ok"] is True
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would delete a message")
-async def test_chat_delete_live(live_client):
-    pass
+async def test_chat_me_message_live(live_client, temp_channel):
+    """Post a /me message and clean up the channel."""
+    result = await chat_me_message(
+        channel=temp_channel, text="is testing", client=live_client
+    )
+    assert result["ok"] is True
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would delete a scheduled message")
-async def test_chat_delete_scheduled_message_live(live_client):
-    pass
+async def test_chat_schedule_and_delete_live(live_client, temp_channel):
+    """Schedule a message, list it, then delete it before it sends."""
+    post_at = int(time.time()) + 3600  # 1 hour from now
 
+    scheduled = await chat_schedule_message(
+        channel=temp_channel,
+        post_at=post_at,
+        text="scheduled integration test",
+        client=live_client,
+    )
+    assert scheduled["ok"] is True
+    scheduled_id = scheduled["scheduled_message_id"]
 
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="requires existing message ts and channel")
-async def test_chat_get_permalink_live(live_client):
-    pass
+    # List scheduled messages
+    listed = await chat_scheduled_messages_list(
+        channel=temp_channel, client=live_client
+    )
+    assert listed["ok"] is True
 
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would post a /me message")
-async def test_chat_me_message_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would post ephemeral message")
-async def test_chat_post_ephemeral_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would post a message")
-async def test_chat_post_message_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would schedule a message")
-async def test_chat_schedule_message_live(live_client):
-    pass
+    # Delete the scheduled message
+    deleted = await chat_delete_scheduled_message(
+        channel=temp_channel,
+        scheduled_message_id=scheduled_id,
+        client=live_client,
+    )
+    assert deleted["ok"] is True
 
 
 @pytest.mark.integration
@@ -79,6 +110,13 @@ async def test_chat_schedule_message_live(live_client):
 async def test_chat_scheduled_messages_list_live(live_client):
     result = await chat_scheduled_messages_list(client=live_client)
     assert result["ok"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="requires active AI assistant stream")
+async def test_chat_append_stream_live(live_client):
+    pass
 
 
 @pytest.mark.integration
@@ -104,13 +142,13 @@ async def test_chat_stream_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would unfurl URLs")
+@pytest.mark.skip(reason="requires a trigger_id and URL to unfurl")
 async def test_chat_unfurl_live(live_client):
     pass
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would update a message")
-async def test_chat_update_live(live_client):
+@pytest.mark.skip(reason="requires a specific user in the channel for ephemeral")
+async def test_chat_post_ephemeral_live(live_client):
     pass

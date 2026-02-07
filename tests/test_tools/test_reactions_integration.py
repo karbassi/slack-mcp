@@ -1,25 +1,15 @@
+import uuid
+
 import pytest
 
+from slack_mcp.tools.chat import chat_delete, chat_post_message
+from slack_mcp.tools.conversations import conversations_archive, conversations_create
 from slack_mcp.tools.reactions import (
     reactions_add,
     reactions_get,
     reactions_list,
     reactions_remove,
 )
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would add a reaction to a message")
-async def test_reactions_add_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="requires a specific message or file to get reactions for")
-async def test_reactions_get_live(live_client):
-    pass
 
 
 @pytest.mark.integration
@@ -31,6 +21,40 @@ async def test_reactions_list_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would remove a reaction from a message")
-async def test_reactions_remove_live(live_client):
-    pass
+async def test_reactions_lifecycle_live(live_client):
+    """Post a message, add reaction, get reactions, remove reaction, clean up."""
+    name = f"test-react-{uuid.uuid4().hex[:8]}"
+    created = await conversations_create(name=name, client=live_client)
+    assert created["ok"] is True
+    channel_id = created["channel"]["id"]
+
+    try:
+        # Post a message
+        posted = await chat_post_message(
+            channel=channel_id, text="react to me", client=live_client
+        )
+        assert posted["ok"] is True
+        ts = posted["ts"]
+
+        # Add reaction
+        added = await reactions_add(
+            channel=channel_id, name="thumbsup", timestamp=ts, client=live_client
+        )
+        assert added["ok"] is True
+
+        # Get reactions
+        got = await reactions_get(
+            channel=channel_id, timestamp=ts, client=live_client
+        )
+        assert got["ok"] is True
+
+        # Remove reaction
+        removed = await reactions_remove(
+            name="thumbsup", channel=channel_id, timestamp=ts, client=live_client
+        )
+        assert removed["ok"] is True
+
+        # Clean up message
+        await chat_delete(channel=channel_id, ts=ts, client=live_client)
+    finally:
+        await conversations_archive(channel=channel_id, client=live_client)
