@@ -82,126 +82,126 @@
 - [x] conversations.setPurpose
 - [x] conversations.setTopic
 - [x] conversations.unarchive
-- [ ] dialog.open
-- [ ] dnd.endDnd
-- [ ] dnd.endSnooze
-- [ ] dnd.info
-- [ ] dnd.setSnooze
-- [ ] dnd.teamInfo
-- [ ] emoji.list
-- [ ] entity.presentDetails
-- [ ] files.comments.delete
-- [ ] files.completeUploadExternal
-- [ ] files.delete
-- [ ] files.getUploadURLExternal
-- [ ] files.info
-- [ ] files.list
-- [ ] files.remote.add
-- [ ] files.remote.info
-- [ ] files.remote.list
-- [ ] files.remote.remove
-- [ ] files.remote.share
-- [ ] files.remote.update
-- [ ] files.revokePublicURL
-- [ ] files.sharedPublicURL
-- [ ] files.upload
-- [ ] files.upload.v2
-- [ ] functions.completeError
-- [ ] functions.completeSuccess
-- [ ] migration.exchange
-- [ ] oauth.access
-- [ ] oauth.v2.access
-- [ ] oauth.v2.exchange
-- [ ] openid.connect.token
-- [ ] openid.connect.userInfo
-- [ ] pins.add
-- [ ] pins.list
-- [ ] pins.remove
-- [ ] reactions.add
-- [ ] reactions.get
-- [ ] reactions.list
-- [ ] reactions.remove
-- [ ] reminders.add
-- [ ] reminders.complete
-- [ ] reminders.delete
-- [ ] reminders.info
-- [ ] reminders.list
-- [ ] rtm.connect
-- [ ] rtm.start
-- [ ] search.all
-- [ ] search.files
-- [ ] search.messages
-- [ ] slackLists.access.delete
-- [ ] slackLists.access.set
-- [ ] slackLists.create
-- [ ] slackLists.download.get
-- [ ] slackLists.download.start
-- [ ] slackLists.items.create
-- [ ] slackLists.items.delete
-- [ ] slackLists.items.deleteMultiple
-- [ ] slackLists.items.info
-- [ ] slackLists.items.list
-- [ ] slackLists.items.update
-- [ ] slackLists.update
-- [ ] stars.add
-- [ ] stars.list
-- [ ] stars.remove
-- [ ] team.accessLogs
-- [ ] team.billableInfo
-- [ ] team.billing.info
-- [ ] team.externalTeams.disconnect
-- [ ] team.externalTeams.list
-- [ ] team.info
-- [ ] team.integrationLogs
-- [ ] team.preferences.list
-- [ ] team.profile.get
-- [ ] tooling.tokens.rotate
-- [ ] usergroups.create
-- [ ] usergroups.disable
-- [ ] usergroups.enable
-- [ ] usergroups.list
-- [ ] usergroups.update
-- [ ] usergroups.users.list
-- [ ] usergroups.users.update
-- [ ] users.conversations
-- [ ] users.deletePhoto
-- [ ] users.discoverableContacts.lookup
-- [ ] users.getPresence
-- [ ] users.identity
-- [ ] users.info
-- [ ] users.list
-- [ ] users.lookupByEmail
-- [ ] users.profile.get
-- [ ] users.profile.set
-- [ ] users.setPhoto
-- [ ] users.setPresence
-- [ ] views.open
-- [ ] views.publish
-- [ ] views.push
-- [ ] views.update
-- [ ] workflows.featured.add
-- [ ] workflows.featured.list
-- [ ] workflows.featured.remove
-- [ ] workflows.featured.set
-- [ ] workflows.stepCompleted
-- [ ] workflows.stepFailed
-- [ ] workflows.updateStep
+- [x] dialog.open
+- [x] dnd.endDnd
+- [x] dnd.endSnooze
+- [x] dnd.info
+- [x] dnd.setSnooze
+- [x] dnd.teamInfo
+- [x] emoji.list
+- [x] entity.presentDetails
+- [x] files.comments.delete
+- [x] files.completeUploadExternal
+- [x] files.delete
+- [x] files.getUploadURLExternal
+- [x] files.info
+- [x] files.list
+- [x] files.remote.add
+- [x] files.remote.info
+- [x] files.remote.list
+- [x] files.remote.remove
+- [x] files.remote.share
+- [x] files.remote.update
+- [x] files.revokePublicURL
+- [x] files.sharedPublicURL
+- [x] files.upload
+- [x] files.upload.v2
+- [x] functions.completeError
+- [x] functions.completeSuccess
+- [x] migration.exchange
+- [x] oauth.access
+- [x] oauth.v2.access
+- [x] oauth.v2.exchange
+- [x] openid.connect.token
+- [x] openid.connect.userInfo
+- [x] pins.add
+- [x] pins.list
+- [x] pins.remove
+- [x] reactions.add
+- [x] reactions.get
+- [x] reactions.list
+- [x] reactions.remove
+- [x] reminders.add
+- [x] reminders.complete
+- [x] reminders.delete
+- [x] reminders.info
+- [x] reminders.list
+- [x] rtm.connect
+- [x] rtm.start
+- [x] search.all
+- [x] search.files
+- [x] search.messages
+- [x] slackLists.access.delete
+- [x] slackLists.access.set
+- [x] slackLists.create
+- [x] slackLists.download.get
+- [x] slackLists.download.start
+- [x] slackLists.items.create
+- [x] slackLists.items.delete
+- [x] slackLists.items.deleteMultiple
+- [x] slackLists.items.info
+- [x] slackLists.items.list
+- [x] slackLists.items.update
+- [x] slackLists.update
+- [x] stars.add
+- [x] stars.list
+- [x] stars.remove
+- [x] team.accessLogs
+- [x] team.billableInfo
+- [x] team.billing.info
+- [x] team.externalTeams.disconnect
+- [x] team.externalTeams.list
+- [x] team.info
+- [x] team.integrationLogs
+- [x] team.preferences.list
+- [x] team.profile.get
+- [x] tooling.tokens.rotate
+- [x] usergroups.create
+- [x] usergroups.disable
+- [x] usergroups.enable
+- [x] usergroups.list
+- [x] usergroups.update
+- [x] usergroups.users.list
+- [x] usergroups.users.update
+- [x] users.conversations
+- [x] users.deletePhoto
+- [x] users.discoverableContacts.lookup
+- [x] users.getPresence
+- [x] users.identity
+- [x] users.info
+- [x] users.list
+- [x] users.lookupByEmail
+- [x] users.profile.get
+- [x] users.profile.set
+- [x] users.setPhoto
+- [x] users.setPresence
+- [x] views.open
+- [x] views.publish
+- [x] views.push
+- [x] views.update
+- [x] workflows.featured.add
+- [x] workflows.featured.list
+- [x] workflows.featured.remove
+- [x] workflows.featured.set
+- [x] workflows.stepCompleted
+- [x] workflows.stepFailed
+- [x] workflows.updateStep
 
 ## Phase 3: Undocumented Session Endpoints
-- [ ] client.boot
-- [ ] client.counts
-- [ ] client.userBoot
-- [ ] threads.getView
+- [x] client.boot
+- [x] client.counts
+- [x] client.userBoot
+- [x] threads.getView
 
 ## Phase 4: Undocumented Legacy Endpoints
-- [ ] bots.list
-- [ ] channels.delete
-- [ ] chat.command
-- [ ] commands.list
-- [ ] files.edit
-- [ ] files.share
-- [ ] team.prefs.get
-- [ ] users.admin.invite
-- [ ] users.admin.setInactive
-- [ ] users.prefs.get
-- [ ] users.prefs.set
+- [x] bots.list
+- [x] channels.delete
+- [x] chat.command
+- [x] commands.list
+- [x] files.edit
+- [x] files.share
+- [x] team.prefs.get
+- [x] users.admin.invite
+- [x] users.admin.setInactive
+- [x] users.prefs.get
+- [x] users.prefs.set
