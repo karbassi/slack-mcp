@@ -1,3 +1,9 @@
 from slack_mcp.server import mcp
 
-mcp.run()
+
+def main():
+    mcp.run()
+
+
+if __name__ == "__main__":
+    main()
