@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -16,8 +14,8 @@ async def client_boot(
 
 @mcp.tool
 async def client_counts(
-    thread_count_by_last_read: Optional[bool] = None,
-    org_wide_aware: Optional[bool] = None,
+    thread_count_by_last_read: bool | None = None,
+    org_wide_aware: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get unread counts and thread info (undocumented session endpoint)."""
@@ -39,7 +37,7 @@ async def client_user_boot(
 
 @mcp.tool
 async def threads_get_view(
-    current_ts: Optional[str] = None,
+    current_ts: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get thread view data (undocumented session endpoint)."""

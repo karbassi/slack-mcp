@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.openid import openid_connect_token, openid_connect_user_info
 
 

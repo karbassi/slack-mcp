@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.files import (
     files_comments_delete,
     files_complete_upload_external,
@@ -121,9 +122,7 @@ async def test_files_remote_remove(mock_client):
 @pytest.mark.asyncio
 async def test_files_remote_share(mock_client):
     mock_client.api_call.return_value = {"ok": True}
-    result = await files_remote_share(
-        channels="C123", file="F123", client=mock_client
-    )
+    result = await files_remote_share(channels="C123", file="F123", client=mock_client)
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with(
         "files.remote.share", channels="C123", file="F123"
@@ -159,7 +158,9 @@ async def test_files_shared_public_url(mock_client):
 @pytest.mark.asyncio
 async def test_files_upload(mock_client):
     mock_client.api_call.return_value = {"ok": True}
-    result = await files_upload(content="hello", filename="test.txt", client=mock_client)
+    result = await files_upload(
+        content="hello", filename="test.txt", client=mock_client
+    )
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with(
         "files.upload", content="hello", filename="test.txt"

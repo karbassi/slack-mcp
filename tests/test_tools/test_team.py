@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.team import (
     team_access_logs,
     team_billable_info,

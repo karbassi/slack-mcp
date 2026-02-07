@@ -57,9 +57,7 @@ async def test_usergroups_lifecycle_live(live_client):
         assert users_updated["ok"] is True
 
         # List users
-        users_listed = await usergroups_users_list(
-            usergroup=ug_id, client=live_client
-        )
+        users_listed = await usergroups_users_list(usergroup=ug_id, client=live_client)
         assert users_listed["ok"] is True
 
         # Disable

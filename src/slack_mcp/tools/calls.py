@@ -1,21 +1,19 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def calls_add(
     external_unique_id: str,
     join_url: str,
-    created_by: Optional[str] = None,
-    date_start: Optional[int] = None,
-    desktop_app_join_url: Optional[str] = None,
-    external_display_id: Optional[str] = None,
-    title: Optional[str] = None,
-    users: Optional[list] = None,
+    created_by: str | None = None,
+    date_start: int | None = None,
+    desktop_app_join_url: str | None = None,
+    external_display_id: str | None = None,
+    title: str | None = None,
+    users: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Register a new call."""
@@ -38,7 +36,7 @@ async def calls_add(
 @mcp.tool
 async def calls_end(
     id: str,
-    duration: Optional[int] = None,
+    duration: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """End a call."""
@@ -80,9 +78,9 @@ async def calls_participants_remove(
 @mcp.tool
 async def calls_update(
     id: str,
-    desktop_app_join_url: Optional[str] = None,
-    join_url: Optional[str] = None,
-    title: Optional[str] = None,
+    desktop_app_join_url: str | None = None,
+    join_url: str | None = None,
+    title: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update information about a call."""

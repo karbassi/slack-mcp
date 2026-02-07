@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.emoji import emoji_list
 
 

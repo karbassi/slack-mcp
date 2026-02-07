@@ -1,15 +1,13 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def api_test(
-    error: Optional[str] = None,
-    foo: Optional[str] = None,
+    error: str | None = None,
+    foo: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Check API calling code. Helps test your calling code."""

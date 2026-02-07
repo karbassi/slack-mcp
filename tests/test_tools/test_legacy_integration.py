@@ -24,7 +24,6 @@ from slack_mcp.tools.legacy import (
     users_prefs_set,
 )
 
-
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
 
@@ -141,6 +140,8 @@ async def test_users_admin_invite_live(live_client):
     pass
 
 
-@pytest.mark.skip(reason="enterprise_is_restricted: Enterprise Grid requires target_team")
+@pytest.mark.skip(
+    reason="enterprise_is_restricted: Enterprise Grid requires target_team"
+)
 async def test_users_admin_set_inactive_live(live_client):
     pass

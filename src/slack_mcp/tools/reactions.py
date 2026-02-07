@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -21,11 +19,11 @@ async def reactions_add(
 
 @mcp.tool
 async def reactions_get(
-    channel: Optional[str] = None,
-    file: Optional[str] = None,
-    file_comment: Optional[str] = None,
-    full: Optional[bool] = None,
-    timestamp: Optional[str] = None,
+    channel: str | None = None,
+    file: str | None = None,
+    file_comment: str | None = None,
+    full: bool | None = None,
+    timestamp: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get reactions for an item."""
@@ -45,13 +43,13 @@ async def reactions_get(
 
 @mcp.tool
 async def reactions_list(
-    count: Optional[int] = None,
-    cursor: Optional[str] = None,
-    full: Optional[bool] = None,
-    limit: Optional[int] = None,
-    page: Optional[int] = None,
-    team_id: Optional[str] = None,
-    user: Optional[str] = None,
+    count: int | None = None,
+    cursor: str | None = None,
+    full: bool | None = None,
+    limit: int | None = None,
+    page: int | None = None,
+    team_id: str | None = None,
+    user: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List reactions made by a user."""
@@ -76,10 +74,10 @@ async def reactions_list(
 @mcp.tool
 async def reactions_remove(
     name: str,
-    channel: Optional[str] = None,
-    file: Optional[str] = None,
-    file_comment: Optional[str] = None,
-    timestamp: Optional[str] = None,
+    channel: str | None = None,
+    file: str | None = None,
+    file_comment: str | None = None,
+    timestamp: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove a reaction from an item."""

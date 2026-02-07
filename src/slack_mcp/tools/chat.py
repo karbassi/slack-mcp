@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -23,7 +21,7 @@ async def chat_append_stream(
 async def chat_delete(
     channel: str,
     ts: str,
-    as_user: Optional[bool] = None,
+    as_user: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Delete a message."""
@@ -37,7 +35,7 @@ async def chat_delete(
 async def chat_delete_scheduled_message(
     channel: str,
     scheduled_message_id: str,
-    as_user: Optional[bool] = None,
+    as_user: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Delete a pending scheduled message from the queue."""
@@ -73,11 +71,11 @@ async def chat_me_message(
 async def chat_post_ephemeral(
     channel: str,
     user: str,
-    text: Optional[str] = None,
-    attachments: Optional[list] = None,
-    blocks: Optional[list] = None,
-    as_user: Optional[bool] = None,
-    thread_ts: Optional[str] = None,
+    text: str | None = None,
+    attachments: list | None = None,
+    blocks: list | None = None,
+    as_user: bool | None = None,
+    thread_ts: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Send an ephemeral message to a user in a channel."""
@@ -98,21 +96,21 @@ async def chat_post_ephemeral(
 @mcp.tool
 async def chat_post_message(
     channel: str,
-    text: Optional[str] = None,
-    attachments: Optional[list] = None,
-    blocks: Optional[list] = None,
-    as_user: Optional[bool] = None,
-    icon_emoji: Optional[str] = None,
-    icon_url: Optional[str] = None,
-    link_names: Optional[bool] = None,
-    metadata: Optional[dict] = None,
-    mrkdwn: Optional[bool] = None,
-    parse: Optional[str] = None,
-    reply_broadcast: Optional[bool] = None,
-    thread_ts: Optional[str] = None,
-    unfurl_links: Optional[bool] = None,
-    unfurl_media: Optional[bool] = None,
-    username: Optional[str] = None,
+    text: str | None = None,
+    attachments: list | None = None,
+    blocks: list | None = None,
+    as_user: bool | None = None,
+    icon_emoji: str | None = None,
+    icon_url: str | None = None,
+    link_names: bool | None = None,
+    metadata: dict | None = None,
+    mrkdwn: bool | None = None,
+    parse: str | None = None,
+    reply_broadcast: bool | None = None,
+    thread_ts: str | None = None,
+    unfurl_links: bool | None = None,
+    unfurl_media: bool | None = None,
+    username: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Send a message to a channel."""
@@ -154,15 +152,15 @@ async def chat_post_message(
 async def chat_schedule_message(
     channel: str,
     post_at: int,
-    text: Optional[str] = None,
-    attachments: Optional[list] = None,
-    blocks: Optional[list] = None,
-    as_user: Optional[bool] = None,
-    metadata: Optional[dict] = None,
-    reply_broadcast: Optional[bool] = None,
-    thread_ts: Optional[str] = None,
-    unfurl_links: Optional[bool] = None,
-    unfurl_media: Optional[bool] = None,
+    text: str | None = None,
+    attachments: list | None = None,
+    blocks: list | None = None,
+    as_user: bool | None = None,
+    metadata: dict | None = None,
+    reply_broadcast: bool | None = None,
+    thread_ts: str | None = None,
+    unfurl_links: bool | None = None,
+    unfurl_media: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Schedule a message to be sent to a channel."""
@@ -190,12 +188,12 @@ async def chat_schedule_message(
 
 @mcp.tool
 async def chat_scheduled_messages_list(
-    channel: Optional[str] = None,
-    cursor: Optional[str] = None,
-    latest: Optional[str] = None,
-    limit: Optional[int] = None,
-    oldest: Optional[str] = None,
-    team_id: Optional[str] = None,
+    channel: str | None = None,
+    cursor: str | None = None,
+    latest: str | None = None,
+    limit: int | None = None,
+    oldest: str | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List scheduled messages."""
@@ -257,10 +255,10 @@ async def chat_unfurl(
     channel: str,
     ts: str,
     unfurls: dict,
-    user_auth_blocks: Optional[list] = None,
-    user_auth_message: Optional[str] = None,
-    user_auth_required: Optional[bool] = None,
-    user_auth_url: Optional[str] = None,
+    user_auth_blocks: list | None = None,
+    user_auth_message: str | None = None,
+    user_auth_required: bool | None = None,
+    user_auth_url: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Provide custom unfurl behavior for URLs in messages."""
@@ -280,14 +278,14 @@ async def chat_unfurl(
 async def chat_update(
     channel: str,
     ts: str,
-    text: Optional[str] = None,
-    attachments: Optional[list] = None,
-    blocks: Optional[list] = None,
-    as_user: Optional[bool] = None,
-    link_names: Optional[bool] = None,
-    metadata: Optional[dict] = None,
-    parse: Optional[str] = None,
-    reply_broadcast: Optional[bool] = None,
+    text: str | None = None,
+    attachments: list | None = None,
+    blocks: list | None = None,
+    as_user: bool | None = None,
+    link_names: bool | None = None,
+    metadata: dict | None = None,
+    parse: str | None = None,
+    reply_broadcast: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update a message."""

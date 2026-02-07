@@ -53,9 +53,7 @@ async def test_conversations_create_and_archive_live(live_client):
         assert history["ok"] is True
 
         # Members
-        members = await conversations_members(
-            channel=channel_id, client=live_client
-        )
+        members = await conversations_members(channel=channel_id, client=live_client)
         assert members["ok"] is True
 
         # Set topic
@@ -79,9 +77,7 @@ async def test_conversations_create_and_archive_live(live_client):
 
     finally:
         # Archive (cleanup)
-        archived = await conversations_archive(
-            channel=channel_id, client=live_client
-        )
+        archived = await conversations_archive(channel=channel_id, client=live_client)
         assert archived["ok"] is True
 
 
@@ -96,9 +92,7 @@ async def test_conversations_unarchive_live(live_client):
 
     try:
         await conversations_archive(channel=channel_id, client=live_client)
-        result = await conversations_unarchive(
-            channel=channel_id, client=live_client
-        )
+        result = await conversations_unarchive(channel=channel_id, client=live_client)
         assert result["ok"] is True
     finally:
         await conversations_archive(channel=channel_id, client=live_client)

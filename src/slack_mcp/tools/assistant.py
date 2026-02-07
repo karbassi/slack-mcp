@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -26,8 +24,8 @@ async def assistant_threads_set_status(
 async def assistant_threads_set_suggested_prompts(
     channel_id: str,
     thread_ts: str,
-    prompts: Optional[list] = None,
-    title: Optional[str] = None,
+    prompts: list | None = None,
+    title: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set suggested prompts for an AI assistant thread."""

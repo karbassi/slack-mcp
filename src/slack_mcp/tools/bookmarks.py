@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -11,10 +9,10 @@ async def bookmarks_add(
     channel_id: str,
     title: str,
     type: str,
-    emoji: Optional[str] = None,
-    entity_id: Optional[str] = None,
-    link: Optional[str] = None,
-    parent_id: Optional[str] = None,
+    emoji: str | None = None,
+    entity_id: str | None = None,
+    link: str | None = None,
+    parent_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Add a bookmark to a channel."""
@@ -34,9 +32,9 @@ async def bookmarks_add(
 async def bookmarks_edit(
     bookmark_id: str,
     channel_id: str,
-    emoji: Optional[str] = None,
-    link: Optional[str] = None,
-    title: Optional[str] = None,
+    emoji: str | None = None,
+    link: str | None = None,
+    title: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Edit a bookmark in a channel."""

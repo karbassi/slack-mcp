@@ -73,7 +73,9 @@ async def test_apps_manifest_update(mock_client):
 @pytest.mark.asyncio
 async def test_apps_manifest_validate(mock_client):
     mock_client.api_call.return_value = {"ok": True, "errors": []}
-    result = await apps_manifest_validate(manifest='{"name":"test"}', client=mock_client)
+    result = await apps_manifest_validate(
+        manifest='{"name":"test"}', client=mock_client
+    )
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with(
         "apps.manifest.validate", manifest='{"name":"test"}'

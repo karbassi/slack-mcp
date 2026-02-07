@@ -1,20 +1,18 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def search_all(
     query: str,
-    count: Optional[int] = None,
-    highlight: Optional[bool] = None,
-    page: Optional[int] = None,
-    sort: Optional[str] = None,
-    sort_dir: Optional[str] = None,
-    team_id: Optional[str] = None,
+    count: int | None = None,
+    highlight: bool | None = None,
+    page: int | None = None,
+    sort: str | None = None,
+    sort_dir: str | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for messages and files matching a query."""
@@ -37,12 +35,12 @@ async def search_all(
 @mcp.tool
 async def search_files(
     query: str,
-    count: Optional[int] = None,
-    highlight: Optional[bool] = None,
-    page: Optional[int] = None,
-    sort: Optional[str] = None,
-    sort_dir: Optional[str] = None,
-    team_id: Optional[str] = None,
+    count: int | None = None,
+    highlight: bool | None = None,
+    page: int | None = None,
+    sort: str | None = None,
+    sort_dir: str | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for files matching a query."""
@@ -65,13 +63,13 @@ async def search_files(
 @mcp.tool
 async def search_messages(
     query: str,
-    count: Optional[int] = None,
-    cursor: Optional[str] = None,
-    highlight: Optional[bool] = None,
-    page: Optional[int] = None,
-    sort: Optional[str] = None,
-    sort_dir: Optional[str] = None,
-    team_id: Optional[str] = None,
+    count: int | None = None,
+    cursor: str | None = None,
+    highlight: bool | None = None,
+    page: int | None = None,
+    sort: str | None = None,
+    sort_dir: str | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for messages matching a query."""

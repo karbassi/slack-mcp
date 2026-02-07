@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.legacy import (
     bots_list,
     channels_delete,
@@ -27,9 +28,7 @@ async def test_channels_delete(mock_client):
     mock_client.session_call.return_value = {"ok": True}
     result = await channels_delete(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "channels.delete", channel="C123"
-    )
+    mock_client.session_call.assert_called_once_with("channels.delete", channel="C123")
 
 
 @pytest.mark.asyncio
@@ -65,9 +64,7 @@ async def test_files_edit(mock_client):
 @pytest.mark.asyncio
 async def test_files_share_legacy(mock_client):
     mock_client.session_call.return_value = {"ok": True}
-    result = await files_share_legacy(
-        file="F123", channel="C123", client=mock_client
-    )
+    result = await files_share_legacy(file="F123", channel="C123", client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with(
         "files.share", file="F123", channel="C123"
@@ -85,9 +82,7 @@ async def test_team_prefs_get(mock_client):
 @pytest.mark.asyncio
 async def test_users_admin_invite(mock_client):
     mock_client.session_call.return_value = {"ok": True}
-    result = await users_admin_invite(
-        email="test@example.com", client=mock_client
-    )
+    result = await users_admin_invite(email="test@example.com", client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with(
         "users.admin.invite", email="test@example.com"
@@ -115,9 +110,7 @@ async def test_users_prefs_get(mock_client):
 @pytest.mark.asyncio
 async def test_users_prefs_set(mock_client):
     mock_client.session_call.return_value = {"ok": True}
-    result = await users_prefs_set(
-        name="theme", value="dark", client=mock_client
-    )
+    result = await users_prefs_set(name="theme", value="dark", client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with(
         "users.prefs.set", name="theme", value="dark"

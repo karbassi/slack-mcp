@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -23,7 +21,7 @@ async def functions_complete_error(
 @mcp.tool
 async def functions_complete_success(
     function_execution_id: str,
-    outputs: Optional[dict] = None,
+    outputs: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Signal the successful completion of a function."""

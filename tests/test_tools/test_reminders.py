@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.reminders import (
     reminders_add,
     reminders_complete,
@@ -25,9 +26,7 @@ async def test_reminders_complete(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await reminders_complete(reminder="Rm123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "reminders.complete", reminder="Rm123"
-    )
+    mock_client.api_call.assert_called_once_with("reminders.complete", reminder="Rm123")
 
 
 @pytest.mark.asyncio
@@ -35,9 +34,7 @@ async def test_reminders_delete(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await reminders_delete(reminder="Rm123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "reminders.delete", reminder="Rm123"
-    )
+    mock_client.api_call.assert_called_once_with("reminders.delete", reminder="Rm123")
 
 
 @pytest.mark.asyncio

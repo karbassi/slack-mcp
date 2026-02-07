@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -24,8 +22,8 @@ async def dnd_end_snooze(
 
 @mcp.tool
 async def dnd_info(
-    user: Optional[str] = None,
-    team_id: Optional[str] = None,
+    user: str | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve a user's current Do Not Disturb status."""
@@ -49,7 +47,7 @@ async def dnd_set_snooze(
 @mcp.tool
 async def dnd_team_info(
     users: str,
-    team_id: Optional[str] = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve the Do Not Disturb status for users on a team."""

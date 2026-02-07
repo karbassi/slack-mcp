@@ -1,15 +1,13 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def bots_info(
-    bot: Optional[str] = None,
-    team_id: Optional[str] = None,
+    bot: str | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get info for a bot user."""

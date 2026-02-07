@@ -1,9 +1,7 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
@@ -12,9 +10,7 @@ async def workflows_featured_add(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Add featured workflows."""
-    return await client.api_call(
-        "workflows.featured.add", workflow_ids=workflow_ids
-    )
+    return await client.api_call("workflows.featured.add", workflow_ids=workflow_ids)
 
 
 @mcp.tool
@@ -31,9 +27,7 @@ async def workflows_featured_remove(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove featured workflows."""
-    return await client.api_call(
-        "workflows.featured.remove", workflow_ids=workflow_ids
-    )
+    return await client.api_call("workflows.featured.remove", workflow_ids=workflow_ids)
 
 
 @mcp.tool
@@ -42,15 +36,13 @@ async def workflows_featured_set(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set featured workflows."""
-    return await client.api_call(
-        "workflows.featured.set", workflow_ids=workflow_ids
-    )
+    return await client.api_call("workflows.featured.set", workflow_ids=workflow_ids)
 
 
 @mcp.tool
 async def workflows_step_completed(
     workflow_step_execute_id: str,
-    outputs: Optional[dict] = None,
+    outputs: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Indicate a workflow step has been completed successfully."""
@@ -77,10 +69,10 @@ async def workflows_step_failed(
 @mcp.tool
 async def workflows_update_step(
     workflow_step_edit_id: str,
-    inputs: Optional[dict] = None,
-    outputs: Optional[list] = None,
-    step_image_url: Optional[str] = None,
-    step_name: Optional[str] = None,
+    inputs: dict | None = None,
+    outputs: list | None = None,
+    step_image_url: str | None = None,
+    step_name: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update the configuration for a workflow step."""

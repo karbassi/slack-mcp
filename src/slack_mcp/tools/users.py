@@ -1,19 +1,17 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def users_conversations(
-    cursor: Optional[str] = None,
-    exclude_archived: Optional[bool] = None,
-    limit: Optional[int] = None,
-    team_id: Optional[str] = None,
-    types: Optional[str] = None,
-    user: Optional[str] = None,
+    cursor: str | None = None,
+    exclude_archived: bool | None = None,
+    limit: int | None = None,
+    team_id: str | None = None,
+    types: str | None = None,
+    user: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List conversations the calling user may access."""
@@ -47,9 +45,7 @@ async def users_discoverable_contacts_lookup(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Look up a user by their email address for Slack Connect discovery."""
-    return await client.api_call(
-        "users.discoverableContacts.lookup", email=email
-    )
+    return await client.api_call("users.discoverableContacts.lookup", email=email)
 
 
 @mcp.tool
@@ -72,7 +68,7 @@ async def users_identity(
 @mcp.tool
 async def users_info(
     user: str,
-    include_locale: Optional[bool] = None,
+    include_locale: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get information about a user."""
@@ -84,10 +80,10 @@ async def users_info(
 
 @mcp.tool
 async def users_list(
-    cursor: Optional[str] = None,
-    include_locale: Optional[bool] = None,
-    limit: Optional[int] = None,
-    team_id: Optional[str] = None,
+    cursor: str | None = None,
+    include_locale: bool | None = None,
+    limit: int | None = None,
+    team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all users in a Slack team."""
@@ -114,8 +110,8 @@ async def users_lookup_by_email(
 
 @mcp.tool
 async def users_profile_get(
-    include_labels: Optional[bool] = None,
-    user: Optional[str] = None,
+    include_labels: bool | None = None,
+    user: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve a user's profile information."""
@@ -129,10 +125,10 @@ async def users_profile_get(
 
 @mcp.tool
 async def users_profile_set(
-    name: Optional[str] = None,
-    profile: Optional[dict] = None,
-    user: Optional[str] = None,
-    value: Optional[str] = None,
+    name: str | None = None,
+    profile: dict | None = None,
+    user: str | None = None,
+    value: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set the profile information for a user."""
@@ -151,9 +147,9 @@ async def users_profile_set(
 @mcp.tool
 async def users_set_photo(
     image: str,
-    crop_w: Optional[int] = None,
-    crop_x: Optional[int] = None,
-    crop_y: Optional[int] = None,
+    crop_w: int | None = None,
+    crop_x: int | None = None,
+    crop_y: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set the user profile photo."""

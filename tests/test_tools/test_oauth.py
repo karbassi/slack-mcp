@@ -1,4 +1,5 @@
 import pytest
+
 from slack_mcp.tools.oauth import oauth_access, oauth_v2_access, oauth_v2_exchange
 
 

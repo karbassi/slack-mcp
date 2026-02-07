@@ -1,16 +1,14 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def canvases_access_delete(
     canvas_id: str,
-    channel_ids: Optional[list] = None,
-    user_ids: Optional[list] = None,
+    channel_ids: list | None = None,
+    user_ids: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove access to a canvas for specified entities."""
@@ -26,8 +24,8 @@ async def canvases_access_delete(
 async def canvases_access_set(
     canvas_id: str,
     access_level: str,
-    channel_ids: Optional[list] = None,
-    user_ids: Optional[list] = None,
+    channel_ids: list | None = None,
+    user_ids: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set access level to a canvas for specified entities."""
@@ -41,8 +39,8 @@ async def canvases_access_set(
 
 @mcp.tool
 async def canvases_create(
-    title: Optional[str] = None,
-    document_content: Optional[dict] = None,
+    title: str | None = None,
+    document_content: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a canvas."""
@@ -70,7 +68,9 @@ async def canvases_edit(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Edit a canvas."""
-    return await client.api_call_json("canvases.edit", canvas_id=canvas_id, changes=changes)
+    return await client.api_call_json(
+        "canvases.edit", canvas_id=canvas_id, changes=changes
+    )
 
 
 @mcp.tool

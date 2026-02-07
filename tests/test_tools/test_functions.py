@@ -1,5 +1,9 @@
 import pytest
-from slack_mcp.tools.functions import functions_complete_error, functions_complete_success
+
+from slack_mcp.tools.functions import (
+    functions_complete_error,
+    functions_complete_success,
+)
 
 
 @pytest.mark.asyncio

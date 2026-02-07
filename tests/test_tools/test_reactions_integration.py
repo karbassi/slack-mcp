@@ -43,9 +43,7 @@ async def test_reactions_lifecycle_live(live_client):
         assert added["ok"] is True
 
         # Get reactions
-        got = await reactions_get(
-            channel=channel_id, timestamp=ts, client=live_client
-        )
+        got = await reactions_get(channel=channel_id, timestamp=ts, client=live_client)
         assert got["ok"] is True
 
         # Remove reaction

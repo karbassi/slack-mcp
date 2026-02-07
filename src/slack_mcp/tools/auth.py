@@ -1,14 +1,12 @@
-from typing import Optional
-
 from fastmcp.dependencies import Depends
 
-from slack_mcp.server import mcp, slack_client
 from slack_mcp.client import SlackClient
+from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
 async def auth_revoke(
-    test: Optional[bool] = None,
+    test: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Revoke a token."""
@@ -20,9 +18,9 @@ async def auth_revoke(
 
 @mcp.tool
 async def auth_teams_list(
-    cursor: Optional[str] = None,
-    limit: Optional[int] = None,
-    include_icon: Optional[bool] = None,
+    cursor: str | None = None,
+    limit: int | None = None,
+    include_icon: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List the workspaces a token can access."""
