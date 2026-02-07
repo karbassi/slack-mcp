@@ -1,0 +1,30 @@
+[project]
+name = "slack-mcp"
+version = "0.1.0"
+description = "MCP server exposing Slack Web API methods as tools"
+requires-python = ">=3.13"
+dependencies = [
+    "fastmcp>=3.0.0b1",
+    "slack-sdk",
+    "aiohttp",
+    "httpx",
+    "python-dotenv",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "respx",
+]
+
+[tool.pytest.ini_options]
+markers = ["integration: real Slack API tests"]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/slack_mcp"]
