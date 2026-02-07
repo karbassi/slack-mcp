@@ -1,5 +1,6 @@
 import pytest
 
+from slack_mcp.tools.auth import auth_test
 from slack_mcp.tools.dnd import (
     dnd_end_dnd,
     dnd_end_snooze,
@@ -11,20 +12,6 @@ from slack_mcp.tools.dnd import (
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would end DND session")
-async def test_dnd_end_dnd_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would end snooze mode")
-async def test_dnd_end_snooze_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
 async def test_dnd_info_live(live_client):
     result = await dnd_info(client=live_client)
     assert result["ok"] is True
@@ -32,13 +19,28 @@ async def test_dnd_info_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="destructive: would enable snooze mode")
-async def test_dnd_set_snooze_live(live_client):
-    pass
+async def test_dnd_snooze_lifecycle_live(live_client):
+    """Set snooze, check info, then end snooze."""
+    # Set snooze for 1 minute
+    snoozed = await dnd_set_snooze(num_minutes=1, client=live_client)
+    assert snoozed["ok"] is True
+
+    # Check info shows snooze active
+    info = await dnd_info(client=live_client)
+    assert info["ok"] is True
+    assert info.get("snooze_enabled") is True
+
+    # End snooze
+    ended = await dnd_end_snooze(client=live_client)
+    assert ended["ok"] is True
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires valid user IDs")
 async def test_dnd_team_info_live(live_client):
-    pass
+    """Get DND team info using our own user ID."""
+    auth = await auth_test(client=live_client)
+    user_id = auth["user_id"]
+
+    result = await dnd_team_info(users=user_id, client=live_client)
+    assert result["ok"] is True
