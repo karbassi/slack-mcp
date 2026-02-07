@@ -16,7 +16,7 @@ Add to your MCP client config (`.mcp.json` for Claude Code, `claude_desktop_conf
     "slack": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/karbassi/slack-api.git", "slack-mcp"],
+      "args": ["--from", "git+https://github.com/karbassi/slack-mcp.git", "slack-mcp"],
       "env": {
         "SLACK_XOXP_TOKEN": "xoxp-..."
       }
@@ -95,13 +95,13 @@ No install step — `uvx` handles it. See [Quickstart](#quickstart).
 ### From git
 
 ```sh
-uv pip install git+https://github.com/karbassi/slack-api.git
+uv pip install git+https://github.com/karbassi/slack-mcp.git
 ```
 
 ### From a local clone
 
 ```sh
-git clone https://github.com/karbassi/slack-api.git
+git clone https://github.com/karbassi/slack-mcp.git
 cd slack-api
 uv sync
 ```
@@ -116,7 +116,7 @@ uv sync
     "slack": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/karbassi/slack-api.git", "slack-mcp"],
+      "args": ["--from", "git+https://github.com/karbassi/slack-mcp.git", "slack-mcp"],
       "env": {
         "SLACK_XOXP_TOKEN": "xoxp-...",
         "SLACK_XOXC_TOKEN": "xoxc-...",
