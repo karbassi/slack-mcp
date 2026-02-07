@@ -1,0 +1,11 @@
+.env
+.claude/settings.local.json
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.ruff_cache/
