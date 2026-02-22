@@ -1,4 +1,5 @@
 from fastmcp.dependencies import Depends
+from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient
 from slack_mcp.server import mcp, slack_client
@@ -268,10 +269,12 @@ async def conversations_mark(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set the read cursor in a channel."""
-    result = await client.api_call("conversations.mark", channel=channel, ts=ts)
-    if not result.get("ok") and result.get("error") == "missing_scope":
-        return await client.session_call_form("conversations.mark", channel=channel, ts=ts)
-    return result
+    try:
+        return await client.api_call("conversations.mark", channel=channel, ts=ts)
+    except SlackApiError as e:
+        if e.response.get("error") == "missing_scope":
+            return await client.session_call_form("conversations.mark", channel=channel, ts=ts)
+        raise
 
 
 @mcp.tool
