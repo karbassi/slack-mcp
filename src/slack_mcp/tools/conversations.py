@@ -268,7 +268,10 @@ async def conversations_mark(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set the read cursor in a channel."""
-    return await client.api_call("conversations.mark", channel=channel, ts=ts)
+    result = await client.api_call("conversations.mark", channel=channel, ts=ts)
+    if not result.get("ok") and result.get("error") == "missing_scope":
+        return await client.session_call_form("conversations.mark", channel=channel, ts=ts)
+    return result
 
 
 @mcp.tool
