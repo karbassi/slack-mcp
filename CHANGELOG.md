@@ -6,12 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-02-24
+
 ### Added
 
+- Response caching middleware — stable identity data (users, teams, bots, emoji) cached for 1 hour, dynamic data (channel lists, members, bookmarks) cached for 5 minutes
+- `ThreadCachingMiddleware` — automatically caches `conversations_replies` for threads older than 1 hour and `conversations_history` for bounded historical ranges
+- `cache_clear` tool — clears the entire MCP cache on demand so subsequent calls fetch fresh data
+- `py-key-value-aio[disk]` dependency for disk-backed caching
 - Ruff linter/formatter configuration
 - CHANGELOG and CONTRIBUTING guide
+- Security policy
 
-## [0.1.0] - 2025-05-01
+### Fixed
+
+- Session token fallback for `conversations.mark`
+- `SlackApiError` handling for session token fallback
+
+## [0.1.0] - 2026-02-07
 
 Initial release.
 
@@ -24,7 +36,8 @@ Initial release.
 - SlackClient with 4 transport methods (form/JSON x official/session)
 - FastMCP 3.0 integration with dependency injection
 - Slack app manifest with all required OAuth scopes
-- 313 tests (257 passing, 56 skipped for missing scopes/tokens)
 - Unit tests with mocked client for all tool families
 - Integration tests against live Slack API
 - `uvx` support for zero-install usage
+- README with quickstart, setup, and architecture documentation
+- MIT license
