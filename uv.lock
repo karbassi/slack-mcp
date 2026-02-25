@@ -1400,12 +1400,13 @@ wheels = [
 
 [[package]]
 name = "slack-mcp"
-version = "0.1.0"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "fastmcp" },
     { name = "httpx" },
+    { name = "py-key-value-aio", extra = ["disk"] },
     { name = "python-dotenv" },
     { name = "slack-sdk" },
 ]
@@ -1423,6 +1424,7 @@ requires-dist = [
     { name = "aiohttp" },
     { name = "fastmcp", specifier = ">=3.0.0b1" },
     { name = "httpx" },
+    { name = "py-key-value-aio", extras = ["disk"] },
     { name = "python-dotenv" },
     { name = "slack-sdk" },
 ]
