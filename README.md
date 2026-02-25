@@ -1,14 +1,47 @@
+<div align="center">
+
 # Slack MCP
 
-The most complete Slack integration for AI agents. **193 tools** covering the entire Slack Web API — messages, channels, files, canvases, lists, search, reactions, and more — all accessible through the [Model Context Protocol](https://modelcontextprotocol.io/).
+**Your entire Slack workspace — available to any AI.**
 
-Give your AI assistant full access to Slack. Read unread messages, draft replies, search across your workspace, manage channels, upload files, set reminders — anything you can do in Slack, your agent can do too.
+[![Python](https://img.shields.io/pypi/pyversions/slack-mcp?style=flat-square)](https://pypi.org/project/slack-mcp/)
+[![License](https://img.shields.io/github/license/karbassi/slack-mcp?style=flat-square)](LICENSE)
 
-## Quickstart
+A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives LLMs full access to [Slack](https://slack.com).<br>
+Messages, channels, files, canvases, lists, search, reactions — all of it.
 
-One command. No cloning needed.
+**193 tools** · **35 API families** · **Every Slack feature**
 
-Add to your MCP client config (`.mcp.json` for Claude Code, `claude_desktop_config.json` for Claude Desktop):
+</div>
+
+---
+
+## Quick Start
+
+### 1. Create a Slack App
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps) > **Create New App** > **From a manifest**
+2. Paste the contents of [`manifest.json`](manifest.json)
+3. Install to your workspace
+4. Copy the **User OAuth Token** (`xoxp-...`) from **OAuth & Permissions**
+
+### 2. Add to your AI client
+
+<details>
+<summary><strong>Claude Code</strong></summary>
+
+```bash
+claude mcp add slack -- uvx --from git+https://github.com/karbassi/slack-mcp.git slack-mcp
+```
+
+Then set `SLACK_XOXP_TOKEN` in your shell environment.
+
+</details>
+
+<details>
+<summary><strong>Claude Desktop</strong></summary>
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -25,117 +58,12 @@ Add to your MCP client config (`.mcp.json` for Claude Code, `claude_desktop_conf
 }
 ```
 
-That's it. Your agent now has Slack.
+</details>
 
-## What can it do?
+<details>
+<summary><strong>Cursor</strong></summary>
 
-**Read** — Unread messages, channel history, threads, search results, file listings
-
-**Write** — Send messages, reply to threads, react, pin, bookmark, schedule messages
-
-**Manage** — Create/archive channels, invite users, set topics, manage user groups
-
-**Files** — Upload, share, edit, organize across channels
-
-**Advanced** — Canvases, Lists, Reminders, Do Not Disturb, Calls, Workflows
-
-### Beyond the official API
-
-This server also includes 15 undocumented and legacy endpoints — the same internal APIs that Slack's own web and desktop apps use. These require session tokens (`xoxc`+`xoxd`) from your browser.
-
-**Session endpoints** — workspace state that the official API doesn't expose:
-
-| Endpoint | What it provides |
-|----------|-----------------|
-| `client.boot` | Full workspace bootstrap — channels, users, prefs, feature flags. What Slack loads on startup. |
-| `client.counts` | Unread counts per channel/DM/thread plus mention counts. Powers the badge numbers in Slack's sidebar. |
-| `client.userBoot` | User-specific bootstrap data — lighter version of `client.boot` scoped to the authenticated user. |
-| `threads.getView` | Thread inbox data — the list of threads you see in Slack's "Threads" view with read/unread state. |
-
-**Legacy endpoints** — functionality missing from or removed from the official API:
-
-| Endpoint | What it provides |
-|----------|-----------------|
-| `chat.command` | Execute slash commands (`/shrug`, `/remind`, custom commands) programmatically. |
-| `commands.list` | List all available slash commands in the workspace, including custom ones. |
-| `files.edit` | Edit a file's title, content, or filetype in-place. No official API equivalent. |
-| `files.share` | Share a file to a channel. Simpler than the official message-with-attachment approach. |
-| `bots.list` | List all bot users in the workspace. Not available via the official API. |
-| `team.prefs.get` | Full team-level preferences — message retention, permissions, allowed domains. |
-| `users.prefs.get` | All user preferences — notifications, sidebar, theme, accessibility. Hundreds of prefs. |
-| `users.prefs.set` | Set any individual user preference by name/value. |
-| `users.admin.invite` | Invite users to the workspace by email (Enterprise Grid only). |
-| `users.admin.setInactive` | Deactivate a user account (Enterprise Grid only). |
-| `channels.delete` | Dead method — returns `unknown_method`. Included for completeness. |
-
-### 193 tools across 35 API families
-
-| Family | Tools | Family | Tools |
-|--------|-------|--------|-------|
-| conversations | 28 | files | 16 |
-| chat | 14 | users | 12 |
-| slack_lists | 12 | legacy | 11 |
-| team | 9 | apps | 8 |
-| usergroups | 7 | workflows | 7 |
-| canvases | 6 | calls | 6 |
-| dnd | 5 | reminders | 5 |
-| bookmarks | 4 | reactions | 4 |
-| views | 4 | undocumented | 4 |
-| auth | 3 | assistant | 3 |
-| oauth | 3 | pins | 3 |
-| search | 3 | stars | 3 |
-| bots | 2 | functions | 2 |
-| openid | 2 | rtm | 2 |
-| api | 1 | dialog | 1 |
-| emoji | 1 | entity | 1 |
-| migration | 1 | tooling | 1 |
-
-## Setup
-
-### 1. Create a Slack App
-
-Use the included `manifest.json` to create a Slack app with all required scopes pre-configured:
-
-1. Go to [api.slack.com/apps](https://api.slack.com/apps) > **Create New App** > **From a manifest**
-2. Paste the contents of `manifest.json`
-3. Install to your workspace
-4. Copy the **User OAuth Token** (`xoxp-...`) from **OAuth & Permissions**
-
-### 2. Set your token
-
-The only required token is `SLACK_XOXP_TOKEN`. Set it in your MCP config's `env` block (see Quickstart above), or via a `.env` file if running locally.
-
-For access to undocumented endpoints (unread counts, workspace boot, file editing), you'll also need session tokens from your browser:
-
-| Token | Source | Required |
-|-------|--------|----------|
-| `SLACK_XOXP_TOKEN` | Slack app OAuth | Yes |
-| `SLACK_XOXC_TOKEN` | Browser cookies | Optional |
-| `SLACK_XOXD_TOKEN` | Browser cookies | Optional |
-
-## Install
-
-### Via uvx (recommended)
-
-No install step — `uvx` handles it. See [Quickstart](#quickstart).
-
-### From git
-
-```sh
-uv pip install git+https://github.com/karbassi/slack-mcp.git
-```
-
-### From a local clone
-
-```sh
-git clone https://github.com/karbassi/slack-mcp.git
-cd slack-mcp
-uv sync
-```
-
-## Usage
-
-### MCP server (uvx)
+Add to `~/.cursor/mcp.json`:
 
 ```json
 {
@@ -145,16 +73,62 @@ uv sync
       "command": "uvx",
       "args": ["--from", "git+https://github.com/karbassi/slack-mcp.git", "slack-mcp"],
       "env": {
-        "SLACK_XOXP_TOKEN": "xoxp-...",
-        "SLACK_XOXC_TOKEN": "xoxc-...",
-        "SLACK_XOXD_TOKEN": "xoxd-..."
+        "SLACK_XOXP_TOKEN": "xoxp-..."
       }
     }
   }
 }
 ```
 
-### MCP server (local clone)
+</details>
+
+<details>
+<summary><strong>Windsurf</strong></summary>
+
+Add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/karbassi/slack-mcp.git", "slack-mcp"],
+      "env": {
+        "SLACK_XOXP_TOKEN": "xoxp-..."
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>VS Code / GitHub Copilot</strong></summary>
+
+Add to your VS Code `settings.json`:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "slack": {
+        "command": "uvx",
+        "args": ["--from", "git+https://github.com/karbassi/slack-mcp.git", "slack-mcp"],
+        "env": {
+          "SLACK_XOXP_TOKEN": "xoxp-..."
+        }
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Local clone</strong></summary>
 
 ```json
 {
@@ -168,45 +142,100 @@ uv sync
 }
 ```
 
-### Standalone
+</details>
 
-```sh
-slack-mcp
-```
+## What Can It Do?
 
-## Architecture
+> *"Catch me up on #engineering from today"*
+> *"Reply to Sarah's thread saying we'll ship it Monday"*
+> *"Search for anything about the Q3 roadmap"*
+> *"Create a channel called #project-atlas and invite the design team"*
 
-Built with [FastMCP 3.0](https://github.com/jlowin/fastmcp) and [slack-sdk](https://github.com/slackapi/python-slack-sdk).
+| Domain | Tools | Highlights |
+|---|---|---|
+| **Conversations** | 28 | History, threads, replies, create, archive, invite, mark read |
+| **Files** | 16 | Upload, share, edit, list, remote files |
+| **Chat** | 14 | Send, reply, schedule, update, delete, ephemeral |
+| **Users** | 12 | Profile, presence, lookup, list |
+| **Lists** | 12 | Create, edit items, manage access |
+| **Legacy** | 11 | Slash commands, file editing, bot listing |
+| **Team** | 9 | Info, preferences, access logs, billing |
+| **Apps** | 8 | Manifests, connections, authorizations |
+| **Usergroups** | 7 | Create, update, manage members |
+| **Workflows** | 7 | Featured workflows, step completion |
+| **Canvases** | 6 | Create, edit, sections, access control |
+| **Calls** | 6 | Start, end, manage participants |
+| **+ 23 more** | | DND, reminders, bookmarks, reactions, pins, stars, views, search, auth, bots, emoji, ... |
 
-```
-src/slack_mcp/
-  server.py       # FastMCP server, tool registration
-  client.py       # SlackClient with 4 transport methods
-  tools/          # 35 modules, one per API family
-```
+Plus a `cache_clear` utility tool to bust the response cache on demand.
 
-The client supports four transport modes to handle the full spectrum of Slack's API surface:
+### Beyond the Official API
 
-| Method | Encoding | Auth | Use case |
-|--------|----------|------|----------|
-| `api_call` | Form | xoxp | Standard Web API |
-| `api_call_json` | JSON | xoxp | Endpoints with nested objects (canvases, lists) |
-| `session_call` | JSON | xoxc+xoxd | Undocumented endpoints |
-| `session_call_form` | Form | xoxc+xoxd | Legacy undocumented endpoints |
+15 undocumented and legacy endpoints — the same internal APIs that Slack's own apps use. Requires session tokens (`xoxc`+`xoxd`).
 
-## Tests
+<details>
+<summary><strong>Session endpoints</strong> — workspace state the official API doesn't expose</summary>
 
-```sh
-# Unit tests (mocked, no tokens needed)
+| Endpoint | What it provides |
+|---|---|
+| `client.boot` | Full workspace bootstrap — channels, users, prefs, feature flags |
+| `client.counts` | Unread counts per channel/DM/thread plus mention counts |
+| `client.userBoot` | User-specific bootstrap data scoped to the authenticated user |
+| `threads.getView` | Thread inbox — the list of threads with read/unread state |
+
+</details>
+
+<details>
+<summary><strong>Legacy endpoints</strong> — functionality missing from the official API</summary>
+
+| Endpoint | What it provides |
+|---|---|
+| `chat.command` | Execute slash commands programmatically |
+| `commands.list` | List all slash commands including custom ones |
+| `files.edit` | Edit a file's title, content, or filetype in-place |
+| `files.share` | Share a file to a channel |
+| `bots.list` | List all bot users in the workspace |
+| `team.prefs.get` | Team-level preferences — retention, permissions, domains |
+| `users.prefs.get` | All user preferences — notifications, sidebar, theme |
+| `users.prefs.set` | Set any individual user preference |
+| `users.admin.invite` | Invite users by email (Enterprise Grid) |
+| `users.admin.setInactive` | Deactivate a user account (Enterprise Grid) |
+| `channels.delete` | Dead method — included for completeness |
+
+</details>
+
+## Authentication
+
+| Variable | Required | Description |
+|---|---|---|
+| `SLACK_XOXP_TOKEN` | **Yes** | User OAuth token from your Slack app |
+| `SLACK_XOXC_TOKEN` | No | Browser session token for undocumented endpoints |
+| `SLACK_XOXD_TOKEN` | No | Browser session cookie (paired with `xoxc`) |
+
+> **Official vs session:** The `xoxp` token covers all 193 official API tools. For undocumented endpoints (unread counts, workspace boot, file editing), you also need `xoxc`+`xoxd` — grab them from your browser cookies while logged into slack.com.
+
+## Caching
+
+Responses are cached automatically to reduce API calls:
+
+- **Stable data** (users, teams, bots, emoji) — 1 hour TTL
+- **Dynamic data** (channel lists, members, bookmarks) — 5 minute TTL
+- **Old threads** (`conversations_replies` with ts > 1 hour old) — 1 hour TTL
+- **Bounded history** (`conversations_history` with old date range) — 1 hour TTL
+
+Use the `cache_clear` tool to bust the cache when you need fresh data.
+
+## Development
+
+```bash
+git clone https://github.com/karbassi/slack-mcp.git
+cd slack-mcp
+uv sync
+uv run ruff check .
 uv run pytest tests/
-
-# Integration tests (requires valid tokens in .env)
-uv run pytest tests/ -m integration
+uv run pytest tests/ -m integration  # requires tokens in .env
 ```
 
-257 passing, 56 skipped. Skips are endpoints that require bot tokens, specific OAuth scopes, or Enterprise Grid — not bugs.
+## License
 
-## Requirements
-
-- Python 3.13+
-- [uv](https://docs.astral.sh/uv/)
+[MIT](LICENSE)
