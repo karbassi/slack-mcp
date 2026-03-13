@@ -37,6 +37,8 @@ LONG_CACHED_TOOLS = [
     "emoji_list",
     "commands_list",
     "migration_exchange",
+    # Bulk resolution
+    "resolve_names",
     # Users
     "users_info",
     "users_list",
@@ -211,6 +213,7 @@ import slack_mcp.tools.openid
 import slack_mcp.tools.pins
 import slack_mcp.tools.reactions
 import slack_mcp.tools.reminders
+import slack_mcp.tools.resolve
 import slack_mcp.tools.rtm
 import slack_mcp.tools.search
 import slack_mcp.tools.slack_lists
