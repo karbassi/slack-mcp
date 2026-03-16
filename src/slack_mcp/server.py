@@ -37,8 +37,6 @@ LONG_CACHED_TOOLS = [
     "emoji_list",
     "commands_list",
     "migration_exchange",
-    # Bulk resolution
-    "resolve_names",
     # Users
     "users_info",
     "users_list",
@@ -52,6 +50,8 @@ LONG_CACHED_TOOLS = [
 
 # More dynamic data — can change within minutes (5 minutes)
 SHORT_CACHED_TOOLS = [
+    # Bulk resolution (matches conversations.info's 5min TTL)
+    "resolve_names",
     "users_conversations",
     # Channels / Groups
     "conversations_info",

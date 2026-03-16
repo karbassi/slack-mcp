@@ -1,4 +1,6 @@
 import pytest
+from slack_sdk.errors import SlackApiError
+from slack_sdk.web.async_slack_response import AsyncSlackResponse
 
 from slack_mcp.tools.resolve import resolve_names
 
@@ -78,10 +80,37 @@ async def test_resolve_names_fallback_real_name(mock_client):
 
 @pytest.mark.asyncio
 async def test_resolve_names_api_failure(mock_client):
-    mock_client.api_call.return_value = {"ok": False, "error": "user_not_found"}
+    mock_client.api_call.side_effect = SlackApiError(
+        message="user_not_found",
+        response=AsyncSlackResponse(
+            client=None,
+            http_verb="POST",
+            api_url="https://slack.com/api/users.info",
+            req_args={},
+            data={"ok": False, "error": "user_not_found"},
+            headers={},
+            status_code=200,
+        ),
+    )
     result = await resolve_names(user_ids=["UBAD"], client=mock_client)
     assert result["ok"] is True
     assert result["names"]["UBAD"] is None
+
+
+@pytest.mark.asyncio
+async def test_resolve_names_deduplicates_ids(mock_client):
+    mock_client.api_call.return_value = {
+        "ok": True,
+        "user": {
+            "id": "U123",
+            "name": "jdoe",
+            "real_name": "Jane Doe",
+            "profile": {"display_name": "Jane", "real_name": "Jane Doe"},
+        },
+    }
+    result = await resolve_names(user_ids=["U123", "U123", "U123"], client=mock_client)
+    assert result["names"]["U123"] == "Jane"
+    mock_client.api_call.assert_called_once_with("users.info", user="U123")
 
 
 @pytest.mark.asyncio
