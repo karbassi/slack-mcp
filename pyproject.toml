@@ -1,6 +1,6 @@
 [project]
 name = "slack-mcp"
-version = "1.0.0"
+version = "1.1.0"
 description = "MCP server exposing Slack Web API methods as tools"
 license = "MIT"
 requires-python = ">=3.13"

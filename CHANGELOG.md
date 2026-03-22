@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-22
+
 ### Added
 
 - `resolve_names` tool — bulk-resolve user and channel IDs to display names in a single call with concurrent lookups, bounded concurrency, and input deduplication
