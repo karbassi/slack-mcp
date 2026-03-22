@@ -1,3 +1,7 @@
+import json
+import uuid
+
+import httpx
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
@@ -93,3 +97,375 @@ async def threads_get_view(
     if current_ts is not None:
         kwargs["current_ts"] = current_ts
     return await client.session_call("threads.getView", **kwargs)
+
+
+def _pad_draft_ts(ts: str) -> str:
+    """Pad a draft timestamp to 7 decimal places (required by Slack)."""
+    if "." in ts:
+        integer, frac = ts.split(".", 1)
+        return f"{integer}.{frac:<07}"
+    return ts
+
+
+# --- Drafts ---
+
+
+@mcp.tool
+async def drafts_list(
+    is_active: bool | None = None,
+    limit: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List all unsent message drafts (undocumented session endpoint)."""
+    kwargs = {}
+    if is_active is not None:
+        kwargs["is_active"] = str(is_active).lower()
+    if limit is not None:
+        kwargs["limit"] = str(limit)
+    return await client.session_call("drafts.list", **kwargs)
+
+
+@mcp.tool
+async def drafts_create(
+    channel_id: str,
+    text: str,
+    thread_ts: str | None = None,
+    broadcast: bool = False,
+    file_ids: list[str] | None = None,
+    date_scheduled: str | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Create a message draft (undocumented session endpoint).
+
+    Text is automatically wrapped in Block Kit rich_text format.
+    """
+    blocks = [
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [{"type": "text", "text": text}],
+                }
+            ],
+        }
+    ]
+    destination: dict = {"channel_id": channel_id}
+    if thread_ts is not None:
+        destination["thread_ts"] = thread_ts
+        destination["broadcast"] = broadcast
+    kwargs: dict = {
+        "blocks": json.dumps(blocks),
+        "destinations": json.dumps([destination]),
+        "client_msg_id": str(uuid.uuid4()),
+        "file_ids": json.dumps(file_ids or []),
+        "is_from_composer": "true",
+    }
+    if date_scheduled is not None:
+        kwargs["date_scheduled"] = date_scheduled
+    return await client.session_call("drafts.create", **kwargs)
+
+
+@mcp.tool
+async def drafts_update(
+    draft_id: str,
+    client_last_updated_ts: str,
+    channel_id: str,
+    text: str,
+    thread_ts: str | None = None,
+    broadcast: bool = False,
+    file_ids: list[str] | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Update an existing draft (undocumented session endpoint)."""
+    blocks = [
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [{"type": "text", "text": text}],
+                }
+            ],
+        }
+    ]
+    destination: dict = {"channel_id": channel_id}
+    if thread_ts is not None:
+        destination["thread_ts"] = thread_ts
+        destination["broadcast"] = broadcast
+    return await client.session_call(
+        "drafts.update",
+        draft_id=draft_id,
+        client_last_updated_ts=_pad_draft_ts(client_last_updated_ts),
+        blocks=json.dumps(blocks),
+        destinations=json.dumps([destination]),
+        client_msg_id=str(uuid.uuid4()),
+        file_ids=json.dumps(file_ids or []),
+    )
+
+
+@mcp.tool
+async def drafts_delete(
+    draft_id: str,
+    client_last_updated_ts: str | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Delete a draft (undocumented session endpoint).
+
+    If client_last_updated_ts is omitted, the latest timestamp is fetched
+    automatically from drafts.list to avoid conflict errors.
+    """
+    if client_last_updated_ts is None:
+        drafts = await client.session_call("drafts.list")
+        for draft in drafts.get("drafts", []):
+            if draft["id"] == draft_id:
+                client_last_updated_ts = draft["last_updated_ts"]
+                break
+        if client_last_updated_ts is None:
+            return {"ok": False, "error": "draft_not_found"}
+    return await client.session_call(
+        "drafts.delete",
+        draft_id=draft_id,
+        client_last_updated_ts=_pad_draft_ts(client_last_updated_ts),
+    )
+
+
+# --- Saved Items ---
+
+
+@mcp.tool
+async def saved_list(
+    cursor: str | None = None,
+    limit: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List saved-for-later items (undocumented session endpoint)."""
+    kwargs = {}
+    if cursor is not None:
+        kwargs["cursor"] = cursor
+    if limit is not None:
+        kwargs["limit"] = limit
+    return await client.session_call("saved.list", **kwargs)
+
+
+@mcp.tool
+async def saved_add(
+    item_type: str,
+    item_id: str,
+    ts: str,
+    date_due: str | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Save a message for later (undocumented session endpoint)."""
+    kwargs = {"item_type": item_type, "item_id": item_id, "ts": ts}
+    if date_due is not None:
+        kwargs["date_due"] = date_due
+    return await client.session_call("saved.add", **kwargs)
+
+
+@mcp.tool
+async def saved_delete(
+    item_type: str,
+    item_id: str,
+    ts: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Remove a saved-for-later item (undocumented session endpoint)."""
+    return await client.session_call_form(
+        "saved.delete", item_type=item_type, item_id=item_id, ts=ts
+    )
+
+
+# --- Emoji (undocumented workspace-level) ---
+
+
+@mcp.tool
+async def emoji_add(
+    name: str,
+    image_url: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Add a custom emoji from a URL (undocumented session endpoint)."""
+    async with httpx.AsyncClient() as http:
+        resp = await http.get(image_url)
+        resp.raise_for_status()
+    content_type = resp.headers.get("content-type", "image/png")
+    ext = content_type.split("/")[-1].split(";")[0]
+    return await client.session_call_multipart(
+        "emoji.add",
+        data={"name": name, "mode": "data"},
+        files={"image": (f"{name}.{ext}", resp.content, content_type)},
+    )
+
+
+@mcp.tool
+async def emoji_remove(
+    name: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Remove a custom emoji (undocumented session endpoint)."""
+    return await client.session_call_form("emoji.remove", name=name)
+
+
+@mcp.tool
+async def emoji_admin_list(
+    page: int | None = None,
+    count: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List custom emoji with metadata like uploader and usage stats (undocumented session endpoint)."""
+    kwargs = {}
+    if page is not None:
+        kwargs["page"] = page
+    if count is not None:
+        kwargs["count"] = count
+    return await client.session_call("emoji.adminList", **kwargs)
+
+
+# --- Search modules (granular search) ---
+
+
+@mcp.tool
+async def search_modules_messages(
+    query: str,
+    cursor: str | None = None,
+    count: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Search messages with granular results (undocumented session endpoint)."""
+    kwargs = {"query": query}
+    if cursor is not None:
+        kwargs["cursor"] = cursor
+    if count is not None:
+        kwargs["count"] = count
+    return await client.session_call("search.modules.messages", **kwargs)
+
+
+@mcp.tool
+async def search_modules_files(
+    query: str,
+    cursor: str | None = None,
+    count: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Search files (undocumented session endpoint)."""
+    kwargs = {"query": query}
+    if cursor is not None:
+        kwargs["cursor"] = cursor
+    if count is not None:
+        kwargs["count"] = count
+    return await client.session_call("search.modules.files", **kwargs)
+
+
+@mcp.tool
+async def search_modules_channels(
+    query: str,
+    cursor: str | None = None,
+    count: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Search channels by name or topic (undocumented session endpoint)."""
+    kwargs = {"query": query}
+    if cursor is not None:
+        kwargs["cursor"] = cursor
+    if count is not None:
+        kwargs["count"] = count
+    return await client.session_call("search.modules.channels", **kwargs)
+
+
+@mcp.tool
+async def search_modules_people(
+    query: str,
+    cursor: str | None = None,
+    count: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Search people by name, title, or department (undocumented session endpoint)."""
+    kwargs = {"query": query}
+    if cursor is not None:
+        kwargs["cursor"] = cursor
+    if count is not None:
+        kwargs["count"] = count
+    return await client.session_call("search.modules.people", **kwargs)
+
+
+@mcp.tool
+async def search_modules_dms(
+    query: str,
+    cursor: str | None = None,
+    count: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Search within direct messages only (undocumented session endpoint)."""
+    kwargs = {"query": query}
+    if cursor is not None:
+        kwargs["cursor"] = cursor
+    if count is not None:
+        kwargs["count"] = count
+    return await client.session_call("search.modules.dms", **kwargs)
+
+
+# --- Conversations (undocumented extensions) ---
+
+
+@mcp.tool
+async def conversations_view(
+    channel: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get channel view with read state and personal config (undocumented session endpoint)."""
+    return await client.session_call("conversations.view", channel=channel)
+
+
+@mcp.tool
+async def conversations_list_prefs(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get per-channel notification and mute preferences (undocumented session endpoint)."""
+    return await client.session_call("conversations.listPrefs")
+
+
+# --- Users (undocumented extensions) ---
+
+
+@mcp.tool
+async def users_channel_sections_list(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get sidebar organization — custom sections, favorites (undocumented session endpoint)."""
+    return await client.session_call("users.channelSections.list")
+
+
+@mcp.tool
+async def users_priority_list(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get contacts ranked by interaction frequency (undocumented session endpoint)."""
+    return await client.session_call("users.priority.list")
+
+
+# --- Workspace introspection ---
+
+
+@mcp.tool
+async def experiments_get_by_user(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get A/B test experiment assignments for the current user (undocumented session endpoint)."""
+    return await client.session_call("experiments.getByUser")
+
+
+@mcp.tool
+async def api_features(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get workspace feature flags (undocumented session endpoint)."""
+    return await client.session_call("api.features")
+
+
+@mcp.tool
+async def ai_apps_list(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List AI applications configured in the workspace (undocumented session endpoint)."""
+    return await client.session_call("aiApps.list")
