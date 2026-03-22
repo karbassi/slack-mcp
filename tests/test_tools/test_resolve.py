@@ -98,6 +98,24 @@ async def test_resolve_names_api_failure(mock_client):
 
 
 @pytest.mark.asyncio
+async def test_resolve_names_auth_error_propagates(mock_client):
+    mock_client.api_call.side_effect = SlackApiError(
+        message="not_authed",
+        response=AsyncSlackResponse(
+            client=None,
+            http_verb="POST",
+            api_url="https://slack.com/api/users.info",
+            req_args={},
+            data={"ok": False, "error": "not_authed"},
+            headers={},
+            status_code=200,
+        ),
+    )
+    with pytest.raises(SlackApiError):
+        await resolve_names(user_ids=["U123"], client=mock_client)
+
+
+@pytest.mark.asyncio
 async def test_resolve_names_deduplicates_ids(mock_client):
     mock_client.api_call.return_value = {
         "ok": True,

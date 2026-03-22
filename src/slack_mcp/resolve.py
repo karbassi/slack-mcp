@@ -10,6 +10,13 @@ MAX_CONCURRENCY = 10
 _USER_MENTION_RE = re.compile(r"<@(U[A-Z0-9]+)")
 _CHANNEL_MENTION_RE = re.compile(r"<#(C[A-Z0-9]+)")
 
+_NOT_FOUND_ERRORS = {
+    "user_not_found",
+    "user_not_visible",
+    "channel_not_found",
+    "bot_not_found",
+}
+
 
 async def _resolve_user(
     client: SlackClient, uid: str, sem: asyncio.Semaphore
@@ -17,8 +24,10 @@ async def _resolve_user(
     async with sem:
         try:
             resp = await client.api_call("users.info", user=uid)
-        except SlackApiError:
-            return uid, None
+        except SlackApiError as e:
+            if e.response.get("error") in _NOT_FOUND_ERRORS:
+                return uid, None
+            raise
         user = resp.get("user", {})
         profile = user.get("profile", {})
         name = (
@@ -36,8 +45,10 @@ async def _resolve_channel(
     async with sem:
         try:
             resp = await client.api_call("conversations.info", channel=cid)
-        except SlackApiError:
-            return cid, None
+        except SlackApiError as e:
+            if e.response.get("error") in _NOT_FOUND_ERRORS:
+                return cid, None
+            raise
         return cid, resp.get("channel", {}).get("name")
 
 
@@ -47,8 +58,10 @@ async def _resolve_bot(
     async with sem:
         try:
             resp = await client.api_call("bots.info", bot=bid)
-        except SlackApiError:
-            return bid, None
+        except SlackApiError as e:
+            if e.response.get("error") in _NOT_FOUND_ERRORS:
+                return bid, None
+            raise
         return bid, resp.get("bot", {}).get("name")
 
 
