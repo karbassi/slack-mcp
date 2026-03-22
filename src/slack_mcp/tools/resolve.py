@@ -19,8 +19,8 @@ async def resolve_names(
     """
     names = await resolve_ids(
         client,
-        user_ids=set(dict.fromkeys(user_ids or [])),
-        channel_ids=set(dict.fromkeys(channel_ids or [])),
+        user_ids=set(user_ids or []),
+        channel_ids=set(channel_ids or []),
         bot_ids=set(),
     )
     return {"ok": True, "names": names}
