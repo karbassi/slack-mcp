@@ -75,7 +75,20 @@ class SlackClient:
         rather than JSON.
         """
         self._require_session_tokens()
-        resp = await self.session_client.post(method, data=kwargs)
+        resp = await self.session_client.post(
+            method,
+            data=kwargs,
+            headers={"Content-Type": "application/x-www-form-urlencoded; charset=utf-8"},
+        )
+        resp.raise_for_status()
+        return self._check_session_response(resp.json(), method)
+
+    async def session_call_multipart(
+        self, method: str, data: dict, files: dict
+    ) -> dict:
+        """Call an undocumented Slack endpoint with multipart form data."""
+        self._require_session_tokens()
+        resp = await self.session_client.post(method, data=data, files=files)
         resp.raise_for_status()
         return self._check_session_response(resp.json(), method)
 
