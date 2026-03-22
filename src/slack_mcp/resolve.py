@@ -63,10 +63,20 @@ async def _resolve_bot(
 
 
 
-_ID_RE = re.compile(r"\b([UW][A-Z0-9]{2,}|[CG][A-Z0-9]{2,}|B[A-Z0-9]{2,})\b")
+# Slack ID prefixes we can resolve:
+#   U/W = user, C/G/D/Z = channel/DM, B = bot
+# IDs are prefix + 8+ uppercase alphanumeric chars
+_ID_RE = re.compile(r"\b([UW][A-Z0-9]{8,}|[CGDZ][A-Z0-9]{8,}|B[A-Z0-9]{8,})\b")
 
-# Keys whose values look like IDs but aren't worth resolving
-_SKIP_KEYS = {"client_msg_id", "team_id", "enterprise_id", "app_id"}
+# Keys whose values look like IDs but aren't resolvable
+_SKIP_KEYS = {
+    "client_msg_id",
+    "team_id",
+    "team",
+    "enterprise_id",
+    "app_id",
+    "api_app_id",
+}
 
 
 def extract_ids_from_json(data: object) -> tuple[set[str], set[str], set[str]]:
