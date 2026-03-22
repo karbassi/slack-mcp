@@ -20,6 +20,7 @@ from fastmcp.server.middleware.middleware import CallNext, Middleware, Middlewar
 from fastmcp.tools.tool import ToolResult
 from key_value.aio.stores.disk import DiskStore
 from mcp.types import CallToolRequestParams
+from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient, get_client
 
@@ -229,7 +230,7 @@ class NameResolutionMiddleware(Middleware):
         try:
             client = get_client()
             names = await resolve_ids(client, user_ids, channel_ids, bot_ids)
-        except Exception:
+        except (SlackApiError, OSError, TimeoutError):
             return result
 
         if names:

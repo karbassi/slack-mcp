@@ -7,7 +7,7 @@ from slack_mcp.client import SlackClient
 
 MAX_CONCURRENCY = 10
 
-_USER_MENTION_RE = re.compile(r"<@(U[A-Z0-9]+)")
+_USER_MENTION_RE = re.compile(r"<@([UW][A-Z0-9]+)")
 _CHANNEL_MENTION_RE = re.compile(r"<#([CG][A-Z0-9]+)")
 
 _NOT_FOUND_ERRORS = {
@@ -74,7 +74,7 @@ def extract_ids_from_messages(
     bot_ids: set[str] = set()
 
     for msg in messages:
-        if (uid := msg.get("user")) and uid.startswith("U"):
+        if (uid := msg.get("user")) and uid[0] in {"U", "W"}:
             user_ids.add(uid)
 
         if (bid := msg.get("bot_id")) and bid.startswith("B"):

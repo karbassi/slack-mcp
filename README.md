@@ -212,7 +212,7 @@ Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the res
 | `SLACK_XOXC_TOKEN` | No | Browser session token for undocumented endpoints |
 | `SLACK_XOXD_TOKEN` | No | Browser session cookie (paired with `xoxc`) |
 
-> **Official vs session:** The `xoxp` token covers all 194 official API tools. For undocumented endpoints (unread counts, workspace boot, file editing), you also need `xoxc`+`xoxd` — grab them from your browser cookies while logged into slack.com.
+> **Official vs session:** The `xoxp` token covers all Slack Web API tools. Utility tools like `resolve_names` and `cache_clear` work without additional auth. For undocumented endpoints (unread counts, workspace boot, file editing), you also need `xoxc`+`xoxd` — grab them from your browser cookies while logged into slack.com.
 
 ## Caching
 
