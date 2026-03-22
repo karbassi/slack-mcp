@@ -75,6 +75,10 @@ CACHED_TOOLS = LONG_CACHED_TOOLS + SHORT_CACHED_TOOLS
 cache_dir = Path.home() / ".cache" / "slack-mcp"
 cache_store = DiskStore(directory=cache_dir)
 
+from slack_mcp.resolve import set_cache_store
+
+set_cache_store(cache_store)
+
 mcp.add_middleware(
     ResponseCachingMiddleware(
         cache_storage=cache_store,

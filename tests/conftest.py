@@ -6,6 +6,15 @@ from unittest.mock import AsyncMock
 import pytest
 
 from slack_mcp.client import SlackClient
+from slack_mcp.resolve import set_cache_store
+
+
+@pytest.fixture(autouse=True)
+def _disable_resolve_cache():
+    """Disable the resolver's disk cache during unit tests."""
+    set_cache_store(None)
+    yield
+    set_cache_store(None)
 
 
 @pytest.fixture
