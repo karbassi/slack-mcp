@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-22
+
+### Added
+
+- 22 new undocumented session endpoint tools:
+  - **Drafts**: `drafts.create`, `drafts.update`, `drafts.delete` — full draft lifecycle; `drafts.list` now supports `is_active` and `limit` params
+  - **Saved items**: `saved.add`, `saved.delete` — manage "Save for later" items
+  - **Emoji**: `emoji.add`, `emoji.remove`, `emoji.adminList` — workspace-level emoji management
+  - **Granular search**: `search.modules.messages`, `search.modules.files`, `search.modules.channels`, `search.modules.people`, `search.modules.dms`
+  - **Conversations**: `conversations.view`, `conversations.listPrefs` — read state and notification preferences
+  - **Users**: `users.channelSections.list`, `users.priority.list` — sidebar organization and contact ranking
+  - **Threads**: `subscriptions.thread.mark` — mark threads as read/unread
+  - **Workspace**: `experiments.getByUser`, `api.features`, `aiApps.list`
+- `session_call_multipart` client method for multipart form uploads
+- `CLAUDE.md` with project instructions
+- Integration tests for all 220 tools (341 pass, ~68 skipped with documented reasons)
+- Test fixture PNG for emoji upload tests
+
+### Fixed
+
+- `session_call_form` now sets `charset=utf-8` in Content-Type to avoid `missing_charset` warnings
+- Draft `client_last_updated_ts` padded to 7 decimal places to prevent `draft_has_conflict` errors
+
 ## [1.1.0] - 2026-03-22
 
 ### Added

@@ -10,7 +10,7 @@
 A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives LLMs full access to [Slack](https://slack.com).<br>
 Messages, channels, files, canvases, lists, search, reactions — all of it.
 
-**194 tools** · **36 API families** · **Every Slack feature**
+**220 tools** · **36 API families** · **Every Slack feature**
 
 </div>
 
@@ -154,6 +154,7 @@ Add to your VS Code `settings.json`:
 | Domain | Tools | Highlights |
 |---|---|---|
 | **Conversations** | 28 | History, threads, replies, create, archive, invite, mark read |
+| **Undocumented** | 28 | Drafts, saved items, emoji management, granular search, sidebar, threads |
 | **Files** | 16 | Upload, share, edit, list, remote files |
 | **Chat** | 14 | Send, reply, schedule, update, delete, ephemeral |
 | **Users** | 12 | Profile, presence, lookup, list |
@@ -171,7 +172,7 @@ Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the res
 
 ### Beyond the Official API
 
-15 undocumented and legacy endpoints — the same internal APIs that Slack's own apps use. Requires session tokens (`xoxc`+`xoxd`).
+39 undocumented and legacy endpoints — the same internal APIs that Slack's own apps use. Requires session tokens (`xoxc`+`xoxd`).
 
 <details>
 <summary><strong>Session endpoints</strong> — workspace state the official API doesn't expose</summary>
@@ -182,6 +183,29 @@ Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the res
 | `client.counts` | Unread counts per channel/DM/thread plus mention counts |
 | `client.userBoot` | User-specific bootstrap data scoped to the authenticated user |
 | `threads.getView` | Thread inbox — the list of threads with read/unread state |
+| `subscriptions.thread.mark` | Mark individual threads as read or unread |
+| `drafts.list` | List all unsent message drafts |
+| `drafts.create` | Create a message draft with Block Kit text |
+| `drafts.update` | Edit an existing draft |
+| `drafts.delete` | Delete a draft |
+| `saved.list` | List saved-for-later items |
+| `saved.add` | Save a message for later with optional due date |
+| `saved.delete` | Remove a saved-for-later item |
+| `emoji.add` | Add a custom emoji from a URL |
+| `emoji.remove` | Remove a custom emoji |
+| `emoji.adminList` | Emoji with rich metadata — uploader, date, usage stats |
+| `search.modules.messages` | Granular message search |
+| `search.modules.files` | File-specific search |
+| `search.modules.channels` | Server-side channel search by name or topic |
+| `search.modules.people` | Fuzzy people search by name, title, department |
+| `search.modules.dms` | Search within DMs only |
+| `conversations.view` | Channel view with read state and personal config |
+| `conversations.listPrefs` | Per-channel notification and mute preferences |
+| `users.channelSections.list` | Sidebar organization — custom sections, favorites |
+| `users.priority.list` | Contacts ranked by interaction frequency |
+| `experiments.getByUser` | A/B test experiment assignments |
+| `api.features` | Workspace feature flags |
+| `aiApps.list` | AI applications configured in the workspace |
 
 </details>
 
@@ -202,6 +226,9 @@ Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the res
 | `users.admin.setInactive` | Deactivate a user account (Enterprise Grid) |
 | `channels.delete` | Dead method — included for completeness |
 
+> [!WARNING]
+> Undocumented endpoints can break without notice. They use session tokens (`xoxc`+`xoxd`) which expire and must be re-grabbed from browser cookies.
+
 </details>
 
 ## Authentication
@@ -212,7 +239,8 @@ Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the res
 | `SLACK_XOXC_TOKEN` | No | Browser session token for undocumented endpoints |
 | `SLACK_XOXD_TOKEN` | No | Browser session cookie (paired with `xoxc`) |
 
-> **Official vs session:** The `xoxp` token covers all Slack Web API tools. Utility tools like `resolve_names` and `cache_clear` work without additional auth. For undocumented endpoints (unread counts, workspace boot, file editing), you also need `xoxc`+`xoxd` — grab them from your browser cookies while logged into slack.com.
+> [!TIP]
+> The `xoxp` token covers all Slack Web API tools. Utility tools like `resolve_names` and `cache_clear` work without additional auth. For undocumented endpoints (unread counts, workspace boot, file editing), you also need `xoxc`+`xoxd` — grab them from your browser cookies while logged into slack.com.
 
 ## Caching
 
@@ -237,6 +265,9 @@ uv run ruff check .
 uv run pytest tests/
 uv run pytest tests/ -m integration  # requires tokens in .env
 ```
+
+> [!NOTE]
+> ~68 integration tests are skipped because they require a bot token (`xoxb`), Slack Connect, interactive triggers (e.g. `views.open`), or would be destructive (e.g. `auth.revoke`). Adding bot token support is a future goal.
 
 ## License
 
