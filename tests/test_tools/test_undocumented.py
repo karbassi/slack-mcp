@@ -149,7 +149,7 @@ async def test_drafts_delete(mock_client):
         draft_id="D123", client_last_updated_ts="1234.567", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
+    mock_client.session_call_form.assert_called_once_with(
         "drafts.delete", draft_id="D123", client_last_updated_ts="1234.5670000"
     )
 
