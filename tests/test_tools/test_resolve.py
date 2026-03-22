@@ -2,6 +2,7 @@ import pytest
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 
+from slack_mcp.resolve import resolve_ids, set_cache_store
 from slack_mcp.tools.resolve import resolve_names
 
 
@@ -108,3 +109,33 @@ async def test_resolve_names_empty(mock_client):
     assert result["ok"] is True
     assert result["names"] == {}
     mock_client.api_call.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_resolve_ids_caches_results(mock_client):
+    """Second resolve for the same ID should hit cache, not the API."""
+    from key_value.aio.stores.memory import MemoryStore
+
+    store = MemoryStore()
+    set_cache_store(store)
+
+    mock_client.api_call.return_value = {
+        "ok": True,
+        "user": {
+            "id": "U0TESTCACHE",
+            "name": "cached",
+            "profile": {"display_name": "Cached User", "real_name": "Cached User"},
+        },
+    }
+
+    # First call — hits API
+    result1 = await resolve_ids(mock_client, {"U0TESTCACHE"}, set(), set())
+    assert result1["U0TESTCACHE"] == "Cached User"
+    assert mock_client.api_call.call_count == 1
+
+    # Second call — should hit cache, not API
+    result2 = await resolve_ids(mock_client, {"U0TESTCACHE"}, set(), set())
+    assert result2["U0TESTCACHE"] == "Cached User"
+    assert mock_client.api_call.call_count == 1  # still 1, no new call
+
+    set_cache_store(None)

@@ -1,11 +1,16 @@
 import asyncio
 import re
+from typing import Any
 
 from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient
 
 MAX_CONCURRENCY = 10
+_RESOLVE_COLLECTION = "resolve_cache"
+_USER_TTL = 3600  # 1 hour — names are stable
+_CHANNEL_TTL = 300  # 5 minutes — channels can be renamed
+_BOT_TTL = 3600  # 1 hour
 
 _NOT_FOUND_ERRORS = {
     "user_not_found",
@@ -13,6 +18,33 @@ _NOT_FOUND_ERRORS = {
     "channel_not_found",
     "bot_not_found",
 }
+
+_cache_store: Any = None
+
+
+def set_cache_store(store: Any) -> None:
+    """Set the cache store used by the resolver (called once at startup)."""
+    global _cache_store
+    _cache_store = store
+
+
+async def _cached_resolve(
+    key: str, ttl: int, resolver, *args
+) -> tuple[str, str | None]:
+    """Check cache first, then call resolver and cache the result."""
+    if _cache_store is not None:
+        cached = await _cache_store.get(key=key, collection=_RESOLVE_COLLECTION)
+        if cached is not None:
+            return key, cached.get("name")
+
+    _, name = await resolver(*args)
+
+    if name is not None and _cache_store is not None:
+        await _cache_store.put(
+            key=key, value={"name": name}, collection=_RESOLVE_COLLECTION, ttl=ttl
+        )
+
+    return key, name
 
 
 async def _resolve_user(
@@ -114,12 +146,21 @@ async def resolve_ids(
     channel_ids: set[str],
     bot_ids: set[str],
 ) -> dict[str, str]:
-    """Resolve all IDs concurrently. Returns {id: name} mapping, skipping failures."""
+    """Resolve all IDs concurrently with disk caching. Returns {id: name} mapping."""
     sem = asyncio.Semaphore(MAX_CONCURRENCY)
     tasks = (
-        [_resolve_user(client, uid, sem) for uid in user_ids]
-        + [_resolve_channel(client, cid, sem) for cid in channel_ids]
-        + [_resolve_bot(client, bid, sem) for bid in bot_ids]
+        [
+            _cached_resolve(uid, _USER_TTL, _resolve_user, client, uid, sem)
+            for uid in user_ids
+        ]
+        + [
+            _cached_resolve(cid, _CHANNEL_TTL, _resolve_channel, client, cid, sem)
+            for cid in channel_ids
+        ]
+        + [
+            _cached_resolve(bid, _BOT_TTL, _resolve_bot, client, bid, sem)
+            for bid in bot_ids
+        ]
     )
     if not tasks:
         return {}
