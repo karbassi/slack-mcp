@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import json
+import os
 import time
 from typing import Any
 
@@ -72,7 +73,11 @@ SHORT_CACHED_TOOLS = [
 
 CACHED_TOOLS = LONG_CACHED_TOOLS + SHORT_CACHED_TOOLS
 
-cache_dir = Path.home() / ".cache" / "slack-mcp"
+from platformdirs import user_cache_dir
+
+# Respect XDG_CACHE_HOME if set, otherwise use platform default
+_xdg = os.environ.get("XDG_CACHE_HOME")
+cache_dir = Path(_xdg) / "slack-mcp" if _xdg else Path(user_cache_dir("slack-mcp"))
 cache_store = DiskStore(directory=cache_dir)
 
 from slack_mcp.resolve import set_cache_store
