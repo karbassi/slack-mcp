@@ -54,8 +54,8 @@ async def test_enriches_conversations_history():
     data = {
         "ok": True,
         "messages": [
-            {"user": "U123", "text": "Hello <@U456> check <#C789>"},
-            {"bot_id": "B111", "text": "Bot message"},
+            {"user": "U0ADCDDNVGT", "text": "Hello <@U0BXYZ12345> check <#C0AD56E4N6B>"},
+            {"bot_id": "BA13894H00", "text": "Bot message"},
         ],
     }
 
@@ -70,10 +70,10 @@ async def test_enriches_conversations_history():
 
     enriched = json.loads(result.content[0].text)
     names = enriched["_resolved_names"]
-    assert names["U123"] == "Alice"
-    assert names["U456"] == "Alice"
-    assert names["C789"] == "general"
-    assert names["B111"] == "Testbot"
+    assert names["U0ADCDDNVGT"] == "Alice"
+    assert names["U0BXYZ12345"] == "Alice"
+    assert names["C0AD56E4N6B"] == "general"
+    assert names["BA13894H00"] == "Testbot"
 
 
 @pytest.mark.asyncio
@@ -82,7 +82,7 @@ async def test_enriches_search_messages():
     data = {
         "ok": True,
         "messages": {
-            "matches": [{"user": "U123", "text": "found it"}],
+            "matches": [{"user": "U0ADCDDNVGT", "text": "found it"}],
         },
     }
 
@@ -96,7 +96,7 @@ async def test_enriches_search_messages():
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     enriched = json.loads(result.content[0].text)
-    assert enriched["_resolved_names"]["U123"] == "Alice"
+    assert enriched["_resolved_names"]["U0ADCDDNVGT"] == "Alice"
 
 
 @pytest.mark.asyncio
@@ -147,7 +147,7 @@ async def test_no_ids_in_messages_no_enrichment():
 @pytest.mark.asyncio
 async def test_failed_lookups_excluded():
     middleware = NameResolutionMiddleware()
-    data = {"ok": True, "messages": [{"user": "UBAD", "text": "hi"}]}
+    data = {"ok": True, "messages": [{"user": "UBAD00000X", "text": "hi"}]}
 
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.async_slack_response import AsyncSlackResponse
@@ -182,7 +182,7 @@ async def test_failed_lookups_excluded():
 @pytest.mark.asyncio
 async def test_resolution_error_returns_original_result():
     middleware = NameResolutionMiddleware()
-    data = {"ok": True, "messages": [{"user": "U123", "text": "hi"}]}
+    data = {"ok": True, "messages": [{"user": "U0ADCDDNVGT", "text": "hi"}]}
     original_json = json.dumps(data)
 
     from slack_sdk.errors import SlackApiError
