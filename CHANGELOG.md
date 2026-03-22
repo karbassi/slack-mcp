@@ -20,14 +20,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - **Threads**: `subscriptions.thread.mark` — mark threads as read/unread
   - **Workspace**: `experiments.getByUser`, `api.features`, `aiApps.list`
 - `session_call_multipart` client method for multipart form uploads
+- Generic ID resolution for all tool responses — user, channel, DM, and bot IDs are auto-resolved to display names via `_resolved_names` (not just message tools)
+- Disk-cached resolver lookups — users/bots cached 1hr, channels 5min, same DiskStore as response cache
+- Platform-native cache directory via `platformdirs` (`~/Library/Caches` on macOS, `~/.cache` on Linux), with `XDG_CACHE_HOME` override
 - `CLAUDE.md` with project instructions
-- Integration tests for all 220 tools (341 pass, ~68 skipped with documented reasons)
+- Integration tests for all 220 tools (342 pass, ~68 skipped with documented reasons)
 - Test fixture PNG for emoji upload tests
 
 ### Fixed
 
 - `session_call_form` now sets `charset=utf-8` in Content-Type to avoid `missing_charset` warnings
 - Draft `client_last_updated_ts` padded to 7 decimal places to prevent `draft_has_conflict` errors
+- ID resolver regex updated to match documented Slack ID formats (D/Z prefixes, 8+ char minimum)
 
 ## [1.1.0] - 2026-03-22
 

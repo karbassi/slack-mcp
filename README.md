@@ -250,10 +250,15 @@ Responses are cached automatically to reduce API calls:
 - **Dynamic data** (channel lists, members, bookmarks) — 5 minute TTL
 - **Old threads** (`conversations_replies` with ts > 1 hour old) — 1 hour TTL
 - **Bounded history** (`conversations_history` with old date range) — 1 hour TTL
+- **Resolved names** (user/bot → 1 hour, channel → 5 minutes)
 
-For `conversations_history`, `conversations_replies`, `search_messages`, and `search_all`, user, channel, and bot IDs are automatically resolved to display names via the `_resolved_names` field — no extra tool calls needed.
+Cache is stored at the platform-native location (`~/Library/Caches/slack-mcp` on macOS, `~/.cache/slack-mcp` on Linux). Set `XDG_CACHE_HOME` to override.
 
 Use the `cache_clear` tool to bust the cache when you need fresh data.
+
+### Name Resolution
+
+All tool responses automatically resolve user, channel, DM, and bot IDs to display names via a `_resolved_names` field — no extra tool calls needed. Resolved names are disk-cached to avoid redundant API lookups.
 
 ## Development
 
