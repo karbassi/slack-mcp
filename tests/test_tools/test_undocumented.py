@@ -4,6 +4,7 @@ from slack_mcp.tools.undocumented import (
     client_boot,
     client_counts,
     client_user_boot,
+    subscriptions_thread_mark,
     threads_get_view,
 )
 
@@ -32,6 +33,21 @@ async def test_client_user_boot(mock_client):
     result = await client_user_boot(client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with("client.userBoot")
+
+
+@pytest.mark.asyncio
+async def test_subscriptions_thread_mark(mock_client):
+    mock_client.session_call.return_value = {"ok": True}
+    result = await subscriptions_thread_mark(
+        channel="C123", thread_ts="1234.5678", client=mock_client
+    )
+    assert result["ok"] is True
+    mock_client.session_call.assert_called_once_with(
+        "subscriptions.thread.mark",
+        channel="C123",
+        thread_ts="1234.5678",
+        read=True,
+    )
 
 
 @pytest.mark.asyncio

@@ -68,6 +68,22 @@ async def client_user_boot(
 
 
 @mcp.tool
+async def subscriptions_thread_mark(
+    channel: str,
+    thread_ts: str,
+    read: bool = True,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Mark a thread as read or unread (undocumented session endpoint)."""
+    return await client.session_call(
+        "subscriptions.thread.mark",
+        channel=channel,
+        thread_ts=thread_ts,
+        read=read,
+    )
+
+
+@mcp.tool
 async def threads_get_view(
     current_ts: str | None = None,
     client: SlackClient = Depends(slack_client),
