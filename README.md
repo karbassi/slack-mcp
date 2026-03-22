@@ -223,7 +223,7 @@ Responses are cached automatically to reduce API calls:
 - **Old threads** (`conversations_replies` with ts > 1 hour old) — 1 hour TTL
 - **Bounded history** (`conversations_history` with old date range) — 1 hour TTL
 
-User, channel, and bot IDs in message responses are automatically resolved to display names via the `_resolved_names` field — no extra tool calls needed.
+For `conversations_history`, `conversations_replies`, `search_messages`, and `search_all`, user, channel, and bot IDs are automatically resolved to display names via the `_resolved_names` field — no extra tool calls needed.
 
 Use the `cache_clear` tool to bust the cache when you need fresh data.
 
