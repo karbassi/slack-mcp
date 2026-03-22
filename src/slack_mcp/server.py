@@ -198,7 +198,11 @@ _SKIP_RESOLUTION = {
 
 
 class NameResolutionMiddleware(Middleware):
-    """Auto-resolve user/channel/bot IDs in any tool response."""
+    """Auto-resolve user/channel/bot IDs in any tool response.
+
+    Appends a second TextContent block with resolved names so the
+    original response is untouched.
+    """
 
     async def on_call_tool(
         self,
@@ -234,7 +238,10 @@ class NameResolutionMiddleware(Middleware):
             return result
 
         if names:
-            data["_resolved_names"] = names
+            data["resolved_names"] = names
+            # NOTE: Both in-place mutation and new ToolResult are silently
+            # discarded by FastMCP — filed as prefecthq/fastmcp#3590.
+            # Keeping the mutation here so it works once upstream is fixed.
             result.content[0].text = json.dumps(data)
 
         return result
