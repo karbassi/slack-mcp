@@ -22,9 +22,11 @@ from key_value.aio.stores.disk import DiskStore
 from mcp.types import CallToolRequestParams
 from slack_sdk.errors import SlackApiError
 
+from importlib.metadata import version
+
 from slack_mcp.client import SlackClient, get_client
 
-mcp = FastMCP(name="Slack MCP")
+mcp = FastMCP(name="Slack MCP", version=version("slack-mcp"))
 
 # Stable identity data — rarely changes (1 hour)
 LONG_CACHED_TOOLS = [
