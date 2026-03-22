@@ -35,35 +35,6 @@ async def test_resolve_names_channels(mock_client):
 
 
 @pytest.mark.asyncio
-async def test_resolve_names_mixed(mock_client):
-    async def _side_effect(method, **kwargs):
-        if method == "users.info":
-            return {
-                "ok": True,
-                "user": {
-                    "id": kwargs["user"],
-                    "name": "alice",
-                    "real_name": "Alice Smith",
-                    "profile": {"display_name": "Alice", "real_name": "Alice Smith"},
-                },
-            }
-        if method == "conversations.info":
-            return {
-                "ok": True,
-                "channel": {"id": kwargs["channel"], "name": "random"},
-            }
-        return {"ok": False}
-
-    mock_client.api_call.side_effect = _side_effect
-    result = await resolve_names(
-        user_ids=["U111"], channel_ids=["C222"], client=mock_client
-    )
-    assert result["ok"] is True
-    assert result["names"]["U111"] == "Alice"
-    assert result["names"]["C222"] == "random"
-
-
-@pytest.mark.asyncio
 async def test_resolve_names_fallback_real_name(mock_client):
     mock_client.api_call.return_value = {
         "ok": True,

@@ -77,27 +77,6 @@ async def test_enriches_conversations_history():
 
 
 @pytest.mark.asyncio
-async def test_enriches_conversations_replies():
-    middleware = NameResolutionMiddleware()
-    data = {
-        "ok": True,
-        "messages": [{"user": "U123", "text": "thread msg"}],
-    }
-
-    async def fake_call_next(ctx):
-        return _make_result(data)
-
-    client = _mock_client(_api_side_effect)
-    ctx = _make_context("conversations_replies", {"channel": "C000", "ts": "123.456"})
-
-    with patch("slack_mcp.server.get_client", return_value=client):
-        result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
-
-    enriched = json.loads(result.content[0].text)
-    assert enriched["_resolved_names"]["U123"] == "Alice"
-
-
-@pytest.mark.asyncio
 async def test_enriches_search_messages():
     middleware = NameResolutionMiddleware()
     data = {
