@@ -17,4 +17,7 @@ async def test_functions_complete_error_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="requires a valid function_execution_id")
 async def test_functions_complete_success_live(live_client):
-    pass
+    result = await functions_complete_success(
+        function_execution_id="Fx0000000000", outputs={}, client=live_client
+    )
+    assert "ok" in result

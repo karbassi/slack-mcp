@@ -78,27 +78,118 @@ async def test_files_v2_upload_lifecycle_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="method_deprecated: files.upload replaced by v2 flow")
 async def test_files_upload_live(live_client):
-    pass
+    """Legacy upload — deprecated by Slack in favour of the v2 flow."""
+    result = await files_upload(
+        content="legacy upload test",
+        filename="legacy.txt",
+        title="Legacy Upload",
+        client=live_client,
+    )
+    assert "ok" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="covered by v2 upload lifecycle test above")
+async def test_files_upload_v2_live(live_client):
+    """files.upload.v2 — already exercised by test_files_v2_upload_lifecycle_live."""
+    result = await files_upload_v2(
+        content="v2 upload test",
+        filename="v2test.txt",
+        title="V2 Upload",
+        client=live_client,
+    )
+    assert "ok" in result
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.skip(
-    reason="not_allowed_token_type: files.remote.* requires bot token (xoxb)"
+    reason="not_allowed_token_type: files.remote.add requires bot token (xoxb)"
 )
-async def test_files_remote_lifecycle_live(live_client):
-    pass
+async def test_files_remote_add_live(live_client):
+    """Add a remote file reference."""
+    ext_id = f"integ-test-{uuid.uuid4().hex[:8]}"
+    result = await files_remote_add(
+        external_id=ext_id,
+        external_url="https://example.com/test.txt",
+        title="Remote Test File",
+        client=live_client,
+    )
+    assert "ok" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="not_allowed_token_type: files.remote.info requires bot token (xoxb)"
+)
+async def test_files_remote_info_live(live_client):
+    """Get info about a remote file by external_id."""
+    result = await files_remote_info(
+        external_id="integ-test-placeholder",
+        client=live_client,
+    )
+    assert "ok" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="not_allowed_token_type: files.remote.list requires bot token (xoxb)"
+)
+async def test_files_remote_list_live(live_client):
+    """List remote files."""
+    result = await files_remote_list(client=live_client)
+    assert "ok" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="not_allowed_token_type: files.remote.remove requires bot token (xoxb)"
+)
+async def test_files_remote_remove_live(live_client):
+    """Remove a remote file."""
+    result = await files_remote_remove(
+        external_id="integ-test-placeholder",
+        client=live_client,
+    )
+    assert "ok" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="not_allowed_token_type: files.remote.share requires bot token (xoxb)"
+)
+async def test_files_remote_share_live(live_client):
+    """Share a remote file into a channel."""
+    result = await files_remote_share(
+        channels="C0000000000",
+        external_id="integ-test-placeholder",
+        client=live_client,
+    )
+    assert "ok" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="not_allowed_token_type: files.remote.update requires bot token (xoxb)"
+)
+async def test_files_remote_update_live(live_client):
+    """Update a remote file."""
+    result = await files_remote_update(
+        external_id="integ-test-placeholder",
+        title="Updated Remote File",
+        client=live_client,
+    )
+    assert "ok" in result
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="requires a file with comments")
 async def test_files_comments_delete_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="covered by v2 upload lifecycle test")
-async def test_files_upload_v2_live(live_client):
     pass

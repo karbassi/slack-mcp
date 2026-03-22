@@ -110,6 +110,13 @@ async def test_slack_lists_lifecycle_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="undocumented cells format for items.update")
+@pytest.mark.skip(reason="undocumented cells/column_values format for items.update")
 async def test_slack_lists_items_update_live(live_client):
-    pass
+    """Update a list item's column values."""
+    result = await slack_lists_items_update(
+        item_id="0000000000",
+        list_id="0000000000",
+        column_values={},
+        client=live_client,
+    )
+    assert "ok" in result

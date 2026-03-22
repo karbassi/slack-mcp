@@ -17,4 +17,5 @@ async def test_openid_connect_token_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="requires a token from OIDC flow")
 async def test_openid_connect_user_info_live(live_client):
-    pass
+    result = await openid_connect_user_info(client=live_client)
+    assert "ok" in result
