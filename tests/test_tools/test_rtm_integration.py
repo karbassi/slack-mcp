@@ -17,4 +17,5 @@ async def test_rtm_connect_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="missing_scope: requires rtm:stream")
 async def test_rtm_start_live(live_client):
-    pass
+    result = await rtm_start(client=live_client)
+    assert "ok" in result

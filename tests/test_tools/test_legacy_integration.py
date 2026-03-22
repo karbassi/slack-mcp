@@ -132,16 +132,21 @@ async def test_users_prefs_set_live(live_client, requires_session_token):
 
 @pytest.mark.skip(reason="unknown_method: channels.delete no longer exists")
 async def test_channels_delete_live(live_client):
-    pass
+    result = await channels_delete(channel="C0000000000", client=live_client)
+    assert "ok" in result
 
 
 @pytest.mark.skip(reason="enterprise_is_restricted: Enterprise Grid blocks invites")
-async def test_users_admin_invite_live(live_client):
-    pass
+async def test_users_admin_invite_live(live_client, requires_session_token):
+    result = await users_admin_invite(
+        email="test@example.com", client=live_client
+    )
+    assert "ok" in result
 
 
 @pytest.mark.skip(
     reason="enterprise_is_restricted: Enterprise Grid requires target_team"
 )
-async def test_users_admin_set_inactive_live(live_client):
-    pass
+async def test_users_admin_set_inactive_live(live_client, requires_session_token):
+    result = await users_admin_set_inactive(user="U0000000000", client=live_client)
+    assert "ok" in result

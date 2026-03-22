@@ -18,11 +18,23 @@ async def test_oauth_access_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="requires a valid OAuth v2 authorization code")
 async def test_oauth_v2_access_live(live_client):
-    pass
+    result = await oauth_v2_access(
+        client_id="000000.000000",
+        client_secret="secret",
+        code="code",
+        client=live_client,
+    )
+    assert "ok" in result
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="requires a valid legacy token to exchange")
 async def test_oauth_v2_exchange_live(live_client):
-    pass
+    result = await oauth_v2_exchange(
+        client_id="000000.000000",
+        client_secret="secret",
+        token="xoxp-legacy-token",
+        client=live_client,
+    )
+    assert "ok" in result

@@ -83,14 +83,18 @@ async def test_users_delete_photo_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="not_allowed_token_type: requires Slack Connect discovery")
 async def test_users_discoverable_contacts_lookup_live(live_client):
-    pass
+    result = await users_discoverable_contacts_lookup(
+        email="test@example.com", client=live_client
+    )
+    assert "ok" in result
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="missing_scope: requires identity.basic (Sign in with Slack)")
 async def test_users_identity_live(live_client):
-    pass
+    result = await users_identity(client=live_client)
+    assert "ok" in result
 
 
 @pytest.mark.integration
@@ -135,4 +139,7 @@ async def test_users_profile_set_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="destructive: would set the user's profile photo")
 async def test_users_set_photo_live(live_client):
-    pass
+    result = await users_set_photo(
+        image="https://example.com/photo.png", client=live_client
+    )
+    assert "ok" in result
