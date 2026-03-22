@@ -5,6 +5,38 @@ from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
+async def session_test(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Check if session tokens (xoxc/xoxd) are valid.
+
+    Calls client.boot as a health check. Returns ok: true if tokens are valid,
+    or a clear error message if they are missing, expired, or invalid.
+    """
+    if not client.xoxc_token or not client.xoxd_token:
+        return {
+            "ok": False,
+            "error": "missing_tokens",
+            "message": "SLACK_XOXC_TOKEN and/or SLACK_XOXD_TOKEN not set.",
+        }
+    try:
+        result = await client.session_call("client.boot")
+        if result.get("ok"):
+            return {"ok": True, "message": "Session tokens are valid."}
+        error = result.get("error", "unknown_error")
+        return {
+            "ok": False,
+            "error": error,
+            "message": f"Session tokens may be expired or invalid ({error}). "
+            "Re-grab xoxc/xoxd from browser cookies while logged into slack.com.",
+        }
+    except ValueError as e:
+        return {"ok": False, "error": "invalid_or_expired", "message": str(e)}
+    except Exception as e:
+        return {"ok": False, "error": type(e).__name__, "message": str(e)}
+
+
+@mcp.tool
 async def client_boot(
     client: SlackClient = Depends(slack_client),
 ) -> dict:

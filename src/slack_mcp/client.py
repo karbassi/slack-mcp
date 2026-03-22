@@ -50,12 +50,23 @@ class SlackClient:
                 "logged into slack.com."
             )
 
+    def _check_session_response(self, data: dict, method: str) -> dict:
+        if not data.get("ok"):
+            error = data.get("error", "unknown_error")
+            if error in ("not_authed", "invalid_auth", "token_expired", "token_revoked"):
+                raise ValueError(
+                    f"Session endpoint {method} failed: {error}. "
+                    "Your xoxc/xoxd tokens may be expired — re-grab them "
+                    "from browser cookies while logged into slack.com."
+                )
+        return data
+
     async def session_call(self, method: str, **kwargs) -> dict:
         """Call an undocumented Slack endpoint using xoxc + xoxd auth."""
         self._require_session_tokens()
         resp = await self.session_client.post(method, json=kwargs)
         resp.raise_for_status()
-        return resp.json()
+        return self._check_session_response(resp.json(), method)
 
     async def session_call_form(self, method: str, **kwargs) -> dict:
         """Call an undocumented Slack endpoint with form-encoded data.
@@ -66,7 +77,7 @@ class SlackClient:
         self._require_session_tokens()
         resp = await self.session_client.post(method, data=kwargs)
         resp.raise_for_status()
-        return resp.json()
+        return self._check_session_response(resp.json(), method)
 
     async def close(self) -> None:
         await self.session_client.aclose()
