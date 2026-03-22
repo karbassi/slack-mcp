@@ -69,7 +69,7 @@ async def test_enriches_conversations_history():
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     enriched = json.loads(result.content[0].text)
-    names = enriched["_resolved_names"]
+    names = enriched["resolved_names"]
     assert names["U0ADCDDNVGT"] == "Alice"
     assert names["U0BXYZ12345"] == "Alice"
     assert names["C0AD56E4N6B"] == "general"
@@ -96,7 +96,7 @@ async def test_enriches_search_messages():
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     enriched = json.loads(result.content[0].text)
-    assert enriched["_resolved_names"]["U0ADCDDNVGT"] == "Alice"
+    assert enriched["resolved_names"]["U0ADCDDNVGT"] == "Alice"
 
 
 @pytest.mark.asyncio
@@ -111,7 +111,7 @@ async def test_non_target_tool_passes_through():
     result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     parsed = json.loads(result.content[0].text)
-    assert "_resolved_names" not in parsed
+    assert "resolved_names" not in parsed
 
 
 @pytest.mark.asyncio
@@ -126,7 +126,7 @@ async def test_empty_messages_no_enrichment():
     result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     parsed = json.loads(result.content[0].text)
-    assert "_resolved_names" not in parsed
+    assert "resolved_names" not in parsed
 
 
 @pytest.mark.asyncio
@@ -141,7 +141,7 @@ async def test_no_ids_in_messages_no_enrichment():
     result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     parsed = json.loads(result.content[0].text)
-    assert "_resolved_names" not in parsed
+    assert "resolved_names" not in parsed
 
 
 @pytest.mark.asyncio
@@ -176,7 +176,7 @@ async def test_failed_lookups_excluded():
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     parsed = json.loads(result.content[0].text)
-    assert "_resolved_names" not in parsed
+    assert "resolved_names" not in parsed
 
 
 @pytest.mark.asyncio
@@ -212,7 +212,7 @@ async def test_resolution_error_returns_original_result():
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     assert result.content[0].text == original_json
-    assert "_resolved_names" not in json.loads(result.content[0].text)
+    assert "resolved_names" not in json.loads(result.content[0].text)
 
 
 @pytest.mark.asyncio
