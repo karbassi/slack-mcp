@@ -94,7 +94,7 @@ async def test_resolve_names_api_failure(mock_client):
     )
     result = await resolve_names(user_ids=["UBAD"], client=mock_client)
     assert result["ok"] is True
-    assert result["names"]["UBAD"] is None
+    assert "UBAD" not in result["names"]
 
 
 @pytest.mark.asyncio

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import json
 import time
 from typing import Any
 
@@ -175,6 +176,67 @@ class ThreadCachingMiddleware(Middleware):
 
 
 mcp.add_middleware(ThreadCachingMiddleware(cache_storage=cache_store))
+
+TOOLS_WITH_MESSAGES = {
+    "conversations_history",
+    "conversations_replies",
+    "search_messages",
+    "search_all",
+}
+
+
+def _extract_messages(tool_name: str, data: dict) -> list[dict]:
+    """Pull the messages list from a tool response based on its structure."""
+    if tool_name in ("conversations_history", "conversations_replies"):
+        return data.get("messages", [])
+    if tool_name in ("search_messages", "search_all"):
+        return data.get("messages", {}).get("matches", [])
+    return []
+
+
+class NameResolutionMiddleware(Middleware):
+    """Auto-resolve user/channel/bot IDs in message-returning tool responses."""
+
+    async def on_call_tool(
+        self,
+        context: MiddlewareContext[CallToolRequestParams],
+        call_next: CallNext[CallToolRequestParams, ToolResult],
+    ) -> ToolResult:
+        result = await call_next(context)
+        tool_name = context.message.name
+
+        if tool_name not in TOOLS_WITH_MESSAGES:
+            return result
+
+        if not result.content or not hasattr(result.content[0], "text"):
+            return result
+
+        try:
+            data = json.loads(result.content[0].text)
+        except (json.JSONDecodeError, IndexError):
+            return result
+
+        messages = _extract_messages(tool_name, data)
+        if not messages:
+            return result
+
+        from slack_mcp.resolve import extract_ids_from_messages, resolve_ids
+
+        user_ids, channel_ids, bot_ids = extract_ids_from_messages(messages)
+        if not user_ids and not channel_ids and not bot_ids:
+            return result
+
+        client = get_client()
+        names = await resolve_ids(client, user_ids, channel_ids, bot_ids)
+
+        if names:
+            data["_resolved_names"] = names
+            result.content[0].text = json.dumps(data)
+
+        return result
+
+
+mcp.add_middleware(NameResolutionMiddleware())
 
 
 @mcp.tool
