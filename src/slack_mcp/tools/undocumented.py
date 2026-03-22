@@ -223,7 +223,7 @@ async def drafts_delete(
                 break
         if client_last_updated_ts is None:
             return {"ok": False, "error": "draft_not_found"}
-    return await client.session_call(
+    return await client.session_call_form(
         "drafts.delete",
         draft_id=draft_id,
         client_last_updated_ts=_pad_draft_ts(client_last_updated_ts),
