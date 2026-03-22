@@ -42,8 +42,17 @@ class SlackClient:
         response = await self.web_client.api_call(method, json=kwargs)
         return dict(response.data)
 
+    def _require_session_tokens(self) -> None:
+        if not self.xoxc_token or not self.xoxd_token:
+            raise ValueError(
+                "Session tokens (SLACK_XOXC_TOKEN and SLACK_XOXD_TOKEN) are required "
+                "for undocumented endpoints. Grab them from your browser cookies while "
+                "logged into slack.com."
+            )
+
     async def session_call(self, method: str, **kwargs) -> dict:
         """Call an undocumented Slack endpoint using xoxc + xoxd auth."""
+        self._require_session_tokens()
         resp = await self.session_client.post(method, json=kwargs)
         resp.raise_for_status()
         return resp.json()
@@ -54,6 +63,7 @@ class SlackClient:
         Some legacy endpoints (e.g. files.edit) require form-encoded data
         rather than JSON.
         """
+        self._require_session_tokens()
         resp = await self.session_client.post(method, data=kwargs)
         resp.raise_for_status()
         return resp.json()
