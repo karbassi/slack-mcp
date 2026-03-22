@@ -7,9 +7,6 @@ from slack_mcp.client import SlackClient
 
 MAX_CONCURRENCY = 10
 
-_USER_MENTION_RE = re.compile(r"<@([UW][A-Z0-9]+)")
-_CHANNEL_MENTION_RE = re.compile(r"<#([CG][A-Z0-9]+)")
-
 _NOT_FOUND_ERRORS = {
     "user_not_found",
     "user_not_visible",
@@ -65,25 +62,39 @@ async def _resolve_bot(
         return bid, resp.get("bot", {}).get("name")
 
 
-def extract_ids_from_messages(
-    messages: list[dict],
-) -> tuple[set[str], set[str], set[str]]:
-    """Extract unique user, channel, and bot IDs from a list of Slack messages."""
+
+_ID_RE = re.compile(r"\b([UW][A-Z0-9]{2,}|[CG][A-Z0-9]{2,}|B[A-Z0-9]{2,})\b")
+
+# Keys whose values look like IDs but aren't worth resolving
+_SKIP_KEYS = {"client_msg_id", "team_id", "enterprise_id", "app_id"}
+
+
+def extract_ids_from_json(data: object) -> tuple[set[str], set[str], set[str]]:
+    """Scan any JSON structure for Slack IDs (users, channels, bots)."""
     user_ids: set[str] = set()
     channel_ids: set[str] = set()
     bot_ids: set[str] = set()
 
-    for msg in messages:
-        if (uid := msg.get("user")) and uid[0] in {"U", "W"}:
-            user_ids.add(uid)
+    def _scan(obj: object, key: str | None = None) -> None:
+        if isinstance(obj, str):
+            if key in _SKIP_KEYS:
+                return
+            for match in _ID_RE.findall(obj):
+                c = match[0]
+                if c in ("U", "W"):
+                    user_ids.add(match)
+                elif c in ("C", "G"):
+                    channel_ids.add(match)
+                elif c == "B":
+                    bot_ids.add(match)
+        elif isinstance(obj, dict):
+            for k, v in obj.items():
+                _scan(v, k)
+        elif isinstance(obj, list):
+            for item in obj:
+                _scan(item, key)
 
-        if (bid := msg.get("bot_id")) and bid.startswith("B"):
-            bot_ids.add(bid)
-
-        text = msg.get("text", "")
-        user_ids.update(_USER_MENTION_RE.findall(text))
-        channel_ids.update(_CHANNEL_MENTION_RE.findall(text))
-
+    _scan(data)
     return user_ids, channel_ids, bot_ids
 
 
