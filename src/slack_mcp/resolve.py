@@ -8,7 +8,7 @@ from slack_mcp.client import SlackClient
 MAX_CONCURRENCY = 10
 
 _USER_MENTION_RE = re.compile(r"<@(U[A-Z0-9]+)")
-_CHANNEL_MENTION_RE = re.compile(r"<#(C[A-Z0-9]+)")
+_CHANNEL_MENTION_RE = re.compile(r"<#([CG][A-Z0-9]+)")
 
 _NOT_FOUND_ERRORS = {
     "user_not_found",

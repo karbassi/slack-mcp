@@ -180,6 +180,42 @@ async def test_failed_lookups_excluded():
 
 
 @pytest.mark.asyncio
+async def test_resolution_error_returns_original_result():
+    middleware = NameResolutionMiddleware()
+    data = {"ok": True, "messages": [{"user": "U123", "text": "hi"}]}
+    original_json = json.dumps(data)
+
+    from slack_sdk.errors import SlackApiError
+    from slack_sdk.web.async_slack_response import AsyncSlackResponse
+
+    async def auth_error(method, **kwargs):
+        raise SlackApiError(
+            message="invalid_auth",
+            response=AsyncSlackResponse(
+                client=None,
+                http_verb="POST",
+                api_url="https://slack.com/api/users.info",
+                req_args={},
+                data={"ok": False, "error": "invalid_auth"},
+                headers={},
+                status_code=200,
+            ),
+        )
+
+    client = _mock_client(auth_error)
+    ctx = _make_context("conversations_history", {"channel": "C000"})
+
+    async def fake_call_next(ctx):
+        return _make_result(data)
+
+    with patch("slack_mcp.server.get_client", return_value=client):
+        result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
+
+    assert result.content[0].text == original_json
+    assert "_resolved_names" not in json.loads(result.content[0].text)
+
+
+@pytest.mark.asyncio
 async def test_middleware_registered():
     from slack_mcp.server import mcp
 

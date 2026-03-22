@@ -226,8 +226,11 @@ class NameResolutionMiddleware(Middleware):
         if not user_ids and not channel_ids and not bot_ids:
             return result
 
-        client = get_client()
-        names = await resolve_ids(client, user_ids, channel_ids, bot_ids)
+        try:
+            client = get_client()
+            names = await resolve_ids(client, user_ids, channel_ids, bot_ids)
+        except Exception:
+            return result
 
         if names:
             data["_resolved_names"] = names
