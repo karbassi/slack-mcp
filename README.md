@@ -10,7 +10,7 @@
 A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives LLMs full access to [Slack](https://slack.com).<br>
 Messages, channels, files, canvases, lists, search, reactions — all of it.
 
-**193 tools** · **35 API families** · **Every Slack feature**
+**194 tools** · **36 API families** · **Every Slack feature**
 
 </div>
 
@@ -167,7 +167,7 @@ Add to your VS Code `settings.json`:
 | **Calls** | 6 | Start, end, manage participants |
 | **+ 23 more** | | DND, reminders, bookmarks, reactions, pins, stars, views, search, auth, bots, emoji, ... |
 
-Plus a `cache_clear` utility tool to bust the response cache on demand.
+Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the response cache on demand) utility tools.
 
 ### Beyond the Official API
 
@@ -212,7 +212,7 @@ Plus a `cache_clear` utility tool to bust the response cache on demand.
 | `SLACK_XOXC_TOKEN` | No | Browser session token for undocumented endpoints |
 | `SLACK_XOXD_TOKEN` | No | Browser session cookie (paired with `xoxc`) |
 
-> **Official vs session:** The `xoxp` token covers all 193 official API tools. For undocumented endpoints (unread counts, workspace boot, file editing), you also need `xoxc`+`xoxd` — grab them from your browser cookies while logged into slack.com.
+> **Official vs session:** The `xoxp` token covers all 194 official API tools. For undocumented endpoints (unread counts, workspace boot, file editing), you also need `xoxc`+`xoxd` — grab them from your browser cookies while logged into slack.com.
 
 ## Caching
 
