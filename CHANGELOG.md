@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-03-24
+
+### Fixed
+
+- Name resolution middleware now works with Claude Code and other MCP clients that read `structuredContent` instead of `content[0].text`
+- Cache is now namespaced by token hash so multiple workspace instances don't share cached responses
+
+### Changed
+
+- Full type annotations on all tool parameters (`list` → `list[str]`, `dict` → `dict[str, str]`, etc.)
+- Fixed all ruff E501 line-length warnings
+
+### Removed
+
+- Stale "Known Issues" note about FastMCP middleware bug — resolved by using `structured_content` per FastMCP docs
+
 ## [1.3.0] - 2026-03-22
 
 ### Added
@@ -32,10 +48,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `session_call_form` now sets `charset=utf-8` in Content-Type to avoid `missing_charset` warnings
 - Draft `client_last_updated_ts` padded to 7 decimal places to prevent `draft_has_conflict` errors
 - ID resolver regex updated to match documented Slack ID formats (D/Z prefixes, 8+ char minimum)
-
-### Known Issues
-
-- `resolved_names` middleware injection is silently discarded by FastMCP ([prefecthq/fastmcp#3590](https://github.com/prefecthq/fastmcp/issues/3590)). Resolver logic and caching work correctly; names will appear in responses once upstream is fixed.
 
 ## [1.1.0] - 2026-03-22
 
