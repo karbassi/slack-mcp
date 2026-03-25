@@ -6,7 +6,7 @@ from slack_mcp.server import mcp, slack_client
 
 @mcp.tool
 async def workflows_featured_add(
-    workflow_ids: list,
+    workflow_ids: list[str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Add featured workflows."""
@@ -23,7 +23,7 @@ async def workflows_featured_list(
 
 @mcp.tool
 async def workflows_featured_remove(
-    workflow_ids: list,
+    workflow_ids: list[str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove featured workflows."""
@@ -32,7 +32,7 @@ async def workflows_featured_remove(
 
 @mcp.tool
 async def workflows_featured_set(
-    workflow_ids: list,
+    workflow_ids: list[str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set featured workflows."""
@@ -42,7 +42,7 @@ async def workflows_featured_set(
 @mcp.tool
 async def workflows_step_completed(
     workflow_step_execute_id: str,
-    outputs: dict | None = None,
+    outputs: dict[str, str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Indicate a workflow step has been completed successfully."""
@@ -54,7 +54,7 @@ async def workflows_step_completed(
 
 @mcp.tool
 async def workflows_step_failed(
-    error: dict,
+    error: dict[str, str],
     workflow_step_execute_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -69,8 +69,8 @@ async def workflows_step_failed(
 @mcp.tool
 async def workflows_update_step(
     workflow_step_edit_id: str,
-    inputs: dict | None = None,
-    outputs: list | None = None,
+    inputs: dict[str, str] | None = None,
+    outputs: list[dict[str, str]] | None = None,
     step_image_url: str | None = None,
     step_name: str | None = None,
     client: SlackClient = Depends(slack_client),

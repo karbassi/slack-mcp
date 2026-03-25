@@ -13,7 +13,7 @@ async def calls_add(
     desktop_app_join_url: str | None = None,
     external_display_id: str | None = None,
     title: str | None = None,
-    users: list | None = None,
+    users: list[dict[str, str]] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Register a new call."""
@@ -58,7 +58,7 @@ async def calls_info(
 @mcp.tool
 async def calls_participants_add(
     id: str,
-    users: list,
+    users: list[dict[str, str]],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Register new participants added to a call."""
@@ -68,7 +68,7 @@ async def calls_participants_add(
 @mcp.tool
 async def calls_participants_remove(
     id: str,
-    users: list,
+    users: list[dict[str, str]],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Register participants removed from a call."""

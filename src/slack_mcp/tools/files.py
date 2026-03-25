@@ -16,7 +16,7 @@ async def files_comments_delete(
 
 @mcp.tool
 async def files_complete_upload_external(
-    files: list,
+    files: list[dict[str, str]],
     channel_id: str | None = None,
     initial_comment: str | None = None,
     thread_ts: str | None = None,

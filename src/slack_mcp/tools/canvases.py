@@ -7,8 +7,8 @@ from slack_mcp.server import mcp, slack_client
 @mcp.tool
 async def canvases_access_delete(
     canvas_id: str,
-    channel_ids: list | None = None,
-    user_ids: list | None = None,
+    channel_ids: list[str] | None = None,
+    user_ids: list[str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove access to a canvas for specified entities."""
@@ -24,8 +24,8 @@ async def canvases_access_delete(
 async def canvases_access_set(
     canvas_id: str,
     access_level: str,
-    channel_ids: list | None = None,
-    user_ids: list | None = None,
+    channel_ids: list[str] | None = None,
+    user_ids: list[str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set access level to a canvas for specified entities."""
@@ -40,7 +40,7 @@ async def canvases_access_set(
 @mcp.tool
 async def canvases_create(
     title: str | None = None,
-    document_content: dict | None = None,
+    document_content: dict[str, str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a canvas."""
@@ -64,7 +64,7 @@ async def canvases_delete(
 @mcp.tool
 async def canvases_edit(
     canvas_id: str,
-    changes: list,
+    changes: list[dict[str, str]],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Edit a canvas."""
@@ -76,7 +76,7 @@ async def canvases_edit(
 @mcp.tool
 async def canvases_sections_lookup(
     canvas_id: str,
-    criteria: dict,
+    criteria: dict[str, str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Find sections matching criteria in a canvas."""
