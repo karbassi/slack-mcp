@@ -1,5 +1,6 @@
 import asyncio
 import re
+from collections.abc import Callable, Coroutine
 from typing import Any
 
 from slack_sdk.errors import SlackApiError
@@ -28,8 +29,11 @@ def set_cache_store(store: Any) -> None:
     _cache_store = store
 
 
+_ResolverT = Callable[..., Coroutine[Any, Any, tuple[str, str | None]]]
+
+
 async def _cached_resolve(
-    key: str, ttl: int, resolver, *args
+    key: str, ttl: int, resolver: _ResolverT, *args: Any
 ) -> tuple[str, str | None]:
     """Check cache first, then call resolver and cache the result."""
     if _cache_store is not None:

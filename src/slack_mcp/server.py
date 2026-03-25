@@ -4,9 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import json
+import hashlib
 import os
 import time
+from importlib.metadata import version
 from typing import Any
 
 import pydantic_core
@@ -22,8 +23,6 @@ from fastmcp.tools.tool import ToolResult
 from key_value.aio.stores.disk import DiskStore
 from mcp.types import CallToolRequestParams
 from slack_sdk.errors import SlackApiError
-
-from importlib.metadata import version
 
 from slack_mcp.client import SlackClient, get_client
 
@@ -75,9 +74,12 @@ CACHED_TOOLS = LONG_CACHED_TOOLS + SHORT_CACHED_TOOLS
 
 from platformdirs import user_cache_dir
 
-# Respect XDG_CACHE_HOME if set, otherwise use platform default
+# Namespace cache by token so multiple workspaces don't collide
 _xdg = os.environ.get("XDG_CACHE_HOME")
-cache_dir = Path(_xdg) / "slack-mcp" if _xdg else Path(user_cache_dir("slack-mcp"))
+_base = Path(_xdg) / "slack-mcp" if _xdg else Path(user_cache_dir("slack-mcp"))
+_token = os.environ.get("SLACK_XOXP_TOKEN", "")
+_ns = hashlib.sha256(_token.encode()).hexdigest()[:12]
+cache_dir = _base / _ns
 cache_store = DiskStore(directory=cache_dir)
 
 from slack_mcp.resolve import set_cache_store
@@ -198,11 +200,7 @@ _SKIP_RESOLUTION = {
 
 
 class NameResolutionMiddleware(Middleware):
-    """Auto-resolve user/channel/bot IDs in any tool response.
-
-    Appends a second TextContent block with resolved names so the
-    original response is untouched.
-    """
+    """Auto-resolve user/channel/bot IDs in any tool response."""
 
     async def on_call_tool(
         self,
@@ -214,20 +212,14 @@ class NameResolutionMiddleware(Middleware):
         if context.message.name in _SKIP_RESOLUTION:
             return result
 
-        if not result.content or not hasattr(result.content[0], "text"):
-            return result
-
-        try:
-            data = json.loads(result.content[0].text)
-        except (json.JSONDecodeError, IndexError):
-            return result
-
-        if not isinstance(data, dict):
+        if not result.structured_content:
             return result
 
         from slack_mcp.resolve import extract_ids_from_json, resolve_ids
 
-        user_ids, channel_ids, bot_ids = extract_ids_from_json(data)
+        user_ids, channel_ids, bot_ids = extract_ids_from_json(
+            result.structured_content
+        )
         if not user_ids and not channel_ids and not bot_ids:
             return result
 
@@ -238,11 +230,7 @@ class NameResolutionMiddleware(Middleware):
             return result
 
         if names:
-            data["resolved_names"] = names
-            # NOTE: Both in-place mutation and new ToolResult are silently
-            # discarded by FastMCP — filed as prefecthq/fastmcp#3590.
-            # Keeping the mutation here so it works once upstream is fixed.
-            result.content[0].text = json.dumps(data)
+            result.structured_content["resolved_names"] = names
 
         return result
 
@@ -258,7 +246,6 @@ def cache_clear() -> str:
 
 
 def slack_client() -> SlackClient:
-    """Dependency provider for SlackClient."""
     return get_client()
 
 

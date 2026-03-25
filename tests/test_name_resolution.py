@@ -19,7 +19,10 @@ def _make_context(tool_name: str, arguments: dict | None = None) -> MiddlewareCo
 
 
 def _make_result(data: dict) -> ToolResult:
-    return ToolResult(content=[TextContent(type="text", text=json.dumps(data))])
+    return ToolResult(
+        content=[TextContent(type="text", text=json.dumps(data))],
+        structured_content=data,
+    )
 
 
 def _mock_client(side_effect):
@@ -68,8 +71,7 @@ async def test_enriches_conversations_history():
     with patch("slack_mcp.server.get_client", return_value=client):
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
-    enriched = json.loads(result.content[0].text)
-    names = enriched["resolved_names"]
+    names = result.structured_content["resolved_names"]
     assert names["U0ADCDDNVGT"] == "Alice"
     assert names["U0BXYZ12345"] == "Alice"
     assert names["C0AD56E4N6B"] == "general"
@@ -95,8 +97,7 @@ async def test_enriches_search_messages():
     with patch("slack_mcp.server.get_client", return_value=client):
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
-    enriched = json.loads(result.content[0].text)
-    assert enriched["resolved_names"]["U0ADCDDNVGT"] == "Alice"
+    assert result.structured_content["resolved_names"]["U0ADCDDNVGT"] == "Alice"
 
 
 @pytest.mark.asyncio
@@ -110,8 +111,7 @@ async def test_non_target_tool_passes_through():
     ctx = _make_context("conversations_list")
     result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
-    parsed = json.loads(result.content[0].text)
-    assert "resolved_names" not in parsed
+    assert "resolved_names" not in result.structured_content
 
 
 @pytest.mark.asyncio
@@ -125,8 +125,7 @@ async def test_empty_messages_no_enrichment():
     ctx = _make_context("conversations_history", {"channel": "C000"})
     result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
-    parsed = json.loads(result.content[0].text)
-    assert "resolved_names" not in parsed
+    assert "resolved_names" not in result.structured_content
 
 
 @pytest.mark.asyncio
@@ -140,8 +139,7 @@ async def test_no_ids_in_messages_no_enrichment():
     ctx = _make_context("conversations_history", {"channel": "C000"})
     result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
-    parsed = json.loads(result.content[0].text)
-    assert "resolved_names" not in parsed
+    assert "resolved_names" not in result.structured_content
 
 
 @pytest.mark.asyncio
@@ -175,8 +173,7 @@ async def test_failed_lookups_excluded():
     with patch("slack_mcp.server.get_client", return_value=client):
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
-    parsed = json.loads(result.content[0].text)
-    assert "resolved_names" not in parsed
+    assert "resolved_names" not in result.structured_content
 
 
 @pytest.mark.asyncio
@@ -211,8 +208,7 @@ async def test_resolution_error_returns_original_result():
     with patch("slack_mcp.server.get_client", return_value=client):
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
-    assert result.content[0].text == original_json
-    assert "resolved_names" not in json.loads(result.content[0].text)
+    assert "resolved_names" not in result.structured_content
 
 
 @pytest.mark.asyncio
