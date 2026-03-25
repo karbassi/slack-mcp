@@ -7,7 +7,7 @@ from slack_mcp.server import mcp, slack_client
 @mcp.tool
 async def views_open(
     trigger_id: str,
-    view: dict,
+    view: dict[str, str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Open a view for a user."""
@@ -17,7 +17,7 @@ async def views_open(
 @mcp.tool
 async def views_publish(
     user_id: str,
-    view: dict,
+    view: dict[str, str],
     hash: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -31,7 +31,7 @@ async def views_publish(
 @mcp.tool
 async def views_push(
     trigger_id: str,
-    view: dict,
+    view: dict[str, str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Push a view onto the stack of a root view."""
@@ -40,7 +40,7 @@ async def views_push(
 
 @mcp.tool
 async def views_update(
-    view: dict,
+    view: dict[str, str],
     external_id: str | None = None,
     hash: str | None = None,
     view_id: str | None = None,

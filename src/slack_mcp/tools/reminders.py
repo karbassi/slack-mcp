@@ -8,7 +8,7 @@ from slack_mcp.server import mcp, slack_client
 async def reminders_add(
     text: str,
     time: str,
-    recurrence: dict | None = None,
+    recurrence: dict[str, str] | None = None,
     team_id: str | None = None,
     user: str | None = None,
     client: SlackClient = Depends(slack_client),

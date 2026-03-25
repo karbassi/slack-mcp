@@ -53,7 +53,12 @@ class SlackClient:
     def _check_session_response(self, data: dict, method: str) -> dict:
         if not data.get("ok"):
             error = data.get("error", "unknown_error")
-            if error in ("not_authed", "invalid_auth", "token_expired", "token_revoked"):
+            if error in (
+                "not_authed",
+                "invalid_auth",
+                "token_expired",
+                "token_revoked",
+            ):
                 raise ValueError(
                     f"Session endpoint {method} failed: {error}. "
                     "Your xoxc/xoxd tokens may be expired — re-grab them "
@@ -78,7 +83,9 @@ class SlackClient:
         resp = await self.session_client.post(
             method,
             data=kwargs,
-            headers={"Content-Type": "application/x-www-form-urlencoded; charset=utf-8"},
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
+            },
         )
         resp.raise_for_status()
         return self._check_session_response(resp.json(), method)

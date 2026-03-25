@@ -313,7 +313,7 @@ async def emoji_admin_list(
     count: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List custom emoji with metadata like uploader and usage stats (undocumented session endpoint)."""
+    """List custom emoji with metadata (undocumented session endpoint)."""
     kwargs = {}
     if page is not None:
         kwargs["page"] = page
@@ -413,7 +413,7 @@ async def conversations_view(
     channel: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get channel view with read state and personal config (undocumented session endpoint)."""
+    """Get channel view with read state (undocumented session endpoint)."""
     return await client.session_call("conversations.view", channel=channel)
 
 
@@ -421,7 +421,7 @@ async def conversations_view(
 async def conversations_list_prefs(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get per-channel notification and mute preferences (undocumented session endpoint)."""
+    """Get per-channel notification and mute prefs (undocumented)."""
     return await client.session_call("conversations.listPrefs")
 
 
@@ -432,7 +432,7 @@ async def conversations_list_prefs(
 async def users_channel_sections_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get sidebar organization — custom sections, favorites (undocumented session endpoint)."""
+    """Get sidebar sections and favorites (undocumented session endpoint)."""
     return await client.session_call("users.channelSections.list")
 
 
@@ -451,7 +451,7 @@ async def users_priority_list(
 async def experiments_get_by_user(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get A/B test experiment assignments for the current user (undocumented session endpoint)."""
+    """Get A/B experiment assignments for current user (undocumented)."""
     return await client.session_call("experiments.getByUser")
 
 
@@ -467,5 +467,5 @@ async def api_features(
 async def ai_apps_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List AI applications configured in the workspace (undocumented session endpoint)."""
+    """List AI apps in the workspace (undocumented session endpoint)."""
     return await client.session_call("aiApps.list")

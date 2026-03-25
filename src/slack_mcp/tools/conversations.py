@@ -273,7 +273,9 @@ async def conversations_mark(
         return await client.api_call("conversations.mark", channel=channel, ts=ts)
     except SlackApiError as e:
         if e.response.get("error") == "missing_scope":
-            return await client.session_call_form("conversations.mark", channel=channel, ts=ts)
+            return await client.session_call_form(
+                "conversations.mark", channel=channel, ts=ts
+            )
         raise
 
 

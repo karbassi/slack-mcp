@@ -6,7 +6,7 @@ from slack_mcp.server import mcp, slack_client
 
 @mcp.tool
 async def dialog_open(
-    dialog: dict,
+    dialog: dict[str, str],
     trigger_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:

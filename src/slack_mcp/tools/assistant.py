@@ -24,7 +24,7 @@ async def assistant_threads_set_status(
 async def assistant_threads_set_suggested_prompts(
     channel_id: str,
     thread_ts: str,
-    prompts: list | None = None,
+    prompts: list[dict[str, str]] | None = None,
     title: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
