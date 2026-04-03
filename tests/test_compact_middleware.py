@@ -107,6 +107,28 @@ class TestCompactResponseMiddleware:
         assert out is result
 
     @pytest.mark.asyncio
+    async def test_compacts_empty_dict(self, _clear_compactors):
+        """An empty dict {} is a valid structured response and should be
+        passed to the compactor (compactors handle it gracefully)."""
+        from slack_mcp.server import CompactResponseMiddleware
+
+        spy = MagicMock()
+
+        @compactable(spy)
+        def my_tool6():
+            pass
+
+        data = {}
+        result = _make_result(structured_content=data)
+        call_next = AsyncMock(return_value=result)
+        ctx = _make_context("my_tool6")
+
+        mw = CompactResponseMiddleware()
+        await mw.on_call_tool(ctx, call_next)
+
+        spy.assert_called_once_with(data)
+
+    @pytest.mark.asyncio
     async def test_strips_when_detailed_false(self, _clear_compactors):
         from slack_mcp.server import CompactResponseMiddleware
 

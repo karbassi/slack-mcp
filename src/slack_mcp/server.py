@@ -259,8 +259,9 @@ class CompactResponseMiddleware(Middleware):
         if args.get("detailed") is True:
             return result
 
-        if result.structured_content:
-            compactor(result.structured_content)
+        content = result.structured_content
+        if content is not None and isinstance(content, dict):
+            compactor(content)
 
         return result
 
