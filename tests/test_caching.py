@@ -9,7 +9,7 @@ from fastmcp.tools.tool import ToolResult
 from key_value.aio.stores.memory import MemoryStore
 from mcp.types import CallToolRequestParams, TextContent
 
-from slack_mcp.server import CACHED_TOOLS, ThreadCachingMiddleware, mcp
+from slack_mcp.server import CACHED_TOOLS, ThreadCachingMiddleware, _make_cache_key, mcp
 
 
 def test_caching_middleware_attached():
@@ -42,10 +42,17 @@ async def test_cached_tool_returns_same_result():
 
     call_count = 0
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
-        return ToolResult(content=[TextContent(type="text", text='{"ok": true, "user": {"id": "U123"}}')])
+        return ToolResult(
+            content=[
+                TextContent(
+                    type="text",
+                    text='{"ok": true, "user": {"id": "U123"}}',
+                )
+            ]
+        )
 
     ctx = _make_context("users_info", {"user": "U123"})
 
@@ -53,7 +60,9 @@ async def test_cached_tool_returns_same_result():
     result2 = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     assert result1.content[0].text == result2.content[0].text
-    assert call_count == 1, "API should only be called once; second call should be cached"
+    assert call_count == 1, (
+        "API should only be called once; second call should be cached"
+    )
 
 
 @pytest.mark.asyncio
@@ -67,7 +76,7 @@ async def test_non_cached_tool_always_hits_api():
 
     call_count = 0
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return ToolResult(content=[TextContent(type="text", text='{"ok": true}')])
@@ -96,7 +105,7 @@ async def test_old_thread_is_cached():
     call_count = 0
     old_ts = f"{time.time() - 7200:.6f}"  # 2 hours ago
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -119,7 +128,7 @@ async def test_recent_thread_is_not_cached():
     call_count = 0
     recent_ts = f"{time.time() - 300:.6f}"  # 5 minutes ago
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -142,7 +151,7 @@ async def test_old_history_range_is_cached():
     old_oldest = f"{time.time() - 14400:.6f}"  # 4 hours ago
     old_latest = f"{time.time() - 7200:.6f}"  # 2 hours ago
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -167,7 +176,7 @@ async def test_recent_history_is_not_cached():
 
     call_count = 0
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -190,7 +199,7 @@ async def test_cache_clear_tool():
     call_count = 0
     old_ts = f"{time.time() - 7200:.6f}"
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -209,3 +218,25 @@ async def test_cache_clear_tool():
     # Next call should go through to the API again
     await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
     assert call_count == 2, "Cache should be empty after clearing"
+
+
+def test_detailed_true_produces_different_cache_key():
+    """detailed=True must produce a different cache key since the cached
+    response is post-compaction — detailed=True skips compaction and must
+    not share a cache entry with the compacted default."""
+    args_without = {"channel": "C123", "ts": "1234.5678"}
+    args_with_false = {"channel": "C123", "ts": "1234.5678", "detailed": False}
+    args_with_true = {"channel": "C123", "ts": "1234.5678", "detailed": True}
+
+    key_base = _make_cache_key("conversations_replies", args_without)
+    key_false = _make_cache_key("conversations_replies", args_with_false)
+    key_true = _make_cache_key("conversations_replies", args_with_true)
+
+    assert key_base == key_false, (
+        f"detailed=False should match absent (both get compacted): "
+        f"{key_base!r} != {key_false!r}"
+    )
+    assert key_base != key_true, (
+        f"detailed=True must differ from default (different response): "
+        f"{key_base!r} == {key_true!r}"
+    )

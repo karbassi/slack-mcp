@@ -5,6 +5,7 @@ import httpx
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
+from slack_mcp.compact import compact_items, compact_message_list, compactable
 from slack_mcp.server import mcp, slack_client
 
 
@@ -25,6 +26,11 @@ async def session_test(
         }
     try:
         result = await client.session_call("client.boot")
+    except ValueError as e:
+        return {"ok": False, "error": "invalid_or_expired", "message": str(e)}
+    except (httpx.HTTPError, OSError, TimeoutError) as e:
+        return {"ok": False, "error": type(e).__name__, "message": str(e)}
+    else:
         if result.get("ok"):
             return {"ok": True, "message": "Session tokens are valid."}
         error = result.get("error", "unknown_error")
@@ -34,10 +40,6 @@ async def session_test(
             "message": f"Session tokens may be expired or invalid ({error}). "
             "Re-grab xoxc/xoxd from browser cookies while logged into slack.com.",
         }
-    except ValueError as e:
-        return {"ok": False, "error": "invalid_or_expired", "message": str(e)}
-    except Exception as e:
-        return {"ok": False, "error": type(e).__name__, "message": str(e)}
 
 
 @mcp.tool
@@ -234,12 +236,14 @@ async def drafts_delete(
 
 
 @mcp.tool
+@compactable(compact_items)
 async def saved_list(
     cursor: str | None = None,
     limit: int | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List saved-for-later items (undocumented session endpoint)."""
+    """List saved-for-later items. Set detailed=True for full response."""
     kwargs = {}
     if cursor is not None:
         kwargs["cursor"] = cursor
@@ -326,13 +330,15 @@ async def emoji_admin_list(
 
 
 @mcp.tool
+@compactable(compact_message_list)
 async def search_modules_messages(
     query: str,
     cursor: str | None = None,
     count: int | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search messages with granular results (undocumented session endpoint)."""
+    """Search messages (undocumented). Set detailed=True for full response."""
     kwargs = {"query": query}
     if cursor is not None:
         kwargs["cursor"] = cursor
@@ -409,11 +415,13 @@ async def search_modules_dms(
 
 
 @mcp.tool
+@compactable(compact_message_list)
 async def conversations_view(
     channel: str,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get channel view with read state (undocumented session endpoint)."""
+    """Get channel view with read state. Set detailed=True for full response."""
     return await client.session_call("conversations.view", channel=channel)
 
 

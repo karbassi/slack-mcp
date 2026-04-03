@@ -2,6 +2,7 @@ from fastmcp.dependencies import Depends
 from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient
+from slack_mcp.compact import compact_channel_list, compact_message_list, compactable
 from slack_mcp.server import mcp, slack_client
 
 
@@ -116,6 +117,7 @@ async def conversations_external_invite_permissions_set(
 
 
 @mcp.tool
+@compactable(compact_message_list)
 async def conversations_history(
     channel: str,
     cursor: str | None = None,
@@ -124,9 +126,10 @@ async def conversations_history(
     limit: int | None = None,
     oldest: str | None = None,
     include_all_metadata: bool | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Fetch a conversation's history of messages and events."""
+    """Fetch a conversation's history. Set detailed=True for full response."""
     kwargs = {"channel": channel}
     if cursor is not None:
         kwargs["cursor"] = cursor
@@ -221,15 +224,17 @@ async def conversations_leave(
 
 
 @mcp.tool
+@compactable(compact_channel_list)
 async def conversations_list(
     cursor: str | None = None,
     exclude_archived: bool | None = None,
     limit: int | None = None,
     team_id: str | None = None,
     types: str | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List all channels in a Slack team."""
+    """List all channels. Set detailed=True for the full response."""
     kwargs = {}
     if cursor is not None:
         kwargs["cursor"] = cursor
@@ -327,6 +332,7 @@ async def conversations_rename(
 
 
 @mcp.tool
+@compactable(compact_message_list)
 async def conversations_replies(
     channel: str,
     ts: str,
@@ -336,9 +342,10 @@ async def conversations_replies(
     limit: int | None = None,
     oldest: str | None = None,
     include_all_metadata: bool | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Retrieve a thread of messages from a conversation."""
+    """Retrieve a thread of messages. Set detailed=True for full response."""
     kwargs = {"channel": channel, "ts": ts}
     if cursor is not None:
         kwargs["cursor"] = cursor

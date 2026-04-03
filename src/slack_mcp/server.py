@@ -122,14 +122,20 @@ def _make_cache_key(tool_name: str, args: dict[str, Any]) -> str:
     """Build a deterministic cache key from tool name and arguments."""
     channel = args.get("channel", "")
     key_parts = [tool_name, channel]
-    for ts_field in ("ts", "oldest", "latest"):
-        if ts_field in args:
-            key_parts.append(f"{ts_field}={args[ts_field]}")
-    other = {
+    key_parts.extend(
+        f"{ts_field}={args[ts_field]}"
+        for ts_field in ("ts", "oldest", "latest")
+        if ts_field in args
+    )
+    filtered = {
         k: v
-        for k, v in sorted(args.items())
+        for k, v in args.items()
         if k not in ("channel", "ts", "oldest", "latest")
     }
+    # Strip detailed=False (same as absent — both get compacted)
+    if not filtered.get("detailed"):
+        filtered.pop("detailed", None)
+    other = dict(sorted(filtered.items()))
     if other:
         key_parts.append(pydantic_core.to_json(other, fallback=str).decode())
     return ":".join(key_parts)
@@ -235,7 +241,36 @@ class NameResolutionMiddleware(Middleware):
         return result
 
 
+class CompactResponseMiddleware(Middleware):
+    """Strip bloat from Slack API responses for tools marked with @compactable."""
+
+    async def on_call_tool(
+        self,
+        context: MiddlewareContext[CallToolRequestParams],
+        call_next: CallNext[CallToolRequestParams, ToolResult],
+    ) -> ToolResult:
+        result = await call_next(context)
+
+        from slack_mcp.compact import get_compactor
+
+        compactor = get_compactor(context.message.name)
+        if compactor is None:
+            return result
+
+        args = context.message.arguments or {}
+        if args.get("detailed") is True:
+            return result
+
+        content = result.structured_content
+        if content is not None and isinstance(content, dict):
+            compactor(content)
+
+        return result
+
+
 mcp.add_middleware(NameResolutionMiddleware())
+
+mcp.add_middleware(CompactResponseMiddleware())
 
 
 @mcp.tool

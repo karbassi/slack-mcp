@@ -1,6 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
+from slack_mcp.compact import compact_file_list, compactable
 from slack_mcp.server import mcp, slack_client
 
 
@@ -60,15 +61,17 @@ async def files_get_upload_url_external(
 
 
 @mcp.tool
+@compactable(compact_file_list)
 async def files_info(
     file: str,
     count: int | None = None,
     cursor: str | None = None,
     limit: int | None = None,
     page: int | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get information about a file."""
+    """Get information about a file. Set detailed=True for full response."""
     kwargs = {"file": file}
     if count is not None:
         kwargs["count"] = count
@@ -82,6 +85,7 @@ async def files_info(
 
 
 @mcp.tool
+@compactable(compact_file_list)
 async def files_list(
     channel: str | None = None,
     count: int | None = None,
@@ -92,9 +96,10 @@ async def files_list(
     ts_to: str | None = None,
     types: str | None = None,
     user: str | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List files for a team, channel, or user."""
+    """List files for a team, channel, or user. Set detailed=True for full response."""
     kwargs = {}
     if channel is not None:
         kwargs["channel"] = channel

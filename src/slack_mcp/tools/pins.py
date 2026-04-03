@@ -1,6 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
+from slack_mcp.compact import compact_items, compactable
 from slack_mcp.server import mcp, slack_client
 
 
@@ -15,11 +16,13 @@ async def pins_add(
 
 
 @mcp.tool
+@compactable(compact_items)
 async def pins_list(
     channel: str,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List items pinned to a channel."""
+    """List items pinned to a channel. Set detailed=True for full response."""
     return await client.api_call("pins.list", channel=channel)
 
 

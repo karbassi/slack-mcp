@@ -1,6 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
+from slack_mcp.compact import compact_items, compact_single_item, compactable
 from slack_mcp.server import mcp, slack_client
 
 
@@ -18,15 +19,17 @@ async def reactions_add(
 
 
 @mcp.tool
+@compactable(compact_single_item)
 async def reactions_get(
     channel: str | None = None,
     file: str | None = None,
     file_comment: str | None = None,
     full: bool | None = None,
     timestamp: str | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get reactions for an item."""
+    """Get reactions for an item. Set detailed=True for full response."""
     kwargs = {}
     if channel is not None:
         kwargs["channel"] = channel
@@ -42,6 +45,7 @@ async def reactions_get(
 
 
 @mcp.tool
+@compactable(compact_items)
 async def reactions_list(
     count: int | None = None,
     cursor: str | None = None,
@@ -50,9 +54,10 @@ async def reactions_list(
     page: int | None = None,
     team_id: str | None = None,
     user: str | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List reactions made by a user."""
+    """List reactions made by a user. Set detailed=True for full response."""
     kwargs = {}
     if count is not None:
         kwargs["count"] = count

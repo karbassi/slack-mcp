@@ -68,7 +68,9 @@ async def test_team_integration_logs_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="not_allowed_token_type: team.externalTeams.list requires org-level token")
+@pytest.mark.skip(
+    reason="not_allowed_token_type: team.externalTeams.list requires org-level token"
+)
 async def test_team_external_teams_list_live(live_client):
     """List external teams and their connection statuses."""
     result = await team_external_teams_list(client=live_client)

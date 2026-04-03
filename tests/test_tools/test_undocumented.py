@@ -2,10 +2,12 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from slack_mcp.compact import compact_items, compact_message_list, get_compactor
 from slack_mcp.tools.undocumented import (
     ai_apps_list,
     api_features,
     client_boot,
+    session_test,
     client_counts,
     client_user_boot,
     conversations_list_prefs,
@@ -210,12 +212,16 @@ async def test_emoji_add(mock_client):
     mock_response.raise_for_status = lambda: None
 
     with patch("slack_mcp.tools.undocumented.httpx.AsyncClient") as mock_http:
-        mock_http.return_value.__aenter__ = AsyncMock(return_value=mock_http.return_value)
+        mock_http.return_value.__aenter__ = AsyncMock(
+            return_value=mock_http.return_value
+        )
         mock_http.return_value.__aexit__ = AsyncMock(return_value=False)
         mock_http.return_value.get = AsyncMock(return_value=mock_response)
 
         result = await emoji_add(
-            name="test_emoji", image_url="https://example.com/emoji.png", client=mock_client
+            name="test_emoji",
+            image_url="https://example.com/emoji.png",
+            client=mock_client,
         )
 
     assert result["ok"] is True
@@ -231,7 +237,9 @@ async def test_emoji_remove(mock_client):
     mock_client.session_call_form.return_value = {"ok": True}
     result = await emoji_remove(name="test_emoji", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call_form.assert_called_once_with("emoji.remove", name="test_emoji")
+    mock_client.session_call_form.assert_called_once_with(
+        "emoji.remove", name="test_emoji"
+    )
 
 
 @pytest.mark.asyncio
@@ -239,12 +247,14 @@ async def test_emoji_admin_list(mock_client):
     mock_client.session_call.return_value = {"ok": True, "emoji": []}
     result = await emoji_admin_list(page=1, count=50, client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("emoji.adminList", page=1, count=50)
+    mock_client.session_call.assert_called_once_with(
+        "emoji.adminList", page=1, count=50
+    )
 
 
 @pytest.mark.asyncio
 async def test_search_modules_messages(mock_client):
-    mock_client.session_call.return_value = {"ok": True, "items": []}
+    mock_client.session_call.return_value = {"ok": True, "messages": []}
     result = await search_modules_messages(query="hello", count=10, client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with(
@@ -257,7 +267,9 @@ async def test_search_modules_files(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_files(query="report", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("search.modules.files", query="report")
+    mock_client.session_call.assert_called_once_with(
+        "search.modules.files", query="report"
+    )
 
 
 @pytest.mark.asyncio
@@ -265,7 +277,9 @@ async def test_search_modules_channels(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_channels(query="eng", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("search.modules.channels", query="eng")
+    mock_client.session_call.assert_called_once_with(
+        "search.modules.channels", query="eng"
+    )
 
 
 @pytest.mark.asyncio
@@ -273,7 +287,9 @@ async def test_search_modules_people(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_people(query="alice", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("search.modules.people", query="alice")
+    mock_client.session_call.assert_called_once_with(
+        "search.modules.people", query="alice"
+    )
 
 
 @pytest.mark.asyncio
@@ -281,7 +297,9 @@ async def test_search_modules_dms(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_dms(query="project", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("search.modules.dms", query="project")
+    mock_client.session_call.assert_called_once_with(
+        "search.modules.dms", query="project"
+    )
 
 
 @pytest.mark.asyncio
@@ -289,7 +307,9 @@ async def test_conversations_view(mock_client):
     mock_client.session_call.return_value = {"ok": True}
     result = await conversations_view(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("conversations.view", channel="C123")
+    mock_client.session_call.assert_called_once_with(
+        "conversations.view", channel="C123"
+    )
 
 
 @pytest.mark.asyncio
@@ -338,3 +358,36 @@ async def test_ai_apps_list(mock_client):
     result = await ai_apps_list(client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with("aiApps.list")
+
+
+@pytest.mark.asyncio
+async def test_session_test_unexpected_error_propagates(mock_client):
+    """Unexpected exceptions should not be silently caught."""
+    mock_client.xoxc_token = "xoxc-test"
+    mock_client.xoxd_token = "xoxd-test"
+    mock_client.session_call.side_effect = RuntimeError("unexpected")
+    with pytest.raises(RuntimeError, match="unexpected"):
+        await session_test(client=mock_client)
+
+
+@pytest.mark.asyncio
+async def test_session_test_known_errors_return_structured(mock_client):
+    """Known network/API errors should return structured error dicts."""
+    mock_client.xoxc_token = "xoxc-test"
+    mock_client.xoxd_token = "xoxd-test"
+    mock_client.session_call.side_effect = ValueError("invalid token")
+    result = await session_test(client=mock_client)
+    assert result["ok"] is False
+    assert result["error"] == "invalid_or_expired"
+
+
+def test_search_modules_messages_compactable():
+    assert get_compactor("search_modules_messages") is compact_message_list
+
+
+def test_conversations_view_compactable():
+    assert get_compactor("conversations_view") is compact_message_list
+
+
+def test_saved_list_compactable():
+    assert get_compactor("saved_list") is compact_items

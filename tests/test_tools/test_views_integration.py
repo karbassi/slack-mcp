@@ -18,7 +18,8 @@ async def test_views_open_live(live_client):
 @pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.skip(
-    reason="not_allowed_token_type: views.publish requires bot token with Home Tab enabled"
+    reason="not_allowed_token_type: views.publish requires "
+    "bot token with Home Tab enabled"
 )
 async def test_views_publish_live(live_client):
     """Publish a Home Tab view for a user."""
