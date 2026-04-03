@@ -183,7 +183,6 @@ async def test_failed_lookups_excluded():
 async def test_resolution_error_returns_original_result():
     middleware = NameResolutionMiddleware()
     data = {"ok": True, "messages": [{"user": "U0ADCDDNVGT", "text": "hi"}]}
-    json.dumps(data)
 
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.async_slack_response import AsyncSlackResponse
