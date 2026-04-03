@@ -50,9 +50,17 @@ select = [
     "B",   # flake8-bugbear
     "SIM", # flake8-simplify
     "TCH", # flake8-type-checking
+    "PLR",  # pylint refactor (complexity, nesting, branches)
+    "C4",   # flake8-comprehensions
+    "RET",  # flake8-return (unnecessary else after return)
+    "PIE",  # flake8-pie (unnecessary passes, duplicate fields)
+    "FURB", # refurb (non-idiomatic patterns)
 ]
 ignore = [
-    "B008", # Depends() in function defaults is the FastMCP pattern
+    "B008",    # Depends() in function defaults is the FastMCP pattern
+    "PLR0913", # too many arguments — Slack API wrappers have many optional params
+    "PLR0912", # too many branches — Slack API wrappers have many optional params
+    "PLR2004", # magic values — thresholds/timeouts are clearer inline
 ]
 
 [tool.ruff.lint.per-file-ignores]
