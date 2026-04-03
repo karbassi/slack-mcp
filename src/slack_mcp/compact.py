@@ -148,7 +148,8 @@ def compact_file_list(data: dict[str, Any]) -> None:
     if not data.get("ok"):
         return
     # files.list shape: {"files": [...]}
-    for f in data.get("files", []):
+    files = data.get("files")
+    for f in files if isinstance(files, list) else []:
         if isinstance(f, dict):
             strip_file(f)
     # files.info shape: {"file": {...}}

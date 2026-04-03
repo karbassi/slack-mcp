@@ -430,6 +430,16 @@ class TestCompactFileList:
         compact_file_list(data)
         assert data == original
 
+    def test_files_none_does_not_crash(self):
+        from slack_mcp.compact import compact_file_list
+        data = {"ok": True, "files": None}
+        compact_file_list(data)
+
+    def test_files_not_a_list(self):
+        from slack_mcp.compact import compact_file_list
+        data = {"ok": True, "files": "not_a_list"}
+        compact_file_list(data)
+
 
 # -- compact_items --
 
