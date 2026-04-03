@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `search_messages` `compact` parameter replaced by `detailed` (inverted semantics: compaction is now the default, opt out with `detailed=True`)
 - Middleware ordering optimized — compaction runs before name resolution so fewer IDs need resolving
-- `detailed` parameter excluded from thread cache keys to avoid duplicate cache entries
+- Thread cache keys treat `detailed=False` the same as omitting `detailed`, while `detailed=True` produces a separate cache entry to avoid mixing compacted and full responses
 
 ## [1.3.1] - 2026-03-24
 
