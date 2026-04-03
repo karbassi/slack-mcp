@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-04-03
+
+### Added
+
+- Compact response middleware — automatically strips bloat from Slack API responses (blocks, attachments, thumbnails, metadata) using allowlist-based field stripping
+- `@compactable` decorator for registering tools with response compactors
+- `detailed` parameter on 15 tools — set `detailed=True` to bypass compaction and get the full Slack API response
+- Compactable tools: `search_messages`, `search_all`, `search_files`, `conversations_history`, `conversations_replies`, `conversations_list`, `files_list`, `files_info`, `pins_list`, `reactions_list`, `reactions_get`, `stars_list`, `search_modules_messages`, `conversations_view`, `saved_list`
+
+### Changed
+
+- `search_messages` `compact` parameter replaced by `detailed` (inverted semantics: compaction is now the default, opt out with `detailed=True`)
+- Middleware ordering optimized — compaction runs before name resolution so fewer IDs need resolving
+- `detailed` parameter excluded from thread cache keys to avoid duplicate cache entries
+
 ## [1.3.1] - 2026-03-24
 
 ### Fixed
