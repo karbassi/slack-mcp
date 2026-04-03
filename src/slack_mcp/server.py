@@ -252,7 +252,7 @@ class CompactResponseMiddleware(Middleware):
             return result
 
         args = context.message.arguments or {}
-        if args.get("detailed"):
+        if args.get("detailed") is True:
             return result
 
         if result.structured_content:
@@ -261,9 +261,9 @@ class CompactResponseMiddleware(Middleware):
         return result
 
 
-mcp.add_middleware(CompactResponseMiddleware())
-
 mcp.add_middleware(NameResolutionMiddleware())
+
+mcp.add_middleware(CompactResponseMiddleware())
 
 
 @mcp.tool

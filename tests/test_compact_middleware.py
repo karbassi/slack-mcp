@@ -147,13 +147,15 @@ class TestCompactResponseMiddleware:
         spy.assert_called_once_with(data)
 
 
-def test_compact_middleware_before_name_resolution():
-    """CompactResponseMiddleware must be registered before NameResolutionMiddleware.
+def test_compact_middleware_after_name_resolution():
+    """CompactResponseMiddleware must be registered after NameResolutionMiddleware.
 
-    In FastMCP's onion model, earlier middleware is inner. On the return path
-    (after call_next), inner middleware runs first. So registering Compact
-    before NameResolution means: tool -> Compact (strips bloat) -> NameResolution
-    (resolves fewer IDs).
+    FastMCP builds the chain via `for mw in reversed(self.middleware)`,
+    so the LAST registered middleware is INNERMOST (closest to the tool).
+    On the return path, inner middleware runs first.
+
+    We want: tool → Compact (strips bloat) → NameResolution (resolves fewer IDs)
+    So Compact must be inner (higher index) and NameResolution outer (lower index).
     """
     from slack_mcp.server import (
         CompactResponseMiddleware,
@@ -171,8 +173,8 @@ def test_compact_middleware_before_name_resolution():
 
     assert compact_idx is not None, "CompactResponseMiddleware not registered"
     assert name_res_idx is not None, "NameResolutionMiddleware not registered"
-    assert compact_idx < name_res_idx, (
+    assert compact_idx > name_res_idx, (
         f"CompactResponseMiddleware (index {compact_idx}) must be registered "
-        f"before NameResolutionMiddleware (index {name_res_idx}) "
-        "so compaction runs first on the return path"
+        f"after NameResolutionMiddleware (index {name_res_idx}) "
+        f"so compaction is inner and runs first on the return path"
     )
