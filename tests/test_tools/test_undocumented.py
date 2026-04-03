@@ -7,6 +7,7 @@ from slack_mcp.tools.undocumented import (
     ai_apps_list,
     api_features,
     client_boot,
+    session_test,
     client_counts,
     client_user_boot,
     conversations_list_prefs,
@@ -357,6 +358,27 @@ async def test_ai_apps_list(mock_client):
     result = await ai_apps_list(client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with("aiApps.list")
+
+
+@pytest.mark.asyncio
+async def test_session_test_unexpected_error_propagates(mock_client):
+    """Unexpected exceptions should not be silently caught."""
+    mock_client.xoxc_token = "xoxc-test"
+    mock_client.xoxd_token = "xoxd-test"
+    mock_client.session_call.side_effect = RuntimeError("unexpected")
+    with pytest.raises(RuntimeError, match="unexpected"):
+        await session_test(client=mock_client)
+
+
+@pytest.mark.asyncio
+async def test_session_test_known_errors_return_structured(mock_client):
+    """Known network/API errors should return structured error dicts."""
+    mock_client.xoxc_token = "xoxc-test"
+    mock_client.xoxd_token = "xoxd-test"
+    mock_client.session_call.side_effect = ValueError("invalid token")
+    result = await session_test(client=mock_client)
+    assert result["ok"] is False
+    assert result["error"] == "invalid_or_expired"
 
 
 def test_search_modules_messages_compactable():

@@ -28,7 +28,7 @@ async def session_test(
         result = await client.session_call("client.boot")
     except ValueError as e:
         return {"ok": False, "error": "invalid_or_expired", "message": str(e)}
-    except Exception as e:
+    except (httpx.HTTPError, OSError, TimeoutError) as e:
         return {"ok": False, "error": type(e).__name__, "message": str(e)}
     else:
         if result.get("ok"):
