@@ -531,7 +531,7 @@ class TestCompactSingleItem:
 
 class TestCompactableDecorator:
     def test_registers_compactor(self):
-        from slack_mcp.compact import compactable, get_compactor
+        from slack_mcp.compact import _COMPACTORS, compactable, get_compactor
 
         def my_compactor(data):
             pass
@@ -540,7 +540,10 @@ class TestCompactableDecorator:
         def my_tool():
             pass
 
-        assert get_compactor("my_tool") is my_compactor
+        try:
+            assert get_compactor("my_tool") is my_compactor
+        finally:
+            _COMPACTORS.pop("my_tool", None)
 
     def test_unknown_tool_returns_none(self):
         from slack_mcp.compact import get_compactor
