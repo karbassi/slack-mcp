@@ -61,8 +61,12 @@ def _strip_to(obj: dict, allowed: frozenset[str]) -> None:
 
 def strip_message(msg: dict) -> None:
     _strip_to(msg, MESSAGE_FIELDS)
-    for f in msg.get("files", []):
-        strip_file(f)
+    files = msg.get("files", [])
+    if not isinstance(files, list):
+        files = []
+    for f in files:
+        if isinstance(f, dict):
+            strip_file(f)
 
 
 def strip_file(f: dict) -> None:
@@ -158,7 +162,12 @@ def compact_items(data: dict[str, Any]) -> None:
     """reactions/pins/stars/saved — items with nested messages/files."""
     if not data.get("ok"):
         return
-    for item in data.get("items", []):
+    items = data.get("items", [])
+    if not isinstance(items, list):
+        return
+    for item in items:
+        if not isinstance(item, dict):
+            continue
         msg = item.get("message")
         if isinstance(msg, dict):
             strip_message(msg)

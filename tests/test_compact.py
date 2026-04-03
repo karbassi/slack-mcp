@@ -158,6 +158,18 @@ class TestStripMessage:
         assert "blocks" not in msg
         assert "ts" in msg
 
+    def test_files_none_does_not_crash(self):
+        from slack_mcp.compact import strip_message
+        msg = {"ts": "123", "text": "hi", "files": None}
+        strip_message(msg)
+        assert "ts" in msg
+
+    def test_files_with_non_dict_elements(self):
+        from slack_mcp.compact import strip_message
+        msg = {"ts": "123", "text": "hi", "files": ["not_a_dict", None, 42]}
+        strip_message(msg)
+        assert "ts" in msg
+
 
 # -- strip_file --
 
@@ -432,6 +444,16 @@ class TestCompactItems:
     def test_missing_items_key(self):
         from slack_mcp.compact import compact_items
         data = {"ok": True}
+        compact_items(data)  # should not raise
+
+    def test_non_dict_items_do_not_crash(self):
+        from slack_mcp.compact import compact_items
+        data = {"ok": True, "items": ["string", None, 42]}
+        compact_items(data)  # should not raise
+
+    def test_items_not_a_list(self):
+        from slack_mcp.compact import compact_items
+        data = {"ok": True, "items": "not_a_list"}
         compact_items(data)  # should not raise
 
     def test_saved_list_shape(self):
