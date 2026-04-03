@@ -452,55 +452,55 @@ class TestCompactItems:
         assert "blocks" not in data["items"][0]["message"]
 
 
-# -- compact_single_message --
+# -- compact_single_item --
 
-class TestCompactSingleMessage:
+class TestCompactSingleItem:
     def test_strips_top_level_message(self):
-        from slack_mcp.compact import compact_single_message
+        from slack_mcp.compact import compact_single_item
         data = {
             "ok": True,
             "type": "message",
             "channel": "C123",
             "message": _bloated_message(),
         }
-        compact_single_message(data)
+        compact_single_item(data)
         msg = data["message"]
         assert "blocks" not in msg
         assert "ts" in msg
         assert "text" in msg
 
     def test_strips_nested_files_in_message(self):
-        from slack_mcp.compact import compact_single_message
+        from slack_mcp.compact import compact_single_item
         data = {
             "ok": True,
             "type": "message",
             "message": _bloated_message(),
         }
-        compact_single_message(data)
+        compact_single_item(data)
         f = data["message"]["files"][0]
         assert "thumb_64" not in f
         assert "id" in f
 
     def test_passthrough_on_not_ok(self):
-        from slack_mcp.compact import compact_single_message
+        from slack_mcp.compact import compact_single_item
         data = {"ok": False, "error": "channel_not_found"}
         original = copy.deepcopy(data)
-        compact_single_message(data)
+        compact_single_item(data)
         assert data == original
 
     def test_missing_message_key(self):
-        from slack_mcp.compact import compact_single_message
+        from slack_mcp.compact import compact_single_item
         data = {"ok": True, "type": "file", "file": {"id": "F1"}}
-        compact_single_message(data)  # should not raise
+        compact_single_item(data)  # should not raise
 
     def test_strips_file_item(self):
-        from slack_mcp.compact import compact_single_message
+        from slack_mcp.compact import compact_single_item
         data = {
             "ok": True,
             "type": "file",
             "file": _bloated_file(),
         }
-        compact_single_message(data)
+        compact_single_item(data)
         assert "thumb_64" not in data["file"]
         assert "id" in data["file"]
 

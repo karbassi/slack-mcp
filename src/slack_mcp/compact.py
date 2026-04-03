@@ -142,7 +142,7 @@ def compact_file_list(data: dict[str, Any]) -> None:
         strip_file(single)
 
 
-def compact_single_message(data: dict[str, Any]) -> None:
+def compact_single_item(data: dict[str, Any]) -> None:
     """reactions.get — single message or file at top level."""
     if not data.get("ok"):
         return

@@ -1,7 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.compact import compact_items, compact_single_message, compactable
+from slack_mcp.compact import compact_items, compact_single_item, compactable
 from slack_mcp.server import mcp, slack_client
 
 
@@ -19,7 +19,7 @@ async def reactions_add(
 
 
 @mcp.tool
-@compactable(compact_single_message)
+@compactable(compact_single_item)
 async def reactions_get(
     channel: str | None = None,
     file: str | None = None,

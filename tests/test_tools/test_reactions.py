@@ -1,6 +1,6 @@
 import pytest
 
-from slack_mcp.compact import compact_items, compact_single_message, get_compactor
+from slack_mcp.compact import compact_items, compact_single_item, get_compactor
 from slack_mcp.tools.reactions import (
     reactions_add,
     reactions_get,
@@ -54,7 +54,7 @@ async def test_reactions_remove(mock_client):
 
 
 def test_reactions_get_compactable():
-    assert get_compactor("reactions_get") is compact_single_message
+    assert get_compactor("reactions_get") is compact_single_item
 
 
 def test_reactions_list_compactable():
