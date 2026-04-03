@@ -211,8 +211,10 @@ async def test_cache_clear_tool():
     assert call_count == 2, "Cache should be empty after clearing"
 
 
-def test_detailed_excluded_from_cache_key():
-    """The 'detailed' param must not affect cache keys."""
+def test_detailed_true_produces_different_cache_key():
+    """detailed=True must produce a different cache key since the cached
+    response is post-compaction — detailed=True skips compaction and must
+    not share a cache entry with the compacted default."""
     args_without = {"channel": "C123", "ts": "1234.5678"}
     args_with_false = {"channel": "C123", "ts": "1234.5678", "detailed": False}
     args_with_true = {"channel": "C123", "ts": "1234.5678", "detailed": True}
@@ -222,10 +224,10 @@ def test_detailed_excluded_from_cache_key():
     key_true = _make_cache_key("conversations_replies", args_with_true)
 
     assert key_base == key_false, (
-        f"detailed=False should produce same key as no detailed: "
+        f"detailed=False should match absent (both get compacted): "
         f"{key_base!r} != {key_false!r}"
     )
-    assert key_base == key_true, (
-        f"detailed=True should produce same key as no detailed: "
-        f"{key_base!r} != {key_true!r}"
+    assert key_base != key_true, (
+        f"detailed=True must differ from default (different response): "
+        f"{key_base!r} == {key_true!r}"
     )

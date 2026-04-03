@@ -125,11 +125,15 @@ def _make_cache_key(tool_name: str, args: dict[str, Any]) -> str:
     for ts_field in ("ts", "oldest", "latest"):
         if ts_field in args:
             key_parts.append(f"{ts_field}={args[ts_field]}")
-    other = {
+    filtered = {
         k: v
-        for k, v in sorted(args.items())
-        if k not in ("channel", "ts", "oldest", "latest", "detailed")
+        for k, v in args.items()
+        if k not in ("channel", "ts", "oldest", "latest")
     }
+    # Strip detailed=False (same as absent — both get compacted)
+    if not filtered.get("detailed"):
+        filtered.pop("detailed", None)
+    other = dict(sorted(filtered.items()))
     if other:
         key_parts.append(pydantic_core.to_json(other, fallback=str).decode())
     return ":".join(key_parts)
