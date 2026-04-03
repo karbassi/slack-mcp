@@ -1,3 +1,4 @@
+import contextlib
 import time
 
 import pytest
@@ -48,10 +49,8 @@ async def test_reminders_info_live(live_client):
         # Some token types return not_found for reminders.info
         assert e.response["error"] in ("not_found", "not_allowed_token_type")
     finally:
-        try:
+        with contextlib.suppress(SlackApiError):
             await reminders_delete(reminder=reminder_id, client=live_client)
-        except SlackApiError:
-            pass
 
 
 @pytest.mark.integration
@@ -72,10 +71,8 @@ async def test_reminders_complete_live(live_client):
         # Some token types return not_found for reminders.complete
         assert e.response["error"] in ("not_found", "not_allowed_token_type")
     finally:
-        try:
+        with contextlib.suppress(SlackApiError):
             await reminders_delete(reminder=reminder_id, client=live_client)
-        except SlackApiError:
-            pass
 
 
 @pytest.mark.integration

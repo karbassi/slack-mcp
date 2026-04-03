@@ -1,3 +1,4 @@
+import contextlib
 import uuid
 
 import pytest
@@ -271,10 +272,8 @@ async def test_conversations_invite_live(live_client):
         )
     finally:
         # Rejoin before archiving (archive requires membership)
-        try:
+        with contextlib.suppress(SlackApiError):
             await conversations_join(channel=channel_id, client=live_client)
-        except SlackApiError:
-            pass
         await conversations_archive(channel=channel_id, client=live_client)
 
 

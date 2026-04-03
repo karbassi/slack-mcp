@@ -10,26 +10,25 @@ from slack_mcp.tools.undocumented import (
     client_boot,
     client_counts,
     client_user_boot,
-    emoji_add,
-    emoji_remove,
-    session_test,
     conversations_list_prefs,
     conversations_view,
     drafts_create,
     drafts_delete,
     drafts_list,
     drafts_update,
+    emoji_add,
     emoji_admin_list,
+    emoji_remove,
     experiments_get_by_user,
     saved_add,
     saved_delete,
     saved_list,
     search_modules_channels,
-    subscriptions_thread_mark,
     search_modules_dms,
     search_modules_files,
     search_modules_messages,
     search_modules_people,
+    session_test,
     subscriptions_thread_mark,
     threads_get_view,
     users_channel_sections_list,
@@ -186,9 +185,12 @@ async def test_emoji_admin_list_live(live_client):
 
 @pytest.mark.usefixtures("requires_session_tokens")
 async def test_emoji_add_tool_live(live_client):
-    """Add a custom emoji via the emoji_add tool function (URL-based), then remove it."""
+    """Add a custom emoji via emoji_add (URL-based), then remove it."""
     name = f"test_{uuid.uuid4().hex[:8]}"
-    image_url = "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+    image_url = (
+        "https://www.google.com/images/branding/googlelogo"
+        "/2x/googlelogo_color_272x92dp.png"
+    )
 
     result = await emoji_add(name=name, image_url=image_url, client=live_client)
     assert "ok" in result
@@ -234,7 +236,10 @@ async def test_subscriptions_thread_mark_live(live_client, temp_channel):
     thread_ts = parent["ts"]
 
     await chat_post_message(
-        channel=temp_channel, text="Thread reply", thread_ts=thread_ts, client=live_client
+        channel=temp_channel,
+        text="Thread reply",
+        thread_ts=thread_ts,
+        client=live_client,
     )
 
     result = await subscriptions_thread_mark(

@@ -211,12 +211,16 @@ async def test_emoji_add(mock_client):
     mock_response.raise_for_status = lambda: None
 
     with patch("slack_mcp.tools.undocumented.httpx.AsyncClient") as mock_http:
-        mock_http.return_value.__aenter__ = AsyncMock(return_value=mock_http.return_value)
+        mock_http.return_value.__aenter__ = AsyncMock(
+            return_value=mock_http.return_value
+        )
         mock_http.return_value.__aexit__ = AsyncMock(return_value=False)
         mock_http.return_value.get = AsyncMock(return_value=mock_response)
 
         result = await emoji_add(
-            name="test_emoji", image_url="https://example.com/emoji.png", client=mock_client
+            name="test_emoji",
+            image_url="https://example.com/emoji.png",
+            client=mock_client,
         )
 
     assert result["ok"] is True
@@ -232,7 +236,9 @@ async def test_emoji_remove(mock_client):
     mock_client.session_call_form.return_value = {"ok": True}
     result = await emoji_remove(name="test_emoji", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call_form.assert_called_once_with("emoji.remove", name="test_emoji")
+    mock_client.session_call_form.assert_called_once_with(
+        "emoji.remove", name="test_emoji"
+    )
 
 
 @pytest.mark.asyncio
@@ -240,7 +246,9 @@ async def test_emoji_admin_list(mock_client):
     mock_client.session_call.return_value = {"ok": True, "emoji": []}
     result = await emoji_admin_list(page=1, count=50, client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("emoji.adminList", page=1, count=50)
+    mock_client.session_call.assert_called_once_with(
+        "emoji.adminList", page=1, count=50
+    )
 
 
 @pytest.mark.asyncio
@@ -258,7 +266,9 @@ async def test_search_modules_files(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_files(query="report", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("search.modules.files", query="report")
+    mock_client.session_call.assert_called_once_with(
+        "search.modules.files", query="report"
+    )
 
 
 @pytest.mark.asyncio
@@ -266,7 +276,9 @@ async def test_search_modules_channels(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_channels(query="eng", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("search.modules.channels", query="eng")
+    mock_client.session_call.assert_called_once_with(
+        "search.modules.channels", query="eng"
+    )
 
 
 @pytest.mark.asyncio
@@ -274,7 +286,9 @@ async def test_search_modules_people(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_people(query="alice", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("search.modules.people", query="alice")
+    mock_client.session_call.assert_called_once_with(
+        "search.modules.people", query="alice"
+    )
 
 
 @pytest.mark.asyncio
@@ -282,7 +296,9 @@ async def test_search_modules_dms(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_dms(query="project", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("search.modules.dms", query="project")
+    mock_client.session_call.assert_called_once_with(
+        "search.modules.dms", query="project"
+    )
 
 
 @pytest.mark.asyncio
@@ -290,7 +306,9 @@ async def test_conversations_view(mock_client):
     mock_client.session_call.return_value = {"ok": True}
     result = await conversations_view(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("conversations.view", channel="C123")
+    mock_client.session_call.assert_called_once_with(
+        "conversations.view", channel="C123"
+    )
 
 
 @pytest.mark.asyncio

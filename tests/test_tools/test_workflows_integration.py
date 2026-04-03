@@ -53,7 +53,9 @@ async def test_workflows_featured_set_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires a valid workflow_step_execute_id from an active step")
+@pytest.mark.skip(
+    reason="requires a valid workflow_step_execute_id from an active step"
+)
 async def test_workflows_step_completed_live(live_client):
     """Mark a workflow step execution as completed."""
     result = await workflows_step_completed(
@@ -66,7 +68,9 @@ async def test_workflows_step_completed_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires a valid workflow_step_execute_id from an active step")
+@pytest.mark.skip(
+    reason="requires a valid workflow_step_execute_id from an active step"
+)
 async def test_workflows_step_failed_live(live_client):
     """Mark a workflow step execution as failed."""
     result = await workflows_step_failed(
@@ -79,7 +83,9 @@ async def test_workflows_step_failed_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires a valid workflow_step_edit_id from a configuration event")
+@pytest.mark.skip(
+    reason="requires a valid workflow_step_edit_id from a configuration event"
+)
 async def test_workflows_update_step_live(live_client):
     """Update the configuration for a workflow step."""
     result = await workflows_update_step(

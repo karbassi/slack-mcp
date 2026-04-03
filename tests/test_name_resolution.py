@@ -57,7 +57,10 @@ async def test_enriches_conversations_history():
     data = {
         "ok": True,
         "messages": [
-            {"user": "U0ADCDDNVGT", "text": "Hello <@U0BXYZ12345> check <#C0AD56E4N6B>"},
+            {
+                "user": "U0ADCDDNVGT",
+                "text": "Hello <@U0BXYZ12345> check <#C0AD56E4N6B>",
+            },
             {"bot_id": "BA13894H00", "text": "Bot message"},
         ],
     }
@@ -180,7 +183,7 @@ async def test_failed_lookups_excluded():
 async def test_resolution_error_returns_original_result():
     middleware = NameResolutionMiddleware()
     data = {"ok": True, "messages": [{"user": "U0ADCDDNVGT", "text": "hi"}]}
-    original_json = json.dumps(data)
+    json.dumps(data)
 
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.async_slack_response import AsyncSlackResponse

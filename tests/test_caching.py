@@ -45,7 +45,14 @@ async def test_cached_tool_returns_same_result():
     async def fake_call_next(context):
         nonlocal call_count
         call_count += 1
-        return ToolResult(content=[TextContent(type="text", text='{"ok": true, "user": {"id": "U123"}}')])
+        return ToolResult(
+            content=[
+                TextContent(
+                    type="text",
+                    text='{"ok": true, "user": {"id": "U123"}}',
+                )
+            ]
+        )
 
     ctx = _make_context("users_info", {"user": "U123"})
 
@@ -53,7 +60,9 @@ async def test_cached_tool_returns_same_result():
     result2 = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     assert result1.content[0].text == result2.content[0].text
-    assert call_count == 1, "API should only be called once; second call should be cached"
+    assert call_count == 1, (
+        "API should only be called once; second call should be cached"
+    )
 
 
 @pytest.mark.asyncio
