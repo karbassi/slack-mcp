@@ -1,6 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
+from slack_mcp.compact import compact_items, compactable
 from slack_mcp.server import mcp, slack_client
 
 
@@ -26,15 +27,17 @@ async def stars_add(
 
 
 @mcp.tool
+@compactable(compact_items)
 async def stars_list(
     count: int | None = None,
     cursor: str | None = None,
     limit: int | None = None,
     page: int | None = None,
     team_id: str | None = None,
+    detailed: bool = False,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List starred items for the calling user."""
+    """List starred items for the calling user. Set detailed=True for full response."""
     kwargs = {}
     if count is not None:
         kwargs["count"] = count

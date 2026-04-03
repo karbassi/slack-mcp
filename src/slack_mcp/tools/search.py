@@ -1,10 +1,17 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
+from slack_mcp.compact import (
+    compact_search_all,
+    compact_search_files,
+    compact_search_messages,
+    compactable,
+)
 from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
+@compactable(compact_search_all)
 async def search_all(
     query: str,
     count: int | None = None,
@@ -13,9 +20,10 @@ async def search_all(
     sort: str | None = None,
     sort_dir: str | None = None,
     team_id: str | None = None,
+    detailed: bool = False,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search for messages and files matching a query."""
+    """Search for messages and files. Set detailed=True for full response."""
     kwargs = {"query": query}
     if count is not None:
         kwargs["count"] = count
@@ -33,6 +41,7 @@ async def search_all(
 
 
 @mcp.tool
+@compactable(compact_search_files)
 async def search_files(
     query: str,
     count: int | None = None,
@@ -41,9 +50,10 @@ async def search_files(
     sort: str | None = None,
     sort_dir: str | None = None,
     team_id: str | None = None,
+    detailed: bool = False,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search for files matching a query."""
+    """Search for files matching a query. Set detailed=True for full response."""
     kwargs = {"query": query}
     if count is not None:
         kwargs["count"] = count
@@ -61,6 +71,7 @@ async def search_files(
 
 
 @mcp.tool
+@compactable(compact_search_messages)
 async def search_messages(
     query: str,
     count: int | None = None,
@@ -70,9 +81,10 @@ async def search_messages(
     sort: str | None = None,
     sort_dir: str | None = None,
     team_id: str | None = None,
+    detailed: bool = False,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search for messages matching a query."""
+    """Search for messages matching a query. Set detailed=True for full response."""
     kwargs = {"query": query}
     if count is not None:
         kwargs["count"] = count

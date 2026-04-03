@@ -1,5 +1,11 @@
 import pytest
 
+from slack_mcp.compact import (
+    compact_search_all,
+    compact_search_files,
+    compact_search_messages,
+    get_compactor,
+)
 from slack_mcp.tools.search import search_all, search_files, search_messages
 
 
@@ -25,3 +31,15 @@ async def test_search_messages(mock_client):
     result = await search_messages(query="meeting", client=mock_client)
     assert result["ok"] is True
     mock_client.api_call.assert_called_once_with("search.messages", query="meeting")
+
+
+def test_search_all_compactable():
+    assert get_compactor("search_all") is compact_search_all
+
+
+def test_search_files_compactable():
+    assert get_compactor("search_files") is compact_search_files
+
+
+def test_search_messages_compactable():
+    assert get_compactor("search_messages") is compact_search_messages

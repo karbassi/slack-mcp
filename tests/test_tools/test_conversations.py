@@ -1,5 +1,6 @@
 import pytest
 
+from slack_mcp.compact import compact_channel_list, compact_message_list, get_compactor
 from slack_mcp.tools.conversations import (
     conversations_accept_shared_invite,
     conversations_approve_shared_invite,
@@ -328,3 +329,15 @@ async def test_conversations_unarchive(mock_client):
     mock_client.api_call.assert_called_once_with(
         "conversations.unarchive", channel="C123"
     )
+
+
+def test_conversations_history_compactable():
+    assert get_compactor("conversations_history") is compact_message_list
+
+
+def test_conversations_replies_compactable():
+    assert get_compactor("conversations_replies") is compact_message_list
+
+
+def test_conversations_list_compactable():
+    assert get_compactor("conversations_list") is compact_channel_list

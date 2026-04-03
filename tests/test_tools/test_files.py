@@ -1,5 +1,6 @@
 import pytest
 
+from slack_mcp.compact import compact_file_list, get_compactor
 from slack_mcp.tools.files import (
     files_comments_delete,
     files_complete_upload_external,
@@ -177,3 +178,11 @@ async def test_files_upload_v2(mock_client):
     mock_client.api_call.assert_called_once_with(
         "files.upload.v2", content="hello", filename="test.txt"
     )
+
+
+def test_files_info_compactable():
+    assert get_compactor("files_info") is compact_file_list
+
+
+def test_files_list_compactable():
+    assert get_compactor("files_list") is compact_file_list

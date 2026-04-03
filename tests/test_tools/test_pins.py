@@ -1,5 +1,6 @@
 import pytest
 
+from slack_mcp.compact import compact_items, get_compactor
 from slack_mcp.tools.pins import pins_add, pins_list, pins_remove
 
 
@@ -31,3 +32,7 @@ async def test_pins_remove(mock_client):
     mock_client.api_call.assert_called_once_with(
         "pins.remove", channel="C123", timestamp="1234.5678"
     )
+
+
+def test_pins_list_compactable():
+    assert get_compactor("pins_list") is compact_items

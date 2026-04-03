@@ -1,5 +1,6 @@
 import pytest
 
+from slack_mcp.compact import compact_items, get_compactor
 from slack_mcp.tools.stars import stars_add, stars_list, stars_remove
 
 
@@ -31,3 +32,7 @@ async def test_stars_remove(mock_client):
     mock_client.api_call.assert_called_once_with(
         "stars.remove", channel="C123", timestamp="1234.5678"
     )
+
+
+def test_stars_list_compactable():
+    assert get_compactor("stars_list") is compact_items

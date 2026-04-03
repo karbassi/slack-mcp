@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from slack_mcp.compact import compact_items, compact_message_list, get_compactor
 from slack_mcp.tools.undocumented import (
     ai_apps_list,
     api_features,
@@ -338,3 +339,15 @@ async def test_ai_apps_list(mock_client):
     result = await ai_apps_list(client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with("aiApps.list")
+
+
+def test_search_modules_messages_compactable():
+    assert get_compactor("search_modules_messages") is compact_message_list
+
+
+def test_conversations_view_compactable():
+    assert get_compactor("conversations_view") is compact_message_list
+
+
+def test_saved_list_compactable():
+    assert get_compactor("saved_list") is compact_items
