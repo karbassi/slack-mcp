@@ -258,7 +258,20 @@ Use the `cache_clear` tool to bust the cache when you need fresh data.
 
 ### Name Resolution
 
-All tool responses automatically resolve user, channel, DM, and bot IDs to display names via a `_resolved_names` field — no extra tool calls needed. Resolved names are disk-cached to avoid redundant API lookups.
+All tool responses automatically resolve user, channel, DM, and bot IDs to display names via a `resolved_names` field — no extra tool calls needed. Resolved names are disk-cached to avoid redundant API lookups.
+
+### Response Compaction
+
+15 high-volume tools automatically strip bloat from Slack API responses — blocks (duplicates text), attachments (link unfurls), thumbnails (22 per file), and metadata noise. Measured reductions:
+
+| Endpoint | Before | After | Reduction |
+|---|---|---|---|
+| `conversations.history` | 465 KB | 113 KB | **76%** |
+| `files.list` | 127 KB | 26 KB | **80%** |
+| `conversations.list` | 59 KB | 17 KB | **71%** |
+| `reactions.list` | 353 KB | 167 KB | **53%** |
+
+Compaction is on by default. Pass `detailed=True` to any compactable tool to get the full Slack API response.
 
 ## Development
 
@@ -266,9 +279,8 @@ All tool responses automatically resolve user, channel, DM, and bot IDs to displ
 git clone https://github.com/karbassi/slack-mcp.git
 cd slack-mcp
 uv sync
-uv run ruff check .
-uv run pytest tests/
-uv run pytest tests/ -m integration  # requires tokens in .env
+mise run check                       # test + lint + security scan
+mise run test:integration            # requires tokens in .env
 ```
 
 > [!NOTE]
