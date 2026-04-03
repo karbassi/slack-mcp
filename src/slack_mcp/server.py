@@ -128,7 +128,7 @@ def _make_cache_key(tool_name: str, args: dict[str, Any]) -> str:
     other = {
         k: v
         for k, v in sorted(args.items())
-        if k not in ("channel", "ts", "oldest", "latest")
+        if k not in ("channel", "ts", "oldest", "latest", "detailed")
     }
     if other:
         key_parts.append(pydantic_core.to_json(other, fallback=str).decode())
@@ -234,6 +234,34 @@ class NameResolutionMiddleware(Middleware):
 
         return result
 
+
+class CompactResponseMiddleware(Middleware):
+    """Strip bloat from Slack API responses for tools marked with @compactable."""
+
+    async def on_call_tool(
+        self,
+        context: MiddlewareContext[CallToolRequestParams],
+        call_next: CallNext[CallToolRequestParams, ToolResult],
+    ) -> ToolResult:
+        result = await call_next(context)
+
+        from slack_mcp.compact import get_compactor
+
+        compactor = get_compactor(context.message.name)
+        if compactor is None:
+            return result
+
+        args = context.message.arguments or {}
+        if args.get("detailed"):
+            return result
+
+        if result.structured_content:
+            compactor(result.structured_content)
+
+        return result
+
+
+mcp.add_middleware(CompactResponseMiddleware())
 
 mcp.add_middleware(NameResolutionMiddleware())
 

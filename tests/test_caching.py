@@ -9,7 +9,7 @@ from fastmcp.tools.tool import ToolResult
 from key_value.aio.stores.memory import MemoryStore
 from mcp.types import CallToolRequestParams, TextContent
 
-from slack_mcp.server import CACHED_TOOLS, ThreadCachingMiddleware, mcp
+from slack_mcp.server import CACHED_TOOLS, ThreadCachingMiddleware, _make_cache_key, mcp
 
 
 def test_caching_middleware_attached():
@@ -209,3 +209,23 @@ async def test_cache_clear_tool():
     # Next call should go through to the API again
     await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
     assert call_count == 2, "Cache should be empty after clearing"
+
+
+def test_detailed_excluded_from_cache_key():
+    """The 'detailed' param must not affect cache keys."""
+    args_without = {"channel": "C123", "ts": "1234.5678"}
+    args_with_false = {"channel": "C123", "ts": "1234.5678", "detailed": False}
+    args_with_true = {"channel": "C123", "ts": "1234.5678", "detailed": True}
+
+    key_base = _make_cache_key("conversations_replies", args_without)
+    key_false = _make_cache_key("conversations_replies", args_with_false)
+    key_true = _make_cache_key("conversations_replies", args_with_true)
+
+    assert key_base == key_false, (
+        f"detailed=False should produce same key as no detailed: "
+        f"{key_base!r} != {key_false!r}"
+    )
+    assert key_base == key_true, (
+        f"detailed=True should produce same key as no detailed: "
+        f"{key_base!r} != {key_true!r}"
+    )
