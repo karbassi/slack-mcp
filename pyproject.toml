@@ -64,10 +64,8 @@ select = [
 ignore = [
     "B008",    # Depends() in function defaults is the FastMCP pattern
     "PLR0913", # too many arguments — Slack API wrappers have many optional params
-    "PLR0912", # too many branches — Slack API wrappers have many optional params
-    "PLR2004", # magic values — thresholds/timeouts are clearer inline
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "src/slack_mcp/server.py" = ["E402", "F401"]  # side-effect imports after load_dotenv()
-"tests/**" = ["F401"]  # integration tests import tools for skip-decorated test stubs
+"tests/**" = ["F401", "PLR2004"]  # F401: skip-decorated test stubs; PLR2004: magic values in assertions are clearer

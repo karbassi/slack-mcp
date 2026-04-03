@@ -94,7 +94,7 @@ async def chat_post_ephemeral(
 
 
 @mcp.tool
-async def chat_post_message(
+async def chat_post_message(  # noqa: PLR0912
     channel: str,
     text: str | None = None,
     attachments: list | None = None,
