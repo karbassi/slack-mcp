@@ -245,7 +245,7 @@ async def test_emoji_admin_list(mock_client):
 
 @pytest.mark.asyncio
 async def test_search_modules_messages(mock_client):
-    mock_client.session_call.return_value = {"ok": True, "items": []}
+    mock_client.session_call.return_value = {"ok": True, "messages": []}
     result = await search_modules_messages(query="hello", count=10, client=mock_client)
     assert result["ok"] is True
     mock_client.session_call.assert_called_once_with(
