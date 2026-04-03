@@ -289,6 +289,14 @@ class TestCompactSearchMessages:
         compact_search_messages(data)
         assert data == original
 
+    def test_non_dict_matches_do_not_crash(self):
+        from slack_mcp.compact import compact_search_messages
+        data = {
+            "ok": True,
+            "messages": {"matches": ["not_a_dict", None, 42]},
+        }
+        compact_search_messages(data)
+
 
 # -- compact_search_files --
 
@@ -314,6 +322,14 @@ class TestCompactSearchFiles:
         original = copy.deepcopy(data)
         compact_search_files(data)
         assert data == original
+
+    def test_non_dict_matches_do_not_crash(self):
+        from slack_mcp.compact import compact_search_files
+        data = {
+            "ok": True,
+            "files": {"matches": ["not_a_dict", None]},
+        }
+        compact_search_files(data)
 
 
 # -- compact_search_all --
@@ -371,6 +387,16 @@ class TestCompactChannelList:
         from slack_mcp.compact import compact_channel_list
         data = {"ok": True}
         compact_channel_list(data)  # should not raise
+
+    def test_non_dict_channels_do_not_crash(self):
+        from slack_mcp.compact import compact_channel_list
+        data = {"ok": True, "channels": ["not_a_dict", None]}
+        compact_channel_list(data)
+
+    def test_channels_not_a_list(self):
+        from slack_mcp.compact import compact_channel_list
+        data = {"ok": True, "channels": "not_a_list"}
+        compact_channel_list(data)
 
 
 # -- compact_file_list --

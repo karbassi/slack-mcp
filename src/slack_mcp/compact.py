@@ -96,7 +96,12 @@ def compact_search_messages(data: dict[str, Any]) -> None:
     messages = data.get("messages")
     if not isinstance(messages, dict):
         return
-    for msg in messages.get("matches", []):
+    matches = messages.get("matches", [])
+    if not isinstance(matches, list):
+        return
+    for msg in matches:
+        if not isinstance(msg, dict):
+            continue
         strip_message(msg)
         ch = msg.get("channel")
         if isinstance(ch, dict):
@@ -110,8 +115,12 @@ def compact_search_files(data: dict[str, Any]) -> None:
     files = data.get("files")
     if not isinstance(files, dict):
         return
-    for f in files.get("matches", []):
-        strip_file(f)
+    matches = files.get("matches", [])
+    if not isinstance(matches, list):
+        return
+    for f in matches:
+        if isinstance(f, dict):
+            strip_file(f)
 
 
 def compact_search_all(data: dict[str, Any]) -> None:
@@ -126,8 +135,12 @@ def compact_channel_list(data: dict[str, Any]) -> None:
     """conversations.list"""
     if not data.get("ok"):
         return
-    for ch in data.get("channels", []):
-        strip_channel(ch)
+    channels = data.get("channels", [])
+    if not isinstance(channels, list):
+        return
+    for ch in channels:
+        if isinstance(ch, dict):
+            strip_channel(ch)
 
 
 def compact_file_list(data: dict[str, Any]) -> None:
