@@ -19,7 +19,7 @@ async def pins_add(
 @compactable(compact_items)
 async def pins_list(
     channel: str,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List items pinned to a channel. Set detailed=True for full response."""

@@ -1,0 +1,23 @@
+[tasks.test]
+description = "Run unit tests"
+run = "uv run pytest tests/ -q -m 'not integration'"
+
+[tasks."test:integration"]
+description = "Run integration tests (requires .env tokens)"
+run = "uv run pytest tests/ -m integration"
+
+[tasks.lint]
+description = "Run ruff linter"
+run = "uv run ruff check ."
+
+[tasks."lint:fix"]
+description = "Run ruff with auto-fix"
+run = "uv run ruff check . --fix"
+
+[tasks.security]
+description = "Run semgrep security + custom rules"
+run = "semgrep --config .semgrep.yml --config p/bandit --config p/secrets --config p/security-audit --config p/owasp-top-ten --config p/ai-best-practices src/"
+
+[tasks.check]
+description = "Run all checks (test + lint + security)"
+depends = ["test", "lint", "security"]

@@ -42,7 +42,7 @@ async def test_cached_tool_returns_same_result():
 
     call_count = 0
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return ToolResult(
@@ -76,7 +76,7 @@ async def test_non_cached_tool_always_hits_api():
 
     call_count = 0
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return ToolResult(content=[TextContent(type="text", text='{"ok": true}')])
@@ -105,7 +105,7 @@ async def test_old_thread_is_cached():
     call_count = 0
     old_ts = f"{time.time() - 7200:.6f}"  # 2 hours ago
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -128,7 +128,7 @@ async def test_recent_thread_is_not_cached():
     call_count = 0
     recent_ts = f"{time.time() - 300:.6f}"  # 5 minutes ago
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -151,7 +151,7 @@ async def test_old_history_range_is_cached():
     old_oldest = f"{time.time() - 14400:.6f}"  # 4 hours ago
     old_latest = f"{time.time() - 7200:.6f}"  # 2 hours ago
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -176,7 +176,7 @@ async def test_recent_history_is_not_cached():
 
     call_count = 0
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT
@@ -199,7 +199,7 @@ async def test_cache_clear_tool():
     call_count = 0
     old_ts = f"{time.time() - 7200:.6f}"
 
-    async def fake_call_next(context):
+    async def fake_call_next(context):  # noqa: ARG001
         nonlocal call_count
         call_count += 1
         return _FAKE_RESULT

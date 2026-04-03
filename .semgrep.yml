@@ -1,0 +1,24 @@
+rules:
+  - id: redundant-default-then-typecheck
+    pattern: |
+      $X = $DICT.get($KEY, [])
+      if isinstance($X, list):
+          ...
+    message: >
+      Redundant: $X defaults to [] but is then checked with isinstance(list).
+      Either drop the default and use `$X = $DICT.get($KEY)` with
+      `for item in $X if isinstance($X, list) else []`, or use an
+      early return `if not isinstance($X, list): return`.
+    languages: [python]
+    severity: WARNING
+
+  - id: redundant-default-then-typecheck-dict
+    pattern: |
+      $X = $DICT.get($KEY, {})
+      if isinstance($X, dict):
+          ...
+    message: >
+      Redundant: $X defaults to {} but is then checked with isinstance(dict).
+      Drop one or the other.
+    languages: [python]
+    severity: WARNING

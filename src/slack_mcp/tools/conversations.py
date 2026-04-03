@@ -126,7 +126,7 @@ async def conversations_history(
     limit: int | None = None,
     oldest: str | None = None,
     include_all_metadata: bool | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Fetch a conversation's history. Set detailed=True for full response."""
@@ -231,7 +231,7 @@ async def conversations_list(
     limit: int | None = None,
     team_id: str | None = None,
     types: str | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all channels. Set detailed=True for the full response."""
@@ -342,7 +342,7 @@ async def conversations_replies(
     limit: int | None = None,
     oldest: str | None = None,
     include_all_metadata: bool | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve a thread of messages. Set detailed=True for full response."""

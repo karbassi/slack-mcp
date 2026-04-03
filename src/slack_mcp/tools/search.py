@@ -20,7 +20,7 @@ async def search_all(
     sort: str | None = None,
     sort_dir: str | None = None,
     team_id: str | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for messages and files. Set detailed=True for full response."""
@@ -50,7 +50,7 @@ async def search_files(
     sort: str | None = None,
     sort_dir: str | None = None,
     team_id: str | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for files matching a query. Set detailed=True for full response."""
@@ -81,7 +81,7 @@ async def search_messages(
     sort: str | None = None,
     sort_dir: str | None = None,
     team_id: str | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for messages matching a query. Set detailed=True for full response."""

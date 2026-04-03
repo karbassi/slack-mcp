@@ -3,9 +3,11 @@
 ## Commands
 
 ```bash
-uv run pytest tests/ -q              # unit tests
-uv run pytest tests/ -m integration  # integration tests (requires .env tokens)
-uv run ruff check .                  # lint
+mise run test              # unit tests
+mise run test:integration  # integration tests (requires .env tokens)
+mise run lint              # ruff linter
+mise run security          # semgrep security + AI best practices + custom rules
+mise run check             # all checks (test + lint + security)
 ```
 
 ## Testing

@@ -265,7 +265,7 @@ async def test_conversations_invite_live(live_client):
         assert invite_result["ok"] is True
     except SlackApiError as e:
         # Some token types cannot use conversations.invite
-        assert e.response["error"] in (
+        assert e.response["error"] in (  # noqa: PT017
             "not_allowed_token_type",
             "cant_invite_self",
             "method_not_supported_for_channel_type",
@@ -312,7 +312,7 @@ async def test_conversations_list_connect_invites_live(live_client):
         assert "ok" in result
     except SlackApiError as e:
         # Some workspaces/token types don't support Slack Connect
-        assert e.response["error"] in (
+        assert e.response["error"] in (  # noqa: PT017
             "missing_scope",
             "feature_not_enabled",
             "not_allowed",
@@ -338,7 +338,7 @@ async def test_conversations_mark_live(live_client, temp_channel):
         assert "ok" in result
     except SlackApiError as e:
         # May fail depending on token type or session token configuration
-        assert e.response["error"] in (
+        assert e.response["error"] in (  # noqa: PT017
             "missing_scope",
             "not_authed",
             "channel_not_found",
@@ -386,7 +386,7 @@ async def test_conversations_request_shared_invite_list_live(live_client):
         assert "ok" in result
     except SlackApiError as e:
         # Some workspaces/token types don't support Slack Connect
-        assert e.response["error"] in (
+        assert e.response["error"] in (  # noqa: PT017
             "missing_scope",
             "feature_not_enabled",
             "restricted_action",

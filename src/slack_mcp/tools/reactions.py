@@ -26,7 +26,7 @@ async def reactions_get(
     file_comment: str | None = None,
     full: bool | None = None,
     timestamp: str | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get reactions for an item. Set detailed=True for full response."""
@@ -54,7 +54,7 @@ async def reactions_list(
     page: int | None = None,
     team_id: str | None = None,
     user: str | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List reactions made by a user. Set detailed=True for full response."""

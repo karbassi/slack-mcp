@@ -65,7 +65,7 @@ async def test_enriches_conversations_history():
         ],
     }
 
-    async def fake_call_next(ctx):
+    async def fake_call_next(_ctx):
         return _make_result(data)
 
     client = _mock_client(_api_side_effect)
@@ -91,7 +91,7 @@ async def test_enriches_search_messages():
         },
     }
 
-    async def fake_call_next(ctx):
+    async def fake_call_next(_ctx):
         return _make_result(data)
 
     client = _mock_client(_api_side_effect)
@@ -108,7 +108,7 @@ async def test_non_target_tool_passes_through():
     middleware = NameResolutionMiddleware()
     data = {"ok": True, "channels": []}
 
-    async def fake_call_next(ctx):
+    async def fake_call_next(_ctx):
         return _make_result(data)
 
     ctx = _make_context("conversations_list")
@@ -122,7 +122,7 @@ async def test_empty_messages_no_enrichment():
     middleware = NameResolutionMiddleware()
     data = {"ok": True, "messages": []}
 
-    async def fake_call_next(ctx):
+    async def fake_call_next(_ctx):
         return _make_result(data)
 
     ctx = _make_context("conversations_history", {"channel": "C000"})
@@ -136,7 +136,7 @@ async def test_no_ids_in_messages_no_enrichment():
     middleware = NameResolutionMiddleware()
     data = {"ok": True, "messages": [{"text": "plain text, no IDs"}]}
 
-    async def fake_call_next(ctx):
+    async def fake_call_next(_ctx):
         return _make_result(data)
 
     ctx = _make_context("conversations_history", {"channel": "C000"})
@@ -153,7 +153,7 @@ async def test_failed_lookups_excluded():
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.async_slack_response import AsyncSlackResponse
 
-    async def failing_api(method, **kwargs):
+    async def failing_api(_method, **_kwargs):
         raise SlackApiError(
             message="user_not_found",
             response=AsyncSlackResponse(
@@ -170,7 +170,7 @@ async def test_failed_lookups_excluded():
     client = _mock_client(failing_api)
     ctx = _make_context("conversations_history", {"channel": "C000"})
 
-    async def fake_call_next(ctx):
+    async def fake_call_next(_ctx):
         return _make_result(data)
 
     with patch("slack_mcp.server.get_client", return_value=client):
@@ -188,7 +188,7 @@ async def test_resolution_error_returns_original_result():
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.async_slack_response import AsyncSlackResponse
 
-    async def auth_error(method, **kwargs):
+    async def auth_error(_method, **_kwargs):
         raise SlackApiError(
             message="invalid_auth",
             response=AsyncSlackResponse(
@@ -205,7 +205,7 @@ async def test_resolution_error_returns_original_result():
     client = _mock_client(auth_error)
     ctx = _make_context("conversations_history", {"channel": "C000"})
 
-    async def fake_call_next(ctx):
+    async def fake_call_next(_ctx):
         return _make_result(data)
 
     with patch("slack_mcp.server.get_client", return_value=client):

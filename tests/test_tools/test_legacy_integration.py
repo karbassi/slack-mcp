@@ -33,28 +33,33 @@ def requires_session_token():
         pytest.skip("SLACK_XOXC_TOKEN not set")
 
 
-async def test_bots_list_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_bots_list_live(live_client):
     result = await bots_list(client=live_client)
     # May or may not work with xoxc; accept ok or known error
     assert isinstance(result, dict)
 
 
-async def test_commands_list_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_commands_list_live(live_client):
     result = await commands_list(client=live_client)
     assert isinstance(result, dict)
 
 
-async def test_team_prefs_get_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_team_prefs_get_live(live_client):
     result = await team_prefs_get(client=live_client)
     assert isinstance(result, dict)
 
 
-async def test_users_prefs_get_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_users_prefs_get_live(live_client):
     result = await users_prefs_get(client=live_client)
     assert isinstance(result, dict)
 
 
-async def test_chat_command_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_chat_command_live(live_client):
     """Execute /shrug in a temp channel (harmless, just posts a message)."""
     name = f"test-cmd-{uuid.uuid4().hex[:8]}"
     created = await conversations_create(name=name, client=live_client)
@@ -68,7 +73,8 @@ async def test_chat_command_live(live_client, requires_session_token):
         await conversations_archive(channel=channel_id, client=live_client)
 
 
-async def test_files_edit_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_files_edit_live(live_client):
     """Upload a file via v2 flow, edit its title, then delete it."""
     content = b"files.edit integration test"
     url_result = await files_get_upload_url_external(
@@ -89,7 +95,8 @@ async def test_files_edit_live(live_client, requires_session_token):
         await files_delete(file=file_id, client=live_client)
 
 
-async def test_files_share_legacy_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_files_share_legacy_live(live_client):
     """Upload a file and share it to a temp channel."""
     name = f"test-share-{uuid.uuid4().hex[:8]}"
     created = await conversations_create(name=name, client=live_client)
@@ -116,7 +123,8 @@ async def test_files_share_legacy_live(live_client, requires_session_token):
         await conversations_archive(channel=channel_id, client=live_client)
 
 
-async def test_users_prefs_set_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_users_prefs_set_live(live_client):
     """Set a preference then restore it."""
     prefs = await users_prefs_get(client=live_client)
     original = prefs.get("prefs", {}).get("emoji_use_all", "true")
@@ -137,7 +145,8 @@ async def test_channels_delete_live(live_client):
 
 
 @pytest.mark.skip(reason="enterprise_is_restricted: Enterprise Grid blocks invites")
-async def test_users_admin_invite_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_users_admin_invite_live(live_client):
     result = await users_admin_invite(
         email="test@example.com", client=live_client
     )
@@ -147,6 +156,7 @@ async def test_users_admin_invite_live(live_client, requires_session_token):
 @pytest.mark.skip(
     reason="enterprise_is_restricted: Enterprise Grid requires target_team"
 )
-async def test_users_admin_set_inactive_live(live_client, requires_session_token):
+@pytest.mark.usefixtures("requires_session_token")
+async def test_users_admin_set_inactive_live(live_client):
     result = await users_admin_set_inactive(user="U0000000000", client=live_client)
     assert "ok" in result

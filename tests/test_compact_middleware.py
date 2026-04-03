@@ -33,7 +33,8 @@ def _make_result(structured_content: dict | None = None):
 
 class TestCompactResponseMiddleware:
     @pytest.mark.asyncio
-    async def test_strips_compactable_tool(self, _clear_compactors):
+    @pytest.mark.usefixtures("_clear_compactors")
+    async def test_strips_compactable_tool(self):
         from slack_mcp.server import CompactResponseMiddleware
 
         spy = MagicMock()
@@ -54,7 +55,8 @@ class TestCompactResponseMiddleware:
         assert out is result
 
     @pytest.mark.asyncio
-    async def test_passthrough_when_detailed_true(self, _clear_compactors):
+    @pytest.mark.usefixtures("_clear_compactors")
+    async def test_passthrough_when_detailed_true(self):
         from slack_mcp.server import CompactResponseMiddleware
 
         spy = MagicMock()
@@ -87,7 +89,8 @@ class TestCompactResponseMiddleware:
         assert out is result
 
     @pytest.mark.asyncio
-    async def test_ignores_no_structured_content(self, _clear_compactors):
+    @pytest.mark.usefixtures("_clear_compactors")
+    async def test_ignores_no_structured_content(self):
         from slack_mcp.server import CompactResponseMiddleware
 
         spy = MagicMock()
@@ -107,7 +110,8 @@ class TestCompactResponseMiddleware:
         assert out is result
 
     @pytest.mark.asyncio
-    async def test_compacts_empty_dict(self, _clear_compactors):
+    @pytest.mark.usefixtures("_clear_compactors")
+    async def test_compacts_empty_dict(self):
         """An empty dict {} is a valid structured response and should be
         passed to the compactor (compactors handle it gracefully)."""
         from slack_mcp.server import CompactResponseMiddleware
@@ -129,7 +133,8 @@ class TestCompactResponseMiddleware:
         spy.assert_called_once_with(data)
 
     @pytest.mark.asyncio
-    async def test_strips_when_detailed_false(self, _clear_compactors):
+    @pytest.mark.usefixtures("_clear_compactors")
+    async def test_strips_when_detailed_false(self):
         from slack_mcp.server import CompactResponseMiddleware
 
         spy = MagicMock()
@@ -149,7 +154,8 @@ class TestCompactResponseMiddleware:
         spy.assert_called_once_with(data)
 
     @pytest.mark.asyncio
-    async def test_strips_when_detailed_absent(self, _clear_compactors):
+    @pytest.mark.usefixtures("_clear_compactors")
+    async def test_strips_when_detailed_absent(self):
         from slack_mcp.server import CompactResponseMiddleware
 
         spy = MagicMock()

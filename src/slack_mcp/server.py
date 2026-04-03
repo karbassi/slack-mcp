@@ -122,9 +122,11 @@ def _make_cache_key(tool_name: str, args: dict[str, Any]) -> str:
     """Build a deterministic cache key from tool name and arguments."""
     channel = args.get("channel", "")
     key_parts = [tool_name, channel]
-    for ts_field in ("ts", "oldest", "latest"):
-        if ts_field in args:
-            key_parts.append(f"{ts_field}={args[ts_field]}")
+    key_parts.extend(
+        f"{ts_field}={args[ts_field]}"
+        for ts_field in ("ts", "oldest", "latest")
+        if ts_field in args
+    )
     filtered = {
         k: v
         for k, v in args.items()

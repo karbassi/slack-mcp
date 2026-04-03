@@ -26,6 +26,11 @@ async def session_test(
         }
     try:
         result = await client.session_call("client.boot")
+    except ValueError as e:
+        return {"ok": False, "error": "invalid_or_expired", "message": str(e)}
+    except Exception as e:
+        return {"ok": False, "error": type(e).__name__, "message": str(e)}
+    else:
         if result.get("ok"):
             return {"ok": True, "message": "Session tokens are valid."}
         error = result.get("error", "unknown_error")
@@ -35,10 +40,6 @@ async def session_test(
             "message": f"Session tokens may be expired or invalid ({error}). "
             "Re-grab xoxc/xoxd from browser cookies while logged into slack.com.",
         }
-    except ValueError as e:
-        return {"ok": False, "error": "invalid_or_expired", "message": str(e)}
-    except Exception as e:
-        return {"ok": False, "error": type(e).__name__, "message": str(e)}
 
 
 @mcp.tool
@@ -239,7 +240,7 @@ async def drafts_delete(
 async def saved_list(
     cursor: str | None = None,
     limit: int | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List saved-for-later items. Set detailed=True for full response."""
@@ -334,7 +335,7 @@ async def search_modules_messages(
     query: str,
     cursor: str | None = None,
     count: int | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search messages (undocumented). Set detailed=True for full response."""
@@ -417,7 +418,7 @@ async def search_modules_dms(
 @compactable(compact_message_list)
 async def conversations_view(
     channel: str,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get channel view with read state. Set detailed=True for full response."""

@@ -34,7 +34,7 @@ async def stars_list(
     limit: int | None = None,
     page: int | None = None,
     team_id: str | None = None,
-    detailed: bool = False,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List starred items for the calling user. Set detailed=True for full response."""

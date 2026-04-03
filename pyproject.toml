@@ -55,6 +55,11 @@ select = [
     "RET",  # flake8-return (unnecessary else after return)
     "PIE",  # flake8-pie (unnecessary passes, duplicate fields)
     "FURB", # refurb (non-idiomatic patterns)
+    "PERF", # perflint (performance anti-patterns)
+    "ARG",  # flake8-unused-arguments
+    "RUF",  # ruff-specific opinionated rules
+    "TRY",  # tryceratops (exception handling anti-patterns)
+    "PT",   # flake8-pytest-style
 ]
 ignore = [
     "B008",    # Depends() in function defaults is the FastMCP pattern

@@ -44,7 +44,7 @@ class SlackClient:
 
     def _require_session_tokens(self) -> None:
         if not self.xoxc_token or not self.xoxd_token:
-            raise ValueError(
+            raise ValueError(  # noqa: TRY003
                 "Session tokens (SLACK_XOXC_TOKEN and SLACK_XOXD_TOKEN) are required "
                 "for undocumented endpoints. Grab them from your browser cookies while "
                 "logged into slack.com."
@@ -59,7 +59,7 @@ class SlackClient:
                 "token_expired",
                 "token_revoked",
             ):
-                raise ValueError(
+                raise ValueError(  # noqa: TRY003
                     f"Session endpoint {method} failed: {error}. "
                     "Your xoxc/xoxd tokens may be expired — re-grab them "
                     "from browser cookies while logged into slack.com."
