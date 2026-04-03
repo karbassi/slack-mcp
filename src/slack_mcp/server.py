@@ -7,6 +7,8 @@ load_dotenv()
 import hashlib
 import os
 import time
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from importlib.metadata import version
 from typing import Any
 
@@ -26,7 +28,15 @@ from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient, get_client
 
-mcp = FastMCP(name="Slack MCP", version=version("slack-mcp"))
+
+@asynccontextmanager
+async def _lifespan(_server: FastMCP) -> AsyncIterator[dict]:
+    yield {}
+    client = get_client()
+    await client.close()
+
+
+mcp = FastMCP(name="Slack MCP", version=version("slack-mcp"), lifespan=_lifespan)
 
 # Stable identity data — rarely changes (1 hour)
 LONG_CACHED_TOOLS = [
