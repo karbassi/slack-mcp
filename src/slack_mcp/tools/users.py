@@ -1,6 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
+from slack_mcp.compact import compact_users, compactable
 from slack_mcp.server import mcp, slack_client
 
 
@@ -66,12 +67,14 @@ async def users_identity(
 
 
 @mcp.tool
+@compactable(compact_users)
 async def users_info(
     user: str,
     include_locale: bool | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get information about a user."""
+    """Get information about a user. Set detailed=True for full response."""
     kwargs = {"user": user}
     if include_locale is not None:
         kwargs["include_locale"] = include_locale
@@ -79,14 +82,16 @@ async def users_info(
 
 
 @mcp.tool
+@compactable(compact_users)
 async def users_list(
     cursor: str | None = None,
     include_locale: bool | None = None,
     limit: int | None = None,
     team_id: str | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List all users in a Slack team."""
+    """List all users in a Slack team. Set detailed=True for full response."""
     kwargs = {}
     if cursor is not None:
         kwargs["cursor"] = cursor
@@ -100,21 +105,25 @@ async def users_list(
 
 
 @mcp.tool
+@compactable(compact_users)
 async def users_lookup_by_email(
     email: str,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Find a user with an email address."""
+    """Find a user with an email address. Set detailed=True for full response."""
     return await client.api_call("users.lookupByEmail", email=email)
 
 
 @mcp.tool
+@compactable(compact_users)
 async def users_profile_get(
     include_labels: bool | None = None,
     user: str | None = None,
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Retrieve a user's profile information."""
+    """Retrieve a user's profile information. Set detailed=True for full response."""
     kwargs = {}
     if include_labels is not None:
         kwargs["include_labels"] = include_labels

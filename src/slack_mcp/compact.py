@@ -48,6 +48,19 @@ CHANNEL_REF_FIELDS = frozenset({
     "id", "name", "is_im", "is_mpim", "is_private", "is_channel",
 })
 
+USER_FIELDS = frozenset({
+    "id", "name", "real_name", "team_id", "deleted", "is_bot", "is_app_user",
+    "is_admin", "is_owner", "is_primary_owner", "is_restricted",
+    "is_ultra_restricted", "is_email_confirmed", "tz", "tz_label", "profile",
+})
+
+# One canonical avatar (image_512) survives; the other 8 sizes are dropped.
+PROFILE_FIELDS = frozenset({
+    "real_name", "display_name", "email", "title", "phone", "pronouns",
+    "first_name", "last_name", "status_text", "status_emoji",
+    "status_expiration", "image_512",
+})
+
 
 # -- Low-level strippers (mutate in-place) --
 
@@ -77,6 +90,17 @@ def strip_channel(ch: dict) -> None:
 
 def strip_channel_ref(ch: dict) -> None:
     _strip_to(ch, CHANNEL_REF_FIELDS)
+
+
+def strip_user(u: dict) -> None:
+    _strip_to(u, USER_FIELDS)
+    profile = u.get("profile")
+    if isinstance(profile, dict):
+        strip_profile(profile)
+
+
+def strip_profile(p: dict) -> None:
+    _strip_to(p, PROFILE_FIELDS)
 
 
 # -- Response-level compactors (mutate in-place) --
@@ -168,6 +192,23 @@ def compact_single_item(data: dict[str, Any]) -> None:
     f = data.get("file")
     if isinstance(f, dict):
         strip_file(f)
+
+
+def compact_users(data: dict[str, Any]) -> None:
+    """users.lookupByEmail / users.info (single user), users.list (members),
+    users.profile.get (bare profile)."""
+    if not data.get("ok"):
+        return
+    user = data.get("user")
+    if isinstance(user, dict):
+        strip_user(user)
+    members = data.get("members")
+    for m in members if isinstance(members, list) else []:
+        if isinstance(m, dict):
+            strip_user(m)
+    profile = data.get("profile")
+    if isinstance(profile, dict):
+        strip_profile(profile)
 
 
 def compact_items(data: dict[str, Any]) -> None:

@@ -103,6 +103,62 @@ def _bloated_channel():
     }
 
 
+def _bloated_user():
+    return {
+        "id": "U002",
+        "name": "jane.doe",
+        "real_name": "Jane Doe",
+        "team_id": "T002",
+        "deleted": False,
+        "is_bot": False,
+        "is_app_user": False,
+        "is_admin": False,
+        "is_owner": False,
+        "is_primary_owner": False,
+        "is_restricted": False,
+        "is_ultra_restricted": False,
+        "is_email_confirmed": True,
+        "tz": "America/Chicago",
+        "tz_label": "Central Daylight Time",
+        "profile": {
+            "real_name": "Jane Doe",
+            "display_name": "Jane Doe",
+            "email": "jane.doe@example.com",
+            "title": "Associate Dir, Systems Ops",
+            "phone": "",
+            "pronouns": "she/they",
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "status_text": "",
+            "status_emoji": "",
+            "status_expiration": 0,
+            "image_512": "https://avatars.slack-edge.com/x_512.jpg",
+            # bloat:
+            "avatar_hash": "00000000aaaa",
+            "real_name_normalized": "Jane Doe",
+            "display_name_normalized": "Jane Doe",
+            "image_24": "https://avatars.slack-edge.com/x_24.jpg",
+            "image_32": "https://avatars.slack-edge.com/x_32.jpg",
+            "image_48": "https://avatars.slack-edge.com/x_48.jpg",
+            "image_72": "https://avatars.slack-edge.com/x_72.jpg",
+            "image_192": "https://avatars.slack-edge.com/x_192.jpg",
+            "image_1024": "https://avatars.slack-edge.com/x_1024.jpg",
+            "image_original": "https://avatars.slack-edge.com/x_original.jpg",
+            "is_custom_image": True,
+            "status_emoji_display_info": [],
+            "status_text_canonical": "",
+            "huddle_state": "default_unset",
+            "team": "T002",
+            "start_date": "2026-04-28",
+        },
+        # bloat:
+        "color": "7d414c",
+        "updated": 1780409890,
+        "tz_offset": -18000,
+        "who_can_share_contact_card": "EVERYONE",
+    }
+
+
 def _bloated_channel_ref():
     return {
         "id": "C123",
@@ -231,6 +287,97 @@ class TestStripChannelRef:
         strip_channel_ref(ch)
         assert "is_org_shared" not in ch
         assert "name_normalized" not in ch
+
+
+# -- strip_user --
+
+class TestStripUser:
+    def test_keeps_allowed_fields(self):
+        from slack_mcp.compact import strip_user
+        u = _bloated_user()
+        strip_user(u)
+        assert "id" in u
+        assert "name" in u
+        assert "real_name" in u
+        assert "tz" in u
+        assert "profile" in u
+
+    def test_removes_bloat(self):
+        from slack_mcp.compact import strip_user
+        u = _bloated_user()
+        strip_user(u)
+        assert "color" not in u
+        assert "updated" not in u
+        assert "tz_offset" not in u
+        assert "who_can_share_contact_card" not in u
+
+    def test_strips_nested_profile(self):
+        from slack_mcp.compact import strip_user
+        u = _bloated_user()
+        strip_user(u)
+        p = u["profile"]
+        assert "email" in p
+        assert "title" in p
+        assert "image_512" in p
+        assert "image_24" not in p
+        assert "image_1024" not in p
+        assert "avatar_hash" not in p
+        assert "real_name_normalized" not in p
+        assert "status_emoji_display_info" not in p
+
+    def test_profile_none_does_not_crash(self):
+        from slack_mcp.compact import strip_user
+        u = {"id": "U1", "profile": None, "color": "abc"}
+        strip_user(u)
+        assert "id" in u
+        assert "color" not in u
+
+
+# -- compact_users --
+
+class TestCompactUsers:
+    def test_strips_single_user(self):
+        from slack_mcp.compact import compact_users
+        data = {"ok": True, "user": _bloated_user()}
+        compact_users(data)
+        u = data["user"]
+        assert "color" not in u
+        assert "image_24" not in u["profile"]
+        assert "email" in u["profile"]
+
+    def test_strips_members_list(self):
+        from slack_mcp.compact import compact_users
+        data = {"ok": True, "members": [_bloated_user(), _bloated_user()]}
+        compact_users(data)
+        for m in data["members"]:
+            assert "tz_offset" not in m
+            assert "image_1024" not in m["profile"]
+
+    def test_strips_bare_profile(self):
+        from slack_mcp.compact import compact_users
+        data = {"ok": True, "profile": _bloated_user()["profile"]}
+        compact_users(data)
+        assert "avatar_hash" not in data["profile"]
+        assert "email" in data["profile"]
+
+    def test_passthrough_on_not_ok(self):
+        from slack_mcp.compact import compact_users
+        data = {"ok": False, "error": "users_not_found"}
+        original = copy.deepcopy(data)
+        compact_users(data)
+        assert data == original
+
+    def test_missing_keys_do_not_crash(self):
+        from slack_mcp.compact import compact_users
+        compact_users({"ok": True})
+
+    def test_members_not_a_list(self):
+        from slack_mcp.compact import compact_users
+        compact_users({"ok": True, "members": "not_a_list"})
+
+    def test_non_dict_members_do_not_crash(self):
+        from slack_mcp.compact import compact_users
+        compact_users({"ok": True, "members": ["str", None, 42]})
 
 
 # -- compact_message_list --
