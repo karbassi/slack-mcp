@@ -7,6 +7,7 @@ from slack_mcp.tools.reminders import (
     reminders_info,
     reminders_list,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -16,8 +17,8 @@ async def test_reminders_add(mock_client):
         text="Do thing", time="in 5 minutes", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "reminders.add", text="Do thing", time="in 5 minutes"
+    assert_api_call(
+        mock_client.api_call, "reminders.add", text="Do thing", time="in 5 minutes"
     )
 
 
@@ -26,7 +27,7 @@ async def test_reminders_complete(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await reminders_complete(reminder="Rm123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("reminders.complete", reminder="Rm123")
+    assert_api_call(mock_client.api_call, "reminders.complete", reminder="Rm123")
 
 
 @pytest.mark.asyncio
@@ -34,7 +35,7 @@ async def test_reminders_delete(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await reminders_delete(reminder="Rm123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("reminders.delete", reminder="Rm123")
+    assert_api_call(mock_client.api_call, "reminders.delete", reminder="Rm123")
 
 
 @pytest.mark.asyncio
@@ -42,7 +43,7 @@ async def test_reminders_info(mock_client):
     mock_client.api_call.return_value = {"ok": True, "reminder": {}}
     result = await reminders_info(reminder="Rm123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("reminders.info", reminder="Rm123")
+    assert_api_call(mock_client.api_call, "reminders.info", reminder="Rm123")
 
 
 @pytest.mark.asyncio
@@ -50,4 +51,4 @@ async def test_reminders_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "reminders": []}
     result = await reminders_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("reminders.list")
+    assert_api_call(mock_client.api_call, "reminders.list")

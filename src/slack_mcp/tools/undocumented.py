@@ -57,12 +57,11 @@ async def client_counts(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get unread counts and thread info (undocumented session endpoint)."""
-    kwargs = {}
-    if thread_count_by_last_read is not None:
-        kwargs["thread_count_by_last_read"] = thread_count_by_last_read
-    if org_wide_aware is not None:
-        kwargs["org_wide_aware"] = org_wide_aware
-    return await client.session_call("client.counts", **kwargs)
+    return await client.session_call(
+        "client.counts",
+        thread_count_by_last_read=thread_count_by_last_read,
+        org_wide_aware=org_wide_aware,
+    )
 
 
 @mcp.tool
@@ -95,10 +94,7 @@ async def threads_get_view(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get thread view data (undocumented session endpoint)."""
-    kwargs = {}
-    if current_ts is not None:
-        kwargs["current_ts"] = current_ts
-    return await client.session_call("threads.getView", **kwargs)
+    return await client.session_call("threads.getView", current_ts=current_ts)
 
 
 def _pad_draft_ts(ts: str) -> str:
@@ -244,12 +240,7 @@ async def saved_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List saved-for-later items. Set detailed=True for full response."""
-    kwargs = {}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if limit is not None:
-        kwargs["limit"] = limit
-    return await client.session_call("saved.list", **kwargs)
+    return await client.session_call("saved.list", cursor=cursor, limit=limit)
 
 
 @mcp.tool
@@ -261,10 +252,9 @@ async def saved_add(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Save a message for later (undocumented session endpoint)."""
-    kwargs = {"item_type": item_type, "item_id": item_id, "ts": ts}
-    if date_due is not None:
-        kwargs["date_due"] = date_due
-    return await client.session_call("saved.add", **kwargs)
+    return await client.session_call(
+        "saved.add", item_type=item_type, item_id=item_id, ts=ts, date_due=date_due
+    )
 
 
 @mcp.tool
@@ -318,12 +308,7 @@ async def emoji_admin_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List custom emoji with metadata (undocumented session endpoint)."""
-    kwargs = {}
-    if page is not None:
-        kwargs["page"] = page
-    if count is not None:
-        kwargs["count"] = count
-    return await client.session_call("emoji.adminList", **kwargs)
+    return await client.session_call("emoji.adminList", page=page, count=count)
 
 
 # --- Search modules (granular search) ---
@@ -339,12 +324,9 @@ async def search_modules_messages(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search messages (undocumented). Set detailed=True for full response."""
-    kwargs = {"query": query}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if count is not None:
-        kwargs["count"] = count
-    return await client.session_call("search.modules.messages", **kwargs)
+    return await client.session_call(
+        "search.modules.messages", query=query, cursor=cursor, count=count
+    )
 
 
 @mcp.tool
@@ -355,12 +337,9 @@ async def search_modules_files(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search files (undocumented session endpoint)."""
-    kwargs = {"query": query}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if count is not None:
-        kwargs["count"] = count
-    return await client.session_call("search.modules.files", **kwargs)
+    return await client.session_call(
+        "search.modules.files", query=query, cursor=cursor, count=count
+    )
 
 
 @mcp.tool
@@ -371,12 +350,9 @@ async def search_modules_channels(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search channels by name or topic (undocumented session endpoint)."""
-    kwargs = {"query": query}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if count is not None:
-        kwargs["count"] = count
-    return await client.session_call("search.modules.channels", **kwargs)
+    return await client.session_call(
+        "search.modules.channels", query=query, cursor=cursor, count=count
+    )
 
 
 @mcp.tool
@@ -387,12 +363,9 @@ async def search_modules_people(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search people by name, title, or department (undocumented session endpoint)."""
-    kwargs = {"query": query}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if count is not None:
-        kwargs["count"] = count
-    return await client.session_call("search.modules.people", **kwargs)
+    return await client.session_call(
+        "search.modules.people", query=query, cursor=cursor, count=count
+    )
 
 
 @mcp.tool
@@ -403,12 +376,9 @@ async def search_modules_dms(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search within direct messages only (undocumented session endpoint)."""
-    kwargs = {"query": query}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if count is not None:
-        kwargs["count"] = count
-    return await client.session_call("search.modules.dms", **kwargs)
+    return await client.session_call(
+        "search.modules.dms", query=query, cursor=cursor, count=count
+    )
 
 
 # --- Conversations (undocumented extensions) ---

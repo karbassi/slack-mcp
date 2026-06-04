@@ -16,20 +16,15 @@ async def users_conversations(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List conversations the calling user may access."""
-    kwargs = {}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if exclude_archived is not None:
-        kwargs["exclude_archived"] = exclude_archived
-    if limit is not None:
-        kwargs["limit"] = limit
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    if types is not None:
-        kwargs["types"] = types
-    if user is not None:
-        kwargs["user"] = user
-    return await client.api_call("users.conversations", **kwargs)
+    return await client.api_call(
+        "users.conversations",
+        cursor=cursor,
+        exclude_archived=exclude_archived,
+        limit=limit,
+        team_id=team_id,
+        types=types,
+        user=user,
+    )
 
 
 @mcp.tool
@@ -75,10 +70,9 @@ async def users_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get information about a user. Set detailed=True for full response."""
-    kwargs = {"user": user}
-    if include_locale is not None:
-        kwargs["include_locale"] = include_locale
-    return await client.api_call("users.info", **kwargs)
+    return await client.api_call(
+        "users.info", user=user, include_locale=include_locale
+    )
 
 
 @mcp.tool
@@ -92,16 +86,13 @@ async def users_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all users in a Slack team. Set detailed=True for full response."""
-    kwargs = {}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if include_locale is not None:
-        kwargs["include_locale"] = include_locale
-    if limit is not None:
-        kwargs["limit"] = limit
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("users.list", **kwargs)
+    return await client.api_call(
+        "users.list",
+        cursor=cursor,
+        include_locale=include_locale,
+        limit=limit,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -124,12 +115,9 @@ async def users_profile_get(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve a user's profile information. Set detailed=True for full response."""
-    kwargs = {}
-    if include_labels is not None:
-        kwargs["include_labels"] = include_labels
-    if user is not None:
-        kwargs["user"] = user
-    return await client.api_call("users.profile.get", **kwargs)
+    return await client.api_call(
+        "users.profile.get", include_labels=include_labels, user=user
+    )
 
 
 @mcp.tool
@@ -141,16 +129,9 @@ async def users_profile_set(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set the profile information for a user."""
-    kwargs = {}
-    if name is not None:
-        kwargs["name"] = name
-    if profile is not None:
-        kwargs["profile"] = profile
-    if user is not None:
-        kwargs["user"] = user
-    if value is not None:
-        kwargs["value"] = value
-    return await client.api_call("users.profile.set", **kwargs)
+    return await client.api_call(
+        "users.profile.set", name=name, profile=profile, user=user, value=value
+    )
 
 
 @mcp.tool
@@ -162,14 +143,9 @@ async def users_set_photo(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set the user profile photo."""
-    kwargs = {"image": image}
-    if crop_w is not None:
-        kwargs["crop_w"] = crop_w
-    if crop_x is not None:
-        kwargs["crop_x"] = crop_x
-    if crop_y is not None:
-        kwargs["crop_y"] = crop_y
-    return await client.api_call("users.setPhoto", **kwargs)
+    return await client.api_call(
+        "users.setPhoto", image=image, crop_w=crop_w, crop_x=crop_x, crop_y=crop_y
+    )
 
 
 @mcp.tool

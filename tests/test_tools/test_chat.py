@@ -16,6 +16,7 @@ from slack_mcp.tools.chat import (
     chat_unfurl,
     chat_update,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -35,9 +36,7 @@ async def test_chat_delete(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await chat_delete(channel="C123", ts="1234.5678", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "chat.delete", channel="C123", ts="1234.5678"
-    )
+    assert_api_call(mock_client.api_call, "chat.delete", channel="C123", ts="1234.5678")
 
 
 @pytest.mark.asyncio
@@ -47,8 +46,11 @@ async def test_chat_delete_scheduled_message(mock_client):
         channel="C123", scheduled_message_id="Q123", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "chat.deleteScheduledMessage", channel="C123", scheduled_message_id="Q123"
+    assert_api_call(
+        mock_client.api_call,
+        "chat.deleteScheduledMessage",
+        channel="C123",
+        scheduled_message_id="Q123",
     )
 
 
@@ -81,8 +83,12 @@ async def test_chat_post_ephemeral(mock_client):
         channel="C123", user="U123", text="secret", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "chat.postEphemeral", channel="C123", user="U123", text="secret"
+    assert_api_call(
+        mock_client.api_call,
+        "chat.postEphemeral",
+        channel="C123",
+        user="U123",
+        text="secret",
     )
 
 
@@ -93,8 +99,8 @@ async def test_chat_post_message(mock_client):
         channel="C123", text="Hello world", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "chat.postMessage", channel="C123", text="Hello world"
+    assert_api_call(
+        mock_client.api_call, "chat.postMessage", channel="C123", text="Hello world"
     )
 
 
@@ -105,8 +111,12 @@ async def test_chat_schedule_message(mock_client):
         channel="C123", post_at=1234567890, text="later", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "chat.scheduleMessage", channel="C123", post_at=1234567890, text="later"
+    assert_api_call(
+        mock_client.api_call,
+        "chat.scheduleMessage",
+        channel="C123",
+        post_at=1234567890,
+        text="later",
     )
 
 
@@ -115,7 +125,7 @@ async def test_chat_scheduled_messages_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "scheduled_messages": []}
     result = await chat_scheduled_messages_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("chat.scheduledMessages.list")
+    assert_api_call(mock_client.api_call, "chat.scheduledMessages.list")
 
 
 @pytest.mark.asyncio
@@ -162,8 +172,12 @@ async def test_chat_unfurl(mock_client):
         channel="C123", ts="1234.5678", unfurls=unfurls, client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "chat.unfurl", channel="C123", ts="1234.5678", unfurls=unfurls
+    assert_api_call(
+        mock_client.api_call,
+        "chat.unfurl",
+        channel="C123",
+        ts="1234.5678",
+        unfurls=unfurls,
     )
 
 
@@ -174,6 +188,10 @@ async def test_chat_update(mock_client):
         channel="C123", ts="1234.5678", text="updated", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "chat.update", channel="C123", ts="1234.5678", text="updated"
+    assert_api_call(
+        mock_client.api_call,
+        "chat.update",
+        channel="C123",
+        ts="1234.5678",
+        text="updated",
     )

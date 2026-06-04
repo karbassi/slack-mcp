@@ -25,10 +25,9 @@ async def chat_delete(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Delete a message."""
-    kwargs = {"channel": channel, "ts": ts}
-    if as_user is not None:
-        kwargs["as_user"] = as_user
-    return await client.api_call("chat.delete", **kwargs)
+    return await client.api_call(
+        "chat.delete", channel=channel, ts=ts, as_user=as_user
+    )
 
 
 @mcp.tool
@@ -39,10 +38,12 @@ async def chat_delete_scheduled_message(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Delete a pending scheduled message from the queue."""
-    kwargs = {"channel": channel, "scheduled_message_id": scheduled_message_id}
-    if as_user is not None:
-        kwargs["as_user"] = as_user
-    return await client.api_call("chat.deleteScheduledMessage", **kwargs)
+    return await client.api_call(
+        "chat.deleteScheduledMessage",
+        channel=channel,
+        scheduled_message_id=scheduled_message_id,
+        as_user=as_user,
+    )
 
 
 @mcp.tool
@@ -79,22 +80,20 @@ async def chat_post_ephemeral(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Send an ephemeral message to a user in a channel."""
-    kwargs = {"channel": channel, "user": user}
-    if text is not None:
-        kwargs["text"] = text
-    if attachments is not None:
-        kwargs["attachments"] = attachments
-    if blocks is not None:
-        kwargs["blocks"] = blocks
-    if as_user is not None:
-        kwargs["as_user"] = as_user
-    if thread_ts is not None:
-        kwargs["thread_ts"] = thread_ts
-    return await client.api_call("chat.postEphemeral", **kwargs)
+    return await client.api_call(
+        "chat.postEphemeral",
+        channel=channel,
+        user=user,
+        text=text,
+        attachments=attachments,
+        blocks=blocks,
+        as_user=as_user,
+        thread_ts=thread_ts,
+    )
 
 
 @mcp.tool
-async def chat_post_message(  # noqa: PLR0912
+async def chat_post_message(
     channel: str,
     text: str | None = None,
     attachments: list | None = None,
@@ -114,38 +113,25 @@ async def chat_post_message(  # noqa: PLR0912
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Send a message to a channel."""
-    kwargs = {"channel": channel}
-    if text is not None:
-        kwargs["text"] = text
-    if attachments is not None:
-        kwargs["attachments"] = attachments
-    if blocks is not None:
-        kwargs["blocks"] = blocks
-    if as_user is not None:
-        kwargs["as_user"] = as_user
-    if icon_emoji is not None:
-        kwargs["icon_emoji"] = icon_emoji
-    if icon_url is not None:
-        kwargs["icon_url"] = icon_url
-    if link_names is not None:
-        kwargs["link_names"] = link_names
-    if metadata is not None:
-        kwargs["metadata"] = metadata
-    if mrkdwn is not None:
-        kwargs["mrkdwn"] = mrkdwn
-    if parse is not None:
-        kwargs["parse"] = parse
-    if reply_broadcast is not None:
-        kwargs["reply_broadcast"] = reply_broadcast
-    if thread_ts is not None:
-        kwargs["thread_ts"] = thread_ts
-    if unfurl_links is not None:
-        kwargs["unfurl_links"] = unfurl_links
-    if unfurl_media is not None:
-        kwargs["unfurl_media"] = unfurl_media
-    if username is not None:
-        kwargs["username"] = username
-    return await client.api_call("chat.postMessage", **kwargs)
+    return await client.api_call(
+        "chat.postMessage",
+        channel=channel,
+        text=text,
+        attachments=attachments,
+        blocks=blocks,
+        as_user=as_user,
+        icon_emoji=icon_emoji,
+        icon_url=icon_url,
+        link_names=link_names,
+        metadata=metadata,
+        mrkdwn=mrkdwn,
+        parse=parse,
+        reply_broadcast=reply_broadcast,
+        thread_ts=thread_ts,
+        unfurl_links=unfurl_links,
+        unfurl_media=unfurl_media,
+        username=username,
+    )
 
 
 @mcp.tool
@@ -164,26 +150,20 @@ async def chat_schedule_message(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Schedule a message to be sent to a channel."""
-    kwargs = {"channel": channel, "post_at": post_at}
-    if text is not None:
-        kwargs["text"] = text
-    if attachments is not None:
-        kwargs["attachments"] = attachments
-    if blocks is not None:
-        kwargs["blocks"] = blocks
-    if as_user is not None:
-        kwargs["as_user"] = as_user
-    if metadata is not None:
-        kwargs["metadata"] = metadata
-    if reply_broadcast is not None:
-        kwargs["reply_broadcast"] = reply_broadcast
-    if thread_ts is not None:
-        kwargs["thread_ts"] = thread_ts
-    if unfurl_links is not None:
-        kwargs["unfurl_links"] = unfurl_links
-    if unfurl_media is not None:
-        kwargs["unfurl_media"] = unfurl_media
-    return await client.api_call("chat.scheduleMessage", **kwargs)
+    return await client.api_call(
+        "chat.scheduleMessage",
+        channel=channel,
+        post_at=post_at,
+        text=text,
+        attachments=attachments,
+        blocks=blocks,
+        as_user=as_user,
+        metadata=metadata,
+        reply_broadcast=reply_broadcast,
+        thread_ts=thread_ts,
+        unfurl_links=unfurl_links,
+        unfurl_media=unfurl_media,
+    )
 
 
 @mcp.tool
@@ -197,20 +177,15 @@ async def chat_scheduled_messages_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List scheduled messages."""
-    kwargs = {}
-    if channel is not None:
-        kwargs["channel"] = channel
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if latest is not None:
-        kwargs["latest"] = latest
-    if limit is not None:
-        kwargs["limit"] = limit
-    if oldest is not None:
-        kwargs["oldest"] = oldest
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("chat.scheduledMessages.list", **kwargs)
+    return await client.api_call(
+        "chat.scheduledMessages.list",
+        channel=channel,
+        cursor=cursor,
+        latest=latest,
+        limit=limit,
+        oldest=oldest,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -262,16 +237,16 @@ async def chat_unfurl(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Provide custom unfurl behavior for URLs in messages."""
-    kwargs = {"channel": channel, "ts": ts, "unfurls": unfurls}
-    if user_auth_blocks is not None:
-        kwargs["user_auth_blocks"] = user_auth_blocks
-    if user_auth_message is not None:
-        kwargs["user_auth_message"] = user_auth_message
-    if user_auth_required is not None:
-        kwargs["user_auth_required"] = user_auth_required
-    if user_auth_url is not None:
-        kwargs["user_auth_url"] = user_auth_url
-    return await client.api_call("chat.unfurl", **kwargs)
+    return await client.api_call(
+        "chat.unfurl",
+        channel=channel,
+        ts=ts,
+        unfurls=unfurls,
+        user_auth_blocks=user_auth_blocks,
+        user_auth_message=user_auth_message,
+        user_auth_required=user_auth_required,
+        user_auth_url=user_auth_url,
+    )
 
 
 @mcp.tool
@@ -289,21 +264,16 @@ async def chat_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update a message."""
-    kwargs = {"channel": channel, "ts": ts}
-    if text is not None:
-        kwargs["text"] = text
-    if attachments is not None:
-        kwargs["attachments"] = attachments
-    if blocks is not None:
-        kwargs["blocks"] = blocks
-    if as_user is not None:
-        kwargs["as_user"] = as_user
-    if link_names is not None:
-        kwargs["link_names"] = link_names
-    if metadata is not None:
-        kwargs["metadata"] = metadata
-    if parse is not None:
-        kwargs["parse"] = parse
-    if reply_broadcast is not None:
-        kwargs["reply_broadcast"] = reply_broadcast
-    return await client.api_call("chat.update", **kwargs)
+    return await client.api_call(
+        "chat.update",
+        channel=channel,
+        ts=ts,
+        text=text,
+        attachments=attachments,
+        blocks=blocks,
+        as_user=as_user,
+        link_names=link_names,
+        metadata=metadata,
+        parse=parse,
+        reply_broadcast=reply_broadcast,
+    )

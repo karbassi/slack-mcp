@@ -7,7 +7,6 @@ from slack_mcp.tools.undocumented import (
     ai_apps_list,
     api_features,
     client_boot,
-    session_test,
     client_counts,
     client_user_boot,
     conversations_list_prefs,
@@ -28,11 +27,13 @@ from slack_mcp.tools.undocumented import (
     search_modules_files,
     search_modules_messages,
     search_modules_people,
+    session_test,
     subscriptions_thread_mark,
     threads_get_view,
     users_channel_sections_list,
     users_priority_list,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -48,8 +49,8 @@ async def test_client_counts(mock_client):
     mock_client.session_call.return_value = {"ok": True, "channels": []}
     result = await client_counts(thread_count_by_last_read=True, client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "client.counts", thread_count_by_last_read=True
+    assert_api_call(
+        mock_client.session_call, "client.counts", thread_count_by_last_read=True
     )
 
 
@@ -81,7 +82,7 @@ async def test_threads_get_view(mock_client):
     mock_client.session_call.return_value = {"ok": True, "threads": []}
     result = await threads_get_view(client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("threads.getView")
+    assert_api_call(mock_client.session_call, "threads.getView")
 
 
 @pytest.mark.asyncio
@@ -161,7 +162,7 @@ async def test_saved_list(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await saved_list(limit=10, client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("saved.list", limit=10)
+    assert_api_call(mock_client.session_call, "saved.list", limit=10)
 
 
 @pytest.mark.asyncio
@@ -171,8 +172,12 @@ async def test_saved_add(mock_client):
         item_type="message", item_id="C123", ts="1234.5678", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "saved.add", item_type="message", item_id="C123", ts="1234.5678"
+    assert_api_call(
+        mock_client.session_call,
+        "saved.add",
+        item_type="message",
+        item_id="C123",
+        ts="1234.5678",
     )
 
 
@@ -257,8 +262,8 @@ async def test_search_modules_messages(mock_client):
     mock_client.session_call.return_value = {"ok": True, "messages": []}
     result = await search_modules_messages(query="hello", count=10, client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "search.modules.messages", query="hello", count=10
+    assert_api_call(
+        mock_client.session_call, "search.modules.messages", query="hello", count=10
     )
 
 
@@ -267,9 +272,7 @@ async def test_search_modules_files(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_files(query="report", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "search.modules.files", query="report"
-    )
+    assert_api_call(mock_client.session_call, "search.modules.files", query="report")
 
 
 @pytest.mark.asyncio
@@ -277,9 +280,7 @@ async def test_search_modules_channels(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_channels(query="eng", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "search.modules.channels", query="eng"
-    )
+    assert_api_call(mock_client.session_call, "search.modules.channels", query="eng")
 
 
 @pytest.mark.asyncio
@@ -287,9 +288,7 @@ async def test_search_modules_people(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_people(query="alice", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "search.modules.people", query="alice"
-    )
+    assert_api_call(mock_client.session_call, "search.modules.people", query="alice")
 
 
 @pytest.mark.asyncio
@@ -297,9 +296,7 @@ async def test_search_modules_dms(mock_client):
     mock_client.session_call.return_value = {"ok": True, "items": []}
     result = await search_modules_dms(query="project", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "search.modules.dms", query="project"
-    )
+    assert_api_call(mock_client.session_call, "search.modules.dms", query="project")
 
 
 @pytest.mark.asyncio

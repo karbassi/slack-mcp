@@ -17,18 +17,15 @@ async def conversations_accept_shared_invite(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Accept an invitation to a Slack Connect channel."""
-    kwargs = {"channel_name": channel_name}
-    if channel_id is not None:
-        kwargs["channel_id"] = channel_id
-    if free_trial_accepted is not None:
-        kwargs["free_trial_accepted"] = free_trial_accepted
-    if invite_id is not None:
-        kwargs["invite_id"] = invite_id
-    if is_private is not None:
-        kwargs["is_private"] = is_private
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("conversations.acceptSharedInvite", **kwargs)
+    return await client.api_call(
+        "conversations.acceptSharedInvite",
+        channel_name=channel_name,
+        channel_id=channel_id,
+        free_trial_accepted=free_trial_accepted,
+        invite_id=invite_id,
+        is_private=is_private,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -38,10 +35,11 @@ async def conversations_approve_shared_invite(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Approve an invitation to a Slack Connect channel."""
-    kwargs = {"invite_id": invite_id}
-    if target_team is not None:
-        kwargs["target_team"] = target_team
-    return await client.api_call("conversations.approveSharedInvite", **kwargs)
+    return await client.api_call(
+        "conversations.approveSharedInvite",
+        invite_id=invite_id,
+        target_team=target_team,
+    )
 
 
 @mcp.tool
@@ -60,10 +58,11 @@ async def conversations_canvases_create(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a canvas in a channel."""
-    kwargs = {"channel_id": channel_id}
-    if document_content is not None:
-        kwargs["document_content"] = document_content
-    return await client.api_call("conversations.canvases.create", **kwargs)
+    return await client.api_call(
+        "conversations.canvases.create",
+        channel_id=channel_id,
+        document_content=document_content,
+    )
 
 
 @mcp.tool
@@ -83,12 +82,12 @@ async def conversations_create(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a new channel."""
-    kwargs = {"name": name}
-    if is_private is not None:
-        kwargs["is_private"] = is_private
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("conversations.create", **kwargs)
+    return await client.api_call(
+        "conversations.create",
+        name=name,
+        is_private=is_private,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -98,10 +97,11 @@ async def conversations_decline_shared_invite(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Decline an invitation to a Slack Connect channel."""
-    kwargs = {"invite_id": invite_id}
-    if target_team is not None:
-        kwargs["target_team"] = target_team
-    return await client.api_call("conversations.declineSharedInvite", **kwargs)
+    return await client.api_call(
+        "conversations.declineSharedInvite",
+        invite_id=invite_id,
+        target_team=target_team,
+    )
 
 
 @mcp.tool
@@ -130,20 +130,16 @@ async def conversations_history(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Fetch a conversation's history. Set detailed=True for full response."""
-    kwargs = {"channel": channel}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if inclusive is not None:
-        kwargs["inclusive"] = inclusive
-    if latest is not None:
-        kwargs["latest"] = latest
-    if limit is not None:
-        kwargs["limit"] = limit
-    if oldest is not None:
-        kwargs["oldest"] = oldest
-    if include_all_metadata is not None:
-        kwargs["include_all_metadata"] = include_all_metadata
-    return await client.api_call("conversations.history", **kwargs)
+    return await client.api_call(
+        "conversations.history",
+        channel=channel,
+        cursor=cursor,
+        inclusive=inclusive,
+        latest=latest,
+        limit=limit,
+        oldest=oldest,
+        include_all_metadata=include_all_metadata,
+    )
 
 
 @mcp.tool
@@ -154,12 +150,12 @@ async def conversations_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve information about a conversation."""
-    kwargs = {"channel": channel}
-    if include_locale is not None:
-        kwargs["include_locale"] = include_locale
-    if include_num_members is not None:
-        kwargs["include_num_members"] = include_num_members
-    return await client.api_call("conversations.info", **kwargs)
+    return await client.api_call(
+        "conversations.info",
+        channel=channel,
+        include_locale=include_locale,
+        include_num_members=include_num_members,
+    )
 
 
 @mcp.tool
@@ -170,10 +166,9 @@ async def conversations_invite(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Invite users to a channel."""
-    kwargs = {"channel": channel, "users": users}
-    if force is not None:
-        kwargs["force"] = force
-    return await client.api_call("conversations.invite", **kwargs)
+    return await client.api_call(
+        "conversations.invite", channel=channel, users=users, force=force
+    )
 
 
 @mcp.tool
@@ -185,14 +180,13 @@ async def conversations_invite_shared(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Send a shared channel invite."""
-    kwargs = {"channel": channel}
-    if emails is not None:
-        kwargs["emails"] = emails
-    if external_limited is not None:
-        kwargs["external_limited"] = external_limited
-    if user_ids is not None:
-        kwargs["user_ids"] = user_ids
-    return await client.api_call("conversations.inviteShared", **kwargs)
+    return await client.api_call(
+        "conversations.inviteShared",
+        channel=channel,
+        emails=emails,
+        external_limited=external_limited,
+        user_ids=user_ids,
+    )
 
 
 @mcp.tool
@@ -235,18 +229,14 @@ async def conversations_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all channels. Set detailed=True for the full response."""
-    kwargs = {}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if exclude_archived is not None:
-        kwargs["exclude_archived"] = exclude_archived
-    if limit is not None:
-        kwargs["limit"] = limit
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    if types is not None:
-        kwargs["types"] = types
-    return await client.api_call("conversations.list", **kwargs)
+    return await client.api_call(
+        "conversations.list",
+        cursor=cursor,
+        exclude_archived=exclude_archived,
+        limit=limit,
+        team_id=team_id,
+        types=types,
+    )
 
 
 @mcp.tool
@@ -257,14 +247,12 @@ async def conversations_list_connect_invites(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List shared channel invites."""
-    kwargs = {}
-    if count is not None:
-        kwargs["count"] = count
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("conversations.listConnectInvites", **kwargs)
+    return await client.api_call(
+        "conversations.listConnectInvites",
+        count=count,
+        cursor=cursor,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -292,12 +280,9 @@ async def conversations_members(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve members of a conversation."""
-    kwargs = {"channel": channel}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if limit is not None:
-        kwargs["limit"] = limit
-    return await client.api_call("conversations.members", **kwargs)
+    return await client.api_call(
+        "conversations.members", channel=channel, cursor=cursor, limit=limit
+    )
 
 
 @mcp.tool
@@ -309,16 +294,13 @@ async def conversations_open(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Open or resume a direct message or multi-party DM."""
-    kwargs = {}
-    if channel is not None:
-        kwargs["channel"] = channel
-    if prevent_creation is not None:
-        kwargs["prevent_creation"] = prevent_creation
-    if return_im is not None:
-        kwargs["return_im"] = return_im
-    if users is not None:
-        kwargs["users"] = users
-    return await client.api_call("conversations.open", **kwargs)
+    return await client.api_call(
+        "conversations.open",
+        channel=channel,
+        prevent_creation=prevent_creation,
+        return_im=return_im,
+        users=users,
+    )
 
 
 @mcp.tool
@@ -346,20 +328,17 @@ async def conversations_replies(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve a thread of messages. Set detailed=True for full response."""
-    kwargs = {"channel": channel, "ts": ts}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if inclusive is not None:
-        kwargs["inclusive"] = inclusive
-    if latest is not None:
-        kwargs["latest"] = latest
-    if limit is not None:
-        kwargs["limit"] = limit
-    if oldest is not None:
-        kwargs["oldest"] = oldest
-    if include_all_metadata is not None:
-        kwargs["include_all_metadata"] = include_all_metadata
-    return await client.api_call("conversations.replies", **kwargs)
+    return await client.api_call(
+        "conversations.replies",
+        channel=channel,
+        ts=ts,
+        cursor=cursor,
+        inclusive=inclusive,
+        latest=latest,
+        limit=limit,
+        oldest=oldest,
+        include_all_metadata=include_all_metadata,
+    )
 
 
 @mcp.tool
@@ -371,14 +350,13 @@ async def conversations_request_shared_invite_approve(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Approve a shared channel invite request."""
-    kwargs = {"invite_id": invite_id}
-    if channel_id is not None:
-        kwargs["channel_id"] = channel_id
-    if is_approved is not None:
-        kwargs["is_approved"] = is_approved
-    if message is not None:
-        kwargs["message"] = message
-    return await client.api_call("conversations.requestSharedInvite.approve", **kwargs)
+    return await client.api_call(
+        "conversations.requestSharedInvite.approve",
+        invite_id=invite_id,
+        channel_id=channel_id,
+        is_approved=is_approved,
+        message=message,
+    )
 
 
 @mcp.tool
@@ -388,10 +366,11 @@ async def conversations_request_shared_invite_deny(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Deny a shared channel invite request."""
-    kwargs = {"invite_id": invite_id}
-    if message is not None:
-        kwargs["message"] = message
-    return await client.api_call("conversations.requestSharedInvite.deny", **kwargs)
+    return await client.api_call(
+        "conversations.requestSharedInvite.deny",
+        invite_id=invite_id,
+        message=message,
+    )
 
 
 @mcp.tool
@@ -406,22 +385,16 @@ async def conversations_request_shared_invite_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List shared channel invite requests."""
-    kwargs = {}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if include_approved is not None:
-        kwargs["include_approved"] = include_approved
-    if include_denied is not None:
-        kwargs["include_denied"] = include_denied
-    if include_expired is not None:
-        kwargs["include_expired"] = include_expired
-    if invite_ids is not None:
-        kwargs["invite_ids"] = invite_ids
-    if limit is not None:
-        kwargs["limit"] = limit
-    if user_id is not None:
-        kwargs["user_id"] = user_id
-    return await client.api_call("conversations.requestSharedInvite.list", **kwargs)
+    return await client.api_call(
+        "conversations.requestSharedInvite.list",
+        cursor=cursor,
+        include_approved=include_approved,
+        include_denied=include_denied,
+        include_expired=include_expired,
+        invite_ids=invite_ids,
+        limit=limit,
+        user_id=user_id,
+    )
 
 
 @mcp.tool

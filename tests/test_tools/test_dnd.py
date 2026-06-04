@@ -7,6 +7,7 @@ from slack_mcp.tools.dnd import (
     dnd_set_snooze,
     dnd_team_info,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -30,7 +31,7 @@ async def test_dnd_info(mock_client):
     mock_client.api_call.return_value = {"ok": True, "dnd_enabled": True}
     result = await dnd_info(user="U123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("dnd.info", user="U123")
+    assert_api_call(mock_client.api_call, "dnd.info", user="U123")
 
 
 @pytest.mark.asyncio
@@ -46,4 +47,4 @@ async def test_dnd_team_info(mock_client):
     mock_client.api_call.return_value = {"ok": True, "users": {}}
     result = await dnd_team_info(users="U123,U456", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("dnd.teamInfo", users="U123,U456")
+    assert_api_call(mock_client.api_call, "dnd.teamInfo", users="U123,U456")

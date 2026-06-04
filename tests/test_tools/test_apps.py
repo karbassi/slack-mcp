@@ -10,6 +10,7 @@ from slack_mcp.tools.apps import (
     apps_manifest_validate,
     apps_uninstall,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -27,8 +28,10 @@ async def test_apps_event_authorizations_list(mock_client):
         event_context="test_ctx", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "apps.event.authorizations.list", event_context="test_ctx"
+    assert_api_call(
+        mock_client.api_call,
+        "apps.event.authorizations.list",
+        event_context="test_ctx",
     )
 
 
@@ -77,8 +80,8 @@ async def test_apps_manifest_validate(mock_client):
         manifest='{"name":"test"}', client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "apps.manifest.validate", manifest='{"name":"test"}'
+    assert_api_call(
+        mock_client.api_call, "apps.manifest.validate", manifest='{"name":"test"}'
     )
 
 

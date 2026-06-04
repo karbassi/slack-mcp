@@ -4,6 +4,7 @@ from slack_mcp.tools.functions import (
     functions_complete_error,
     functions_complete_success,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -27,7 +28,8 @@ async def test_functions_complete_success(mock_client):
         function_execution_id="Fn123", outputs={"result": "done"}, client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call,
         "functions.completeSuccess",
         function_execution_id="Fn123",
         outputs={"result": "done"},

@@ -31,6 +31,7 @@ from slack_mcp.tools.conversations import (
     conversations_set_topic,
     conversations_unarchive,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -40,7 +41,8 @@ async def test_conversations_accept_shared_invite(mock_client):
         channel_name="test-channel", invite_id="I123", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call,
         "conversations.acceptSharedInvite",
         channel_name="test-channel",
         invite_id="I123",
@@ -54,8 +56,8 @@ async def test_conversations_approve_shared_invite(mock_client):
         invite_id="I123", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.approveSharedInvite", invite_id="I123"
+    assert_api_call(
+        mock_client.api_call, "conversations.approveSharedInvite", invite_id="I123"
     )
 
 
@@ -74,8 +76,8 @@ async def test_conversations_canvases_create(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await conversations_canvases_create(channel_id="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.canvases.create", channel_id="C123"
+    assert_api_call(
+        mock_client.api_call, "conversations.canvases.create", channel_id="C123"
     )
 
 
@@ -92,8 +94,8 @@ async def test_conversations_create(mock_client):
     mock_client.api_call.return_value = {"ok": True, "channel": {"id": "C456"}}
     result = await conversations_create(name="test-channel", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.create", name="test-channel"
+    assert_api_call(
+        mock_client.api_call, "conversations.create", name="test-channel"
     )
 
 
@@ -104,8 +106,8 @@ async def test_conversations_decline_shared_invite(mock_client):
         invite_id="I123", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.declineSharedInvite", invite_id="I123"
+    assert_api_call(
+        mock_client.api_call, "conversations.declineSharedInvite", invite_id="I123"
     )
 
 
@@ -128,9 +130,7 @@ async def test_conversations_history(mock_client):
     mock_client.api_call.return_value = {"ok": True, "messages": []}
     result = await conversations_history(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.history", channel="C123"
-    )
+    assert_api_call(mock_client.api_call, "conversations.history", channel="C123")
 
 
 @pytest.mark.asyncio
@@ -138,7 +138,7 @@ async def test_conversations_info(mock_client):
     mock_client.api_call.return_value = {"ok": True, "channel": {}}
     result = await conversations_info(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("conversations.info", channel="C123")
+    assert_api_call(mock_client.api_call, "conversations.info", channel="C123")
 
 
 @pytest.mark.asyncio
@@ -148,8 +148,11 @@ async def test_conversations_invite(mock_client):
         channel="C123", users="U123,U456", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.invite", channel="C123", users="U123,U456"
+    assert_api_call(
+        mock_client.api_call,
+        "conversations.invite",
+        channel="C123",
+        users="U123,U456",
     )
 
 
@@ -160,7 +163,8 @@ async def test_conversations_invite_shared(mock_client):
         channel="C123", emails=["test@example.com"], client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call,
         "conversations.inviteShared",
         channel="C123",
         emails=["test@example.com"],
@@ -198,7 +202,7 @@ async def test_conversations_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "channels": []}
     result = await conversations_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("conversations.list")
+    assert_api_call(mock_client.api_call, "conversations.list")
 
 
 @pytest.mark.asyncio
@@ -206,7 +210,7 @@ async def test_conversations_list_connect_invites(mock_client):
     mock_client.api_call.return_value = {"ok": True, "invites": []}
     result = await conversations_list_connect_invites(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("conversations.listConnectInvites")
+    assert_api_call(mock_client.api_call, "conversations.listConnectInvites")
 
 
 @pytest.mark.asyncio
@@ -226,9 +230,7 @@ async def test_conversations_members(mock_client):
     mock_client.api_call.return_value = {"ok": True, "members": ["U123"]}
     result = await conversations_members(channel="C123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.members", channel="C123"
-    )
+    assert_api_call(mock_client.api_call, "conversations.members", channel="C123")
 
 
 @pytest.mark.asyncio
@@ -236,7 +238,7 @@ async def test_conversations_open(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await conversations_open(users="U123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("conversations.open", users="U123")
+    assert_api_call(mock_client.api_call, "conversations.open", users="U123")
 
 
 @pytest.mark.asyncio
@@ -258,8 +260,11 @@ async def test_conversations_replies(mock_client):
         channel="C123", ts="1234.5678", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.replies", channel="C123", ts="1234.5678"
+    assert_api_call(
+        mock_client.api_call,
+        "conversations.replies",
+        channel="C123",
+        ts="1234.5678",
     )
 
 
@@ -270,8 +275,10 @@ async def test_conversations_request_shared_invite_approve(mock_client):
         invite_id="I123", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.requestSharedInvite.approve", invite_id="I123"
+    assert_api_call(
+        mock_client.api_call,
+        "conversations.requestSharedInvite.approve",
+        invite_id="I123",
     )
 
 
@@ -282,8 +289,10 @@ async def test_conversations_request_shared_invite_deny(mock_client):
         invite_id="I123", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.requestSharedInvite.deny", invite_id="I123"
+    assert_api_call(
+        mock_client.api_call,
+        "conversations.requestSharedInvite.deny",
+        invite_id="I123",
     )
 
 
@@ -292,9 +301,7 @@ async def test_conversations_request_shared_invite_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "invites": []}
     result = await conversations_request_shared_invite_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "conversations.requestSharedInvite.list"
-    )
+    assert_api_call(mock_client.api_call, "conversations.requestSharedInvite.list")
 
 
 @pytest.mark.asyncio

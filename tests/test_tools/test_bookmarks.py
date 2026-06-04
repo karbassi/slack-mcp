@@ -6,6 +6,7 @@ from slack_mcp.tools.bookmarks import (
     bookmarks_list,
     bookmarks_remove,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -19,7 +20,8 @@ async def test_bookmarks_add(mock_client):
         client=mock_client,
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call,
         "bookmarks.add",
         channel_id="C123",
         title="Test",
@@ -35,8 +37,12 @@ async def test_bookmarks_edit(mock_client):
         bookmark_id="Bk123", channel_id="C123", title="Updated", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "bookmarks.edit", bookmark_id="Bk123", channel_id="C123", title="Updated"
+    assert_api_call(
+        mock_client.api_call,
+        "bookmarks.edit",
+        bookmark_id="Bk123",
+        channel_id="C123",
+        title="Updated",
     )
 
 

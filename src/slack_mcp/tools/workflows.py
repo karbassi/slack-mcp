@@ -46,10 +46,11 @@ async def workflows_step_completed(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Indicate a workflow step has been completed successfully."""
-    kwargs = {"workflow_step_execute_id": workflow_step_execute_id}
-    if outputs is not None:
-        kwargs["outputs"] = outputs
-    return await client.api_call("workflows.stepCompleted", **kwargs)
+    return await client.api_call(
+        "workflows.stepCompleted",
+        workflow_step_execute_id=workflow_step_execute_id,
+        outputs=outputs,
+    )
 
 
 @mcp.tool
@@ -76,13 +77,11 @@ async def workflows_update_step(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update the configuration for a workflow step."""
-    kwargs = {"workflow_step_edit_id": workflow_step_edit_id}
-    if inputs is not None:
-        kwargs["inputs"] = inputs
-    if outputs is not None:
-        kwargs["outputs"] = outputs
-    if step_image_url is not None:
-        kwargs["step_image_url"] = step_image_url
-    if step_name is not None:
-        kwargs["step_name"] = step_name
-    return await client.api_call("workflows.updateStep", **kwargs)
+    return await client.api_call(
+        "workflows.updateStep",
+        workflow_step_edit_id=workflow_step_edit_id,
+        inputs=inputs,
+        outputs=outputs,
+        step_image_url=step_image_url,
+        step_name=step_name,
+    )

@@ -14,6 +14,7 @@ from slack_mcp.tools.slack_lists import (
     slack_lists_items_update,
     slack_lists_update,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -23,8 +24,11 @@ async def test_slack_lists_access_delete(mock_client):
         list_id="L123", user_ids=["U123"], client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "slackLists.access.delete", list_id="L123", user_ids=["U123"]
+    assert_api_call(
+        mock_client.api_call_json,
+        "slackLists.access.delete",
+        list_id="L123",
+        user_ids=["U123"],
     )
 
 
@@ -35,8 +39,11 @@ async def test_slack_lists_access_set(mock_client):
         list_id="L123", access_level="write", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "slackLists.access.set", list_id="L123", access_level="write"
+    assert_api_call(
+        mock_client.api_call_json,
+        "slackLists.access.set",
+        list_id="L123",
+        access_level="write",
     )
 
 
@@ -45,9 +52,7 @@ async def test_slack_lists_create(mock_client):
     mock_client.api_call_json.return_value = {"ok": True}
     result = await slack_lists_create(name="My List", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "slackLists.create", name="My List"
-    )
+    assert_api_call(mock_client.api_call_json, "slackLists.create", name="My List")
 
 
 @pytest.mark.asyncio
@@ -77,8 +82,8 @@ async def test_slack_lists_items_create(mock_client):
     mock_client.api_call_json.return_value = {"ok": True}
     result = await slack_lists_items_create(list_id="L123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "slackLists.items.create", list_id="L123"
+    assert_api_call(
+        mock_client.api_call_json, "slackLists.items.create", list_id="L123"
     )
 
 
@@ -123,8 +128,8 @@ async def test_slack_lists_items_list(mock_client):
     mock_client.api_call_json.return_value = {"ok": True, "items": []}
     result = await slack_lists_items_list(list_id="L123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "slackLists.items.list", list_id="L123"
+    assert_api_call(
+        mock_client.api_call_json, "slackLists.items.list", list_id="L123"
     )
 
 
@@ -135,8 +140,8 @@ async def test_slack_lists_items_update(mock_client):
         item_id="I123", list_id="L123", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "slackLists.items.update", id="I123", list_id="L123"
+    assert_api_call(
+        mock_client.api_call_json, "slackLists.items.update", id="I123", list_id="L123"
     )
 
 
@@ -147,6 +152,6 @@ async def test_slack_lists_update(mock_client):
         list_id="L123", name="Updated", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "slackLists.update", id="L123", name="Updated"
+    assert_api_call(
+        mock_client.api_call_json, "slackLists.update", id="L123", name="Updated"
     )

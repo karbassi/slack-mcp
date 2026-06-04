@@ -15,18 +15,15 @@ async def usergroups_create(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a User Group."""
-    kwargs = {"name": name}
-    if channels is not None:
-        kwargs["channels"] = channels
-    if description is not None:
-        kwargs["description"] = description
-    if handle is not None:
-        kwargs["handle"] = handle
-    if include_count is not None:
-        kwargs["include_count"] = include_count
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("usergroups.create", **kwargs)
+    return await client.api_call(
+        "usergroups.create",
+        name=name,
+        channels=channels,
+        description=description,
+        handle=handle,
+        include_count=include_count,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -37,12 +34,12 @@ async def usergroups_disable(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Disable an existing User Group."""
-    kwargs = {"usergroup": usergroup}
-    if include_count is not None:
-        kwargs["include_count"] = include_count
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("usergroups.disable", **kwargs)
+    return await client.api_call(
+        "usergroups.disable",
+        usergroup=usergroup,
+        include_count=include_count,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -53,12 +50,12 @@ async def usergroups_enable(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Enable a User Group."""
-    kwargs = {"usergroup": usergroup}
-    if include_count is not None:
-        kwargs["include_count"] = include_count
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("usergroups.enable", **kwargs)
+    return await client.api_call(
+        "usergroups.enable",
+        usergroup=usergroup,
+        include_count=include_count,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -70,16 +67,13 @@ async def usergroups_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all User Groups for a team."""
-    kwargs = {}
-    if include_count is not None:
-        kwargs["include_count"] = include_count
-    if include_disabled is not None:
-        kwargs["include_disabled"] = include_disabled
-    if include_users is not None:
-        kwargs["include_users"] = include_users
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("usergroups.list", **kwargs)
+    return await client.api_call(
+        "usergroups.list",
+        include_count=include_count,
+        include_disabled=include_disabled,
+        include_users=include_users,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -94,20 +88,16 @@ async def usergroups_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update an existing User Group."""
-    kwargs = {"usergroup": usergroup}
-    if channels is not None:
-        kwargs["channels"] = channels
-    if description is not None:
-        kwargs["description"] = description
-    if handle is not None:
-        kwargs["handle"] = handle
-    if include_count is not None:
-        kwargs["include_count"] = include_count
-    if name is not None:
-        kwargs["name"] = name
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("usergroups.update", **kwargs)
+    return await client.api_call(
+        "usergroups.update",
+        usergroup=usergroup,
+        channels=channels,
+        description=description,
+        handle=handle,
+        include_count=include_count,
+        name=name,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -118,12 +108,12 @@ async def usergroups_users_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all users in a User Group."""
-    kwargs = {"usergroup": usergroup}
-    if include_disabled is not None:
-        kwargs["include_disabled"] = include_disabled
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("usergroups.users.list", **kwargs)
+    return await client.api_call(
+        "usergroups.users.list",
+        usergroup=usergroup,
+        include_disabled=include_disabled,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -135,9 +125,10 @@ async def usergroups_users_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update the list of users for a User Group."""
-    kwargs = {"usergroup": usergroup, "users": users}
-    if include_count is not None:
-        kwargs["include_count"] = include_count
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("usergroups.users.update", **kwargs)
+    return await client.api_call(
+        "usergroups.users.update",
+        usergroup=usergroup,
+        users=users,
+        include_count=include_count,
+        team_id=team_id,
+    )

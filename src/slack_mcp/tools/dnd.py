@@ -27,12 +27,7 @@ async def dnd_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve a user's current Do Not Disturb status."""
-    kwargs = {}
-    if user is not None:
-        kwargs["user"] = user
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("dnd.info", **kwargs)
+    return await client.api_call("dnd.info", user=user, team_id=team_id)
 
 
 @mcp.tool
@@ -51,7 +46,4 @@ async def dnd_team_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Retrieve the Do Not Disturb status for users on a team."""
-    kwargs = {"users": users}
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("dnd.teamInfo", **kwargs)
+    return await client.api_call("dnd.teamInfo", users=users, team_id=team_id)

@@ -13,6 +13,7 @@ from slack_mcp.tools.legacy import (
     users_prefs_get,
     users_prefs_set,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -20,7 +21,7 @@ async def test_bots_list(mock_client):
     mock_client.session_call.return_value = {"ok": True, "bots": []}
     result = await bots_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with("bots.list")
+    assert_api_call(mock_client.session_call, "bots.list")
 
 
 @pytest.mark.asyncio
@@ -56,8 +57,8 @@ async def test_files_edit(mock_client):
     mock_client.session_call_form.return_value = {"ok": True}
     result = await files_edit(file="F123", title="Updated", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call_form.assert_called_once_with(
-        "files.edit", file="F123", title="Updated"
+    assert_api_call(
+        mock_client.session_call_form, "files.edit", file="F123", title="Updated"
     )
 
 
@@ -84,8 +85,8 @@ async def test_users_admin_invite(mock_client):
     mock_client.session_call.return_value = {"ok": True}
     result = await users_admin_invite(email="test@example.com", client=mock_client)
     assert result["ok"] is True
-    mock_client.session_call.assert_called_once_with(
-        "users.admin.invite", email="test@example.com"
+    assert_api_call(
+        mock_client.session_call, "users.admin.invite", email="test@example.com"
     )
 
 

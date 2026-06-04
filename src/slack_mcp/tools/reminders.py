@@ -14,14 +14,14 @@ async def reminders_add(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a reminder."""
-    kwargs = {"text": text, "time": time}
-    if recurrence is not None:
-        kwargs["recurrence"] = recurrence
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    if user is not None:
-        kwargs["user"] = user
-    return await client.api_call("reminders.add", **kwargs)
+    return await client.api_call(
+        "reminders.add",
+        text=text,
+        time=time,
+        recurrence=recurrence,
+        team_id=team_id,
+        user=user,
+    )
 
 
 @mcp.tool
@@ -31,10 +31,9 @@ async def reminders_complete(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Mark a reminder as complete."""
-    kwargs = {"reminder": reminder}
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("reminders.complete", **kwargs)
+    return await client.api_call(
+        "reminders.complete", reminder=reminder, team_id=team_id
+    )
 
 
 @mcp.tool
@@ -44,10 +43,9 @@ async def reminders_delete(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Delete a reminder."""
-    kwargs = {"reminder": reminder}
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("reminders.delete", **kwargs)
+    return await client.api_call(
+        "reminders.delete", reminder=reminder, team_id=team_id
+    )
 
 
 @mcp.tool
@@ -57,10 +55,7 @@ async def reminders_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get info for a reminder."""
-    kwargs = {"reminder": reminder}
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("reminders.info", **kwargs)
+    return await client.api_call("reminders.info", reminder=reminder, team_id=team_id)
 
 
 @mcp.tool
@@ -69,7 +64,4 @@ async def reminders_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all reminders created by or for a given user."""
-    kwargs = {}
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("reminders.list", **kwargs)
+    return await client.api_call("reminders.list", team_id=team_id)

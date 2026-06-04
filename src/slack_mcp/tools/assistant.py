@@ -29,12 +29,13 @@ async def assistant_threads_set_suggested_prompts(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set suggested prompts for an AI assistant thread."""
-    kwargs = {"channel_id": channel_id, "thread_ts": thread_ts}
-    if prompts is not None:
-        kwargs["prompts"] = prompts
-    if title is not None:
-        kwargs["title"] = title
-    return await client.api_call("assistant.threads.setSuggestedPrompts", **kwargs)
+    return await client.api_call(
+        "assistant.threads.setSuggestedPrompts",
+        channel_id=channel_id,
+        thread_ts=thread_ts,
+        prompts=prompts,
+        title=title,
+    )
 
 
 @mcp.tool

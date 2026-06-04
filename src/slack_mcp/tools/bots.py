@@ -11,9 +11,4 @@ async def bots_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get info for a bot user."""
-    kwargs = {}
-    if bot is not None:
-        kwargs["bot"] = bot
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("bots.info", **kwargs)
+    return await client.api_call("bots.info", bot=bot, team_id=team_id)

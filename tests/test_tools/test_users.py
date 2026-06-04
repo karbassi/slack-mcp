@@ -14,6 +14,7 @@ from slack_mcp.tools.users import (
     users_set_photo,
     users_set_presence,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -21,7 +22,7 @@ async def test_users_conversations(mock_client):
     mock_client.api_call.return_value = {"ok": True, "channels": []}
     result = await users_conversations(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("users.conversations")
+    assert_api_call(mock_client.api_call, "users.conversations")
 
 
 @pytest.mark.asyncio
@@ -65,7 +66,7 @@ async def test_users_info(mock_client):
     mock_client.api_call.return_value = {"ok": True, "user": {"id": "U123"}}
     result = await users_info(user="U123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("users.info", user="U123")
+    assert_api_call(mock_client.api_call, "users.info", user="U123")
 
 
 @pytest.mark.asyncio
@@ -73,7 +74,7 @@ async def test_users_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "members": []}
     result = await users_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("users.list")
+    assert_api_call(mock_client.api_call, "users.list")
 
 
 @pytest.mark.asyncio
@@ -91,7 +92,7 @@ async def test_users_profile_get(mock_client):
     mock_client.api_call.return_value = {"ok": True, "profile": {}}
     result = await users_profile_get(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("users.profile.get")
+    assert_api_call(mock_client.api_call, "users.profile.get")
 
 
 @pytest.mark.asyncio
@@ -101,8 +102,8 @@ async def test_users_profile_set(mock_client):
         profile={"status_text": "busy"}, client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "users.profile.set", profile={"status_text": "busy"}
+    assert_api_call(
+        mock_client.api_call, "users.profile.set", profile={"status_text": "busy"}
     )
 
 
@@ -111,7 +112,7 @@ async def test_users_set_photo(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await users_set_photo(image="/path/to/img", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("users.setPhoto", image="/path/to/img")
+    assert_api_call(mock_client.api_call, "users.setPhoto", image="/path/to/img")
 
 
 @pytest.mark.asyncio

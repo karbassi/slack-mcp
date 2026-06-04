@@ -20,12 +20,12 @@ async def apps_event_authorizations_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get a list of authorizations for the given event context."""
-    kwargs = {"event_context": event_context}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if limit is not None:
-        kwargs["limit"] = limit
-    return await client.api_call("apps.event.authorizations.list", **kwargs)
+    return await client.api_call(
+        "apps.event.authorizations.list",
+        event_context=event_context,
+        cursor=cursor,
+        limit=limit,
+    )
 
 
 @mcp.tool
@@ -74,10 +74,9 @@ async def apps_manifest_validate(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Validate an app manifest."""
-    kwargs = {"manifest": manifest}
-    if app_id is not None:
-        kwargs["app_id"] = app_id
-    return await client.api_call("apps.manifest.validate", **kwargs)
+    return await client.api_call(
+        "apps.manifest.validate", manifest=manifest, app_id=app_id
+    )
 
 
 @mcp.tool

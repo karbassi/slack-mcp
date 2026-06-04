@@ -12,12 +12,12 @@ async def canvases_access_delete(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove access to a canvas for specified entities."""
-    kwargs = {"canvas_id": canvas_id}
-    if channel_ids is not None:
-        kwargs["channel_ids"] = channel_ids
-    if user_ids is not None:
-        kwargs["user_ids"] = user_ids
-    return await client.api_call_json("canvases.access.delete", **kwargs)
+    return await client.api_call_json(
+        "canvases.access.delete",
+        canvas_id=canvas_id,
+        channel_ids=channel_ids,
+        user_ids=user_ids,
+    )
 
 
 @mcp.tool
@@ -29,12 +29,13 @@ async def canvases_access_set(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set access level to a canvas for specified entities."""
-    kwargs = {"canvas_id": canvas_id, "access_level": access_level}
-    if channel_ids is not None:
-        kwargs["channel_ids"] = channel_ids
-    if user_ids is not None:
-        kwargs["user_ids"] = user_ids
-    return await client.api_call_json("canvases.access.set", **kwargs)
+    return await client.api_call_json(
+        "canvases.access.set",
+        canvas_id=canvas_id,
+        access_level=access_level,
+        channel_ids=channel_ids,
+        user_ids=user_ids,
+    )
 
 
 @mcp.tool
@@ -44,12 +45,9 @@ async def canvases_create(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a canvas."""
-    kwargs = {}
-    if title is not None:
-        kwargs["title"] = title
-    if document_content is not None:
-        kwargs["document_content"] = document_content
-    return await client.api_call_json("canvases.create", **kwargs)
+    return await client.api_call_json(
+        "canvases.create", title=title, document_content=document_content
+    )
 
 
 @mcp.tool

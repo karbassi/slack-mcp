@@ -9,6 +9,7 @@ from slack_mcp.tools.usergroups import (
     usergroups_users_list,
     usergroups_users_update,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -16,7 +17,7 @@ async def test_usergroups_create(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await usergroups_create(name="TestGroup", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("usergroups.create", name="TestGroup")
+    assert_api_call(mock_client.api_call, "usergroups.create", name="TestGroup")
 
 
 @pytest.mark.asyncio
@@ -24,7 +25,7 @@ async def test_usergroups_disable(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await usergroups_disable(usergroup="S123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("usergroups.disable", usergroup="S123")
+    assert_api_call(mock_client.api_call, "usergroups.disable", usergroup="S123")
 
 
 @pytest.mark.asyncio
@@ -32,7 +33,7 @@ async def test_usergroups_enable(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await usergroups_enable(usergroup="S123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("usergroups.enable", usergroup="S123")
+    assert_api_call(mock_client.api_call, "usergroups.enable", usergroup="S123")
 
 
 @pytest.mark.asyncio
@@ -40,7 +41,7 @@ async def test_usergroups_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "usergroups": []}
     result = await usergroups_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("usergroups.list")
+    assert_api_call(mock_client.api_call, "usergroups.list")
 
 
 @pytest.mark.asyncio
@@ -50,8 +51,8 @@ async def test_usergroups_update(mock_client):
         usergroup="S123", name="Updated", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "usergroups.update", usergroup="S123", name="Updated"
+    assert_api_call(
+        mock_client.api_call, "usergroups.update", usergroup="S123", name="Updated"
     )
 
 
@@ -60,9 +61,7 @@ async def test_usergroups_users_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "users": ["U123"]}
     result = await usergroups_users_list(usergroup="S123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "usergroups.users.list", usergroup="S123"
-    )
+    assert_api_call(mock_client.api_call, "usergroups.users.list", usergroup="S123")
 
 
 @pytest.mark.asyncio
@@ -72,6 +71,9 @@ async def test_usergroups_users_update(mock_client):
         usergroup="S123", users="U123,U456", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "usergroups.users.update", usergroup="S123", users="U123,U456"
+    assert_api_call(
+        mock_client.api_call,
+        "usergroups.users.update",
+        usergroup="S123",
+        users="U123,U456",
     )

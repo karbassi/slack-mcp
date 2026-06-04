@@ -8,6 +8,7 @@ from slack_mcp.tools.canvases import (
     canvases_edit,
     canvases_sections_lookup,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -17,8 +18,11 @@ async def test_canvases_access_delete(mock_client):
         canvas_id="F123", user_ids=["U123"], client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "canvases.access.delete", canvas_id="F123", user_ids=["U123"]
+    assert_api_call(
+        mock_client.api_call_json,
+        "canvases.access.delete",
+        canvas_id="F123",
+        user_ids=["U123"],
     )
 
 
@@ -29,7 +33,8 @@ async def test_canvases_access_set(mock_client):
         canvas_id="F123", access_level="write", user_ids=["U123"], client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call_json,
         "canvases.access.set",
         canvas_id="F123",
         access_level="write",
@@ -42,8 +47,8 @@ async def test_canvases_create(mock_client):
     mock_client.api_call_json.return_value = {"ok": True, "canvas_id": "F123"}
     result = await canvases_create(title="Test Canvas", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "canvases.create", title="Test Canvas"
+    assert_api_call(
+        mock_client.api_call_json, "canvases.create", title="Test Canvas"
     )
 
 

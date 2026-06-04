@@ -11,6 +11,18 @@ load_dotenv()
 _SLACK_BASE_URL = "https://slack.com/api/"
 
 
+def _drop_none(kwargs: dict) -> dict:
+    """Drop keys whose value is None.
+
+    Tools pass every Slack parameter through by keyword, leaving absent
+    optionals as None. Slack's API has no "set to null" semantic — an omitted
+    parameter and an explicit null are equivalent — so dropping None here lets
+    tools forward arguments unconditionally without per-call ``if x is not None``
+    guards. Falsy-but-meaningful values (False, 0, "", []) are preserved.
+    """
+    return {k: v for k, v in kwargs.items() if v is not None}
+
+
 class SlackClient:
     """Unified Slack API client using xoxp for official methods
     and xoxc + xoxd for undocumented session endpoints."""
@@ -30,7 +42,7 @@ class SlackClient:
 
     async def api_call(self, method: str, **kwargs) -> dict:
         """Call an official Slack Web API method via slack_sdk (form-encoded)."""
-        response = await self.web_client.api_call(method, data=kwargs)
+        response = await self.web_client.api_call(method, data=_drop_none(kwargs))
         return dict(response.data)
 
     async def api_call_json(self, method: str, **kwargs) -> dict:
@@ -39,7 +51,7 @@ class SlackClient:
         Some methods (e.g. files.completeUploadExternal) require complex
         nested objects that must be sent as JSON rather than form-encoded.
         """
-        response = await self.web_client.api_call(method, json=kwargs)
+        response = await self.web_client.api_call(method, json=_drop_none(kwargs))
         return dict(response.data)
 
     def _require_session_tokens(self) -> None:
@@ -69,7 +81,7 @@ class SlackClient:
     async def session_call(self, method: str, **kwargs) -> dict:
         """Call an undocumented Slack endpoint using xoxc + xoxd auth."""
         self._require_session_tokens()
-        resp = await self.session_client.post(method, json=kwargs)
+        resp = await self.session_client.post(method, json=_drop_none(kwargs))
         resp.raise_for_status()
         return self._check_session_response(resp.json(), method)
 
@@ -82,7 +94,7 @@ class SlackClient:
         self._require_session_tokens()
         resp = await self.session_client.post(
             method,
-            data=kwargs,
+            data=_drop_none(kwargs),
             headers={
                 "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
             },

@@ -10,7 +10,4 @@ async def emoji_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List custom emoji for a team."""
-    kwargs = {}
-    if include_categories is not None:
-        kwargs["include_categories"] = include_categories
-    return await client.api_call("emoji.list", **kwargs)
+    return await client.api_call("emoji.list", include_categories=include_categories)

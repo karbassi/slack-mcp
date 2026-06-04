@@ -19,6 +19,7 @@ from slack_mcp.tools.files import (
     files_upload,
     files_upload_v2,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -37,8 +38,8 @@ async def test_files_complete_upload_external(mock_client):
     files = [{"id": "F123", "title": "test.txt"}]
     result = await files_complete_upload_external(files=files, client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "files.completeUploadExternal", files=files
+    assert_api_call(
+        mock_client.api_call_json, "files.completeUploadExternal", files=files
     )
 
 
@@ -57,8 +58,11 @@ async def test_files_get_upload_url_external(mock_client):
         filename="test.txt", length=100, client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "files.getUploadURLExternal", filename="test.txt", length=100
+    assert_api_call(
+        mock_client.api_call,
+        "files.getUploadURLExternal",
+        filename="test.txt",
+        length=100,
     )
 
 
@@ -67,7 +71,7 @@ async def test_files_info(mock_client):
     mock_client.api_call.return_value = {"ok": True, "file": {}}
     result = await files_info(file="F123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("files.info", file="F123")
+    assert_api_call(mock_client.api_call, "files.info", file="F123")
 
 
 @pytest.mark.asyncio
@@ -75,7 +79,7 @@ async def test_files_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "files": []}
     result = await files_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("files.list")
+    assert_api_call(mock_client.api_call, "files.list")
 
 
 @pytest.mark.asyncio
@@ -88,7 +92,8 @@ async def test_files_remote_add(mock_client):
         client=mock_client,
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call,
         "files.remote.add",
         external_id="ext123",
         external_url="https://example.com/file",
@@ -101,7 +106,7 @@ async def test_files_remote_info(mock_client):
     mock_client.api_call.return_value = {"ok": True, "file": {}}
     result = await files_remote_info(file="F123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("files.remote.info", file="F123")
+    assert_api_call(mock_client.api_call, "files.remote.info", file="F123")
 
 
 @pytest.mark.asyncio
@@ -109,7 +114,7 @@ async def test_files_remote_list(mock_client):
     mock_client.api_call.return_value = {"ok": True, "files": []}
     result = await files_remote_list(client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("files.remote.list")
+    assert_api_call(mock_client.api_call, "files.remote.list")
 
 
 @pytest.mark.asyncio
@@ -117,7 +122,7 @@ async def test_files_remote_remove(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await files_remote_remove(file="F123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("files.remote.remove", file="F123")
+    assert_api_call(mock_client.api_call, "files.remote.remove", file="F123")
 
 
 @pytest.mark.asyncio
@@ -125,8 +130,8 @@ async def test_files_remote_share(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await files_remote_share(channels="C123", file="F123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "files.remote.share", channels="C123", file="F123"
+    assert_api_call(
+        mock_client.api_call, "files.remote.share", channels="C123", file="F123"
     )
 
 
@@ -135,8 +140,8 @@ async def test_files_remote_update(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await files_remote_update(file="F123", title="Updated", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "files.remote.update", file="F123", title="Updated"
+    assert_api_call(
+        mock_client.api_call, "files.remote.update", file="F123", title="Updated"
     )
 
 
@@ -163,8 +168,8 @@ async def test_files_upload(mock_client):
         content="hello", filename="test.txt", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "files.upload", content="hello", filename="test.txt"
+    assert_api_call(
+        mock_client.api_call, "files.upload", content="hello", filename="test.txt"
     )
 
 
@@ -175,8 +180,8 @@ async def test_files_upload_v2(mock_client):
         content="hello", filename="test.txt", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "files.upload.v2", content="hello", filename="test.txt"
+    assert_api_call(
+        mock_client.api_call, "files.upload.v2", content="hello", filename="test.txt"
     )
 
 

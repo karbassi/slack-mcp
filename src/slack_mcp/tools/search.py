@@ -24,20 +24,16 @@ async def search_all(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for messages and files. Set detailed=True for full response."""
-    kwargs = {"query": query}
-    if count is not None:
-        kwargs["count"] = count
-    if highlight is not None:
-        kwargs["highlight"] = highlight
-    if page is not None:
-        kwargs["page"] = page
-    if sort is not None:
-        kwargs["sort"] = sort
-    if sort_dir is not None:
-        kwargs["sort_dir"] = sort_dir
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("search.all", **kwargs)
+    return await client.api_call(
+        "search.all",
+        query=query,
+        count=count,
+        highlight=highlight,
+        page=page,
+        sort=sort,
+        sort_dir=sort_dir,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -54,20 +50,16 @@ async def search_files(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for files matching a query. Set detailed=True for full response."""
-    kwargs = {"query": query}
-    if count is not None:
-        kwargs["count"] = count
-    if highlight is not None:
-        kwargs["highlight"] = highlight
-    if page is not None:
-        kwargs["page"] = page
-    if sort is not None:
-        kwargs["sort"] = sort
-    if sort_dir is not None:
-        kwargs["sort_dir"] = sort_dir
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("search.files", **kwargs)
+    return await client.api_call(
+        "search.files",
+        query=query,
+        count=count,
+        highlight=highlight,
+        page=page,
+        sort=sort,
+        sort_dir=sort_dir,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -85,19 +77,14 @@ async def search_messages(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search for messages matching a query. Set detailed=True for full response."""
-    kwargs = {"query": query}
-    if count is not None:
-        kwargs["count"] = count
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if highlight is not None:
-        kwargs["highlight"] = highlight
-    if page is not None:
-        kwargs["page"] = page
-    if sort is not None:
-        kwargs["sort"] = sort
-    if sort_dir is not None:
-        kwargs["sort_dir"] = sort_dir
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("search.messages", **kwargs)
+    return await client.api_call(
+        "search.messages",
+        query=query,
+        count=count,
+        cursor=cursor,
+        highlight=highlight,
+        page=page,
+        sort=sort,
+        sort_dir=sort_dir,
+        team_id=team_id,
+    )

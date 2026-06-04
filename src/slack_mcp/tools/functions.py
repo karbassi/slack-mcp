@@ -25,7 +25,8 @@ async def functions_complete_success(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Signal the successful completion of a function."""
-    kwargs = {"function_execution_id": function_execution_id}
-    if outputs is not None:
-        kwargs["outputs"] = outputs
-    return await client.api_call("functions.completeSuccess", **kwargs)
+    return await client.api_call(
+        "functions.completeSuccess",
+        function_execution_id=function_execution_id,
+        outputs=outputs,
+    )

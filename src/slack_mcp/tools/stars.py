@@ -14,16 +14,13 @@ async def stars_add(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Save an item for later (star it)."""
-    kwargs = {}
-    if channel is not None:
-        kwargs["channel"] = channel
-    if file is not None:
-        kwargs["file"] = file
-    if file_comment is not None:
-        kwargs["file_comment"] = file_comment
-    if timestamp is not None:
-        kwargs["timestamp"] = timestamp
-    return await client.api_call("stars.add", **kwargs)
+    return await client.api_call(
+        "stars.add",
+        channel=channel,
+        file=file,
+        file_comment=file_comment,
+        timestamp=timestamp,
+    )
 
 
 @mcp.tool
@@ -38,18 +35,14 @@ async def stars_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List starred items for the calling user. Set detailed=True for full response."""
-    kwargs = {}
-    if count is not None:
-        kwargs["count"] = count
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if limit is not None:
-        kwargs["limit"] = limit
-    if page is not None:
-        kwargs["page"] = page
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    return await client.api_call("stars.list", **kwargs)
+    return await client.api_call(
+        "stars.list",
+        count=count,
+        cursor=cursor,
+        limit=limit,
+        page=page,
+        team_id=team_id,
+    )
 
 
 @mcp.tool
@@ -61,13 +54,10 @@ async def stars_remove(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove a star from an item."""
-    kwargs = {}
-    if channel is not None:
-        kwargs["channel"] = channel
-    if file is not None:
-        kwargs["file"] = file
-    if file_comment is not None:
-        kwargs["file_comment"] = file_comment
-    if timestamp is not None:
-        kwargs["timestamp"] = timestamp
-    return await client.api_call("stars.remove", **kwargs)
+    return await client.api_call(
+        "stars.remove",
+        channel=channel,
+        file=file,
+        file_comment=file_comment,
+        timestamp=timestamp,
+    )

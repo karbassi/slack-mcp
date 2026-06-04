@@ -9,6 +9,7 @@ from slack_mcp.tools.workflows import (
     workflows_step_failed,
     workflows_update_step,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -58,8 +59,10 @@ async def test_workflows_step_completed(mock_client):
         workflow_step_execute_id="WS123", client=mock_client
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "workflows.stepCompleted", workflow_step_execute_id="WS123"
+    assert_api_call(
+        mock_client.api_call,
+        "workflows.stepCompleted",
+        workflow_step_execute_id="WS123",
     )
 
 
@@ -88,7 +91,8 @@ async def test_workflows_update_step(mock_client):
         client=mock_client,
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call,
         "workflows.updateStep",
         workflow_step_edit_id="WSE123",
         inputs={"key": {"value": "val"}},

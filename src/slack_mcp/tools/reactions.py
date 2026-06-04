@@ -30,18 +30,14 @@ async def reactions_get(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get reactions for an item. Set detailed=True for full response."""
-    kwargs = {}
-    if channel is not None:
-        kwargs["channel"] = channel
-    if file is not None:
-        kwargs["file"] = file
-    if file_comment is not None:
-        kwargs["file_comment"] = file_comment
-    if full is not None:
-        kwargs["full"] = full
-    if timestamp is not None:
-        kwargs["timestamp"] = timestamp
-    return await client.api_call("reactions.get", **kwargs)
+    return await client.api_call(
+        "reactions.get",
+        channel=channel,
+        file=file,
+        file_comment=file_comment,
+        full=full,
+        timestamp=timestamp,
+    )
 
 
 @mcp.tool
@@ -58,22 +54,16 @@ async def reactions_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List reactions made by a user. Set detailed=True for full response."""
-    kwargs = {}
-    if count is not None:
-        kwargs["count"] = count
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if full is not None:
-        kwargs["full"] = full
-    if limit is not None:
-        kwargs["limit"] = limit
-    if page is not None:
-        kwargs["page"] = page
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    if user is not None:
-        kwargs["user"] = user
-    return await client.api_call("reactions.list", **kwargs)
+    return await client.api_call(
+        "reactions.list",
+        count=count,
+        cursor=cursor,
+        full=full,
+        limit=limit,
+        page=page,
+        team_id=team_id,
+        user=user,
+    )
 
 
 @mcp.tool
@@ -86,13 +76,11 @@ async def reactions_remove(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove a reaction from an item."""
-    kwargs = {"name": name}
-    if channel is not None:
-        kwargs["channel"] = channel
-    if file is not None:
-        kwargs["file"] = file
-    if file_comment is not None:
-        kwargs["file_comment"] = file_comment
-    if timestamp is not None:
-        kwargs["timestamp"] = timestamp
-    return await client.api_call("reactions.remove", **kwargs)
+    return await client.api_call(
+        "reactions.remove",
+        name=name,
+        channel=channel,
+        file=file,
+        file_comment=file_comment,
+        timestamp=timestamp,
+    )

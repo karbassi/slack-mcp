@@ -22,10 +22,9 @@ async def views_publish(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Publish a static view for a user."""
-    kwargs = {"user_id": user_id, "view": view}
-    if hash is not None:
-        kwargs["hash"] = hash
-    return await client.api_call("views.publish", **kwargs)
+    return await client.api_call(
+        "views.publish", user_id=user_id, view=view, hash=hash
+    )
 
 
 @mcp.tool
@@ -47,11 +46,10 @@ async def views_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update an existing view."""
-    kwargs = {"view": view}
-    if external_id is not None:
-        kwargs["external_id"] = external_id
-    if hash is not None:
-        kwargs["hash"] = hash
-    if view_id is not None:
-        kwargs["view_id"] = view_id
-    return await client.api_call("views.update", **kwargs)
+    return await client.api_call(
+        "views.update",
+        view=view,
+        external_id=external_id,
+        hash=hash,
+        view_id=view_id,
+    )

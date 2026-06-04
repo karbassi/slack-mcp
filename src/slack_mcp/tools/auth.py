@@ -12,10 +12,7 @@ async def auth_revoke(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Revoke a token."""
-    kwargs = {}
-    if test is not None:
-        kwargs["test"] = test
-    return await client.api_call("auth.revoke", **kwargs)
+    return await client.api_call("auth.revoke", test=test)
 
 
 @mcp.tool
@@ -26,14 +23,9 @@ async def auth_teams_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List the workspaces a token can access."""
-    kwargs = {}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if limit is not None:
-        kwargs["limit"] = limit
-    if include_icon is not None:
-        kwargs["include_icon"] = include_icon
-    return await client.api_call("auth.teams.list", **kwargs)
+    return await client.api_call(
+        "auth.teams.list", cursor=cursor, limit=limit, include_icon=include_icon
+    )
 
 
 @mcp.tool

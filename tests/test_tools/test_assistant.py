@@ -5,6 +5,7 @@ from slack_mcp.tools.assistant import (
     assistant_threads_set_suggested_prompts,
     assistant_threads_set_title,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -32,7 +33,8 @@ async def test_assistant_threads_set_suggested_prompts(mock_client):
         client=mock_client,
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call,
         "assistant.threads.setSuggestedPrompts",
         channel_id="C123",
         thread_ts="1234.5678",

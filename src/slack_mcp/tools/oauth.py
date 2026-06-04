@@ -14,12 +14,14 @@ async def oauth_access(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Exchange a temporary OAuth verifier code for an access token (V1)."""
-    kwargs = {"client_id": client_id, "client_secret": client_secret, "code": code}
-    if redirect_uri is not None:
-        kwargs["redirect_uri"] = redirect_uri
-    if single_channel is not None:
-        kwargs["single_channel"] = single_channel
-    return await client.api_call("oauth.access", **kwargs)
+    return await client.api_call(
+        "oauth.access",
+        client_id=client_id,
+        client_secret=client_secret,
+        code=code,
+        redirect_uri=redirect_uri,
+        single_channel=single_channel,
+    )
 
 
 @mcp.tool
@@ -33,14 +35,15 @@ async def oauth_v2_access(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Exchange a temporary OAuth verifier code for an access token (V2)."""
-    kwargs = {"client_id": client_id, "client_secret": client_secret, "code": code}
-    if grant_type is not None:
-        kwargs["grant_type"] = grant_type
-    if redirect_uri is not None:
-        kwargs["redirect_uri"] = redirect_uri
-    if refresh_token is not None:
-        kwargs["refresh_token"] = refresh_token
-    return await client.api_call("oauth.v2.access", **kwargs)
+    return await client.api_call(
+        "oauth.v2.access",
+        client_id=client_id,
+        client_secret=client_secret,
+        code=code,
+        grant_type=grant_type,
+        redirect_uri=redirect_uri,
+        refresh_token=refresh_token,
+    )
 
 
 @mcp.tool

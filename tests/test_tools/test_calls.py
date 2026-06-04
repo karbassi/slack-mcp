@@ -8,6 +8,7 @@ from slack_mcp.tools.calls import (
     calls_participants_remove,
     calls_update,
 )
+from tests.conftest import assert_api_call
 
 
 @pytest.mark.asyncio
@@ -19,7 +20,8 @@ async def test_calls_add(mock_client):
         client=mock_client,
     )
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert_api_call(
+        mock_client.api_call,
         "calls.add",
         external_unique_id="ext123",
         join_url="https://example.com/join",
@@ -31,7 +33,7 @@ async def test_calls_end(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await calls_end(id="R123", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("calls.end", id="R123")
+    assert_api_call(mock_client.api_call, "calls.end", id="R123")
 
 
 @pytest.mark.asyncio
@@ -69,6 +71,4 @@ async def test_calls_update(mock_client):
     mock_client.api_call.return_value = {"ok": True}
     result = await calls_update(id="R123", title="Updated", client=mock_client)
     assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "calls.update", id="R123", title="Updated"
-    )
+    assert_api_call(mock_client.api_call, "calls.update", id="R123", title="Updated")

@@ -17,20 +17,17 @@ async def calls_add(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Register a new call."""
-    kwargs = {"external_unique_id": external_unique_id, "join_url": join_url}
-    if created_by is not None:
-        kwargs["created_by"] = created_by
-    if date_start is not None:
-        kwargs["date_start"] = date_start
-    if desktop_app_join_url is not None:
-        kwargs["desktop_app_join_url"] = desktop_app_join_url
-    if external_display_id is not None:
-        kwargs["external_display_id"] = external_display_id
-    if title is not None:
-        kwargs["title"] = title
-    if users is not None:
-        kwargs["users"] = users
-    return await client.api_call("calls.add", **kwargs)
+    return await client.api_call(
+        "calls.add",
+        external_unique_id=external_unique_id,
+        join_url=join_url,
+        created_by=created_by,
+        date_start=date_start,
+        desktop_app_join_url=desktop_app_join_url,
+        external_display_id=external_display_id,
+        title=title,
+        users=users,
+    )
 
 
 @mcp.tool
@@ -40,10 +37,7 @@ async def calls_end(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """End a call."""
-    kwargs = {"id": id}
-    if duration is not None:
-        kwargs["duration"] = duration
-    return await client.api_call("calls.end", **kwargs)
+    return await client.api_call("calls.end", id=id, duration=duration)
 
 
 @mcp.tool
@@ -84,11 +78,10 @@ async def calls_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update information about a call."""
-    kwargs = {"id": id}
-    if desktop_app_join_url is not None:
-        kwargs["desktop_app_join_url"] = desktop_app_join_url
-    if join_url is not None:
-        kwargs["join_url"] = join_url
-    if title is not None:
-        kwargs["title"] = title
-    return await client.api_call("calls.update", **kwargs)
+    return await client.api_call(
+        "calls.update",
+        id=id,
+        desktop_app_join_url=desktop_app_join_url,
+        join_url=join_url,
+        title=title,
+    )

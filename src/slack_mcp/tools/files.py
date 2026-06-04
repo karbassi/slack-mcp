@@ -24,14 +24,13 @@ async def files_complete_upload_external(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Complete an upload external process."""
-    kwargs = {"files": files}
-    if channel_id is not None:
-        kwargs["channel_id"] = channel_id
-    if initial_comment is not None:
-        kwargs["initial_comment"] = initial_comment
-    if thread_ts is not None:
-        kwargs["thread_ts"] = thread_ts
-    return await client.api_call_json("files.completeUploadExternal", **kwargs)
+    return await client.api_call_json(
+        "files.completeUploadExternal",
+        files=files,
+        channel_id=channel_id,
+        initial_comment=initial_comment,
+        thread_ts=thread_ts,
+    )
 
 
 @mcp.tool
@@ -52,12 +51,13 @@ async def files_get_upload_url_external(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get an upload URL for an external file."""
-    kwargs = {"filename": filename, "length": length}
-    if alt_txt is not None:
-        kwargs["alt_txt"] = alt_txt
-    if snippet_type is not None:
-        kwargs["snippet_type"] = snippet_type
-    return await client.api_call("files.getUploadURLExternal", **kwargs)
+    return await client.api_call(
+        "files.getUploadURLExternal",
+        filename=filename,
+        length=length,
+        alt_txt=alt_txt,
+        snippet_type=snippet_type,
+    )
 
 
 @mcp.tool
@@ -72,16 +72,9 @@ async def files_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get information about a file. Set detailed=True for full response."""
-    kwargs = {"file": file}
-    if count is not None:
-        kwargs["count"] = count
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if limit is not None:
-        kwargs["limit"] = limit
-    if page is not None:
-        kwargs["page"] = page
-    return await client.api_call("files.info", **kwargs)
+    return await client.api_call(
+        "files.info", file=file, count=count, cursor=cursor, limit=limit, page=page
+    )
 
 
 @mcp.tool
@@ -100,26 +93,18 @@ async def files_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List files for a team, channel, or user. Set detailed=True for full response."""
-    kwargs = {}
-    if channel is not None:
-        kwargs["channel"] = channel
-    if count is not None:
-        kwargs["count"] = count
-    if page is not None:
-        kwargs["page"] = page
-    if show_files_hidden_by_limit is not None:
-        kwargs["show_files_hidden_by_limit"] = show_files_hidden_by_limit
-    if team_id is not None:
-        kwargs["team_id"] = team_id
-    if ts_from is not None:
-        kwargs["ts_from"] = ts_from
-    if ts_to is not None:
-        kwargs["ts_to"] = ts_to
-    if types is not None:
-        kwargs["types"] = types
-    if user is not None:
-        kwargs["user"] = user
-    return await client.api_call("files.list", **kwargs)
+    return await client.api_call(
+        "files.list",
+        channel=channel,
+        count=count,
+        page=page,
+        show_files_hidden_by_limit=show_files_hidden_by_limit,
+        team_id=team_id,
+        ts_from=ts_from,
+        ts_to=ts_to,
+        types=types,
+        user=user,
+    )
 
 
 @mcp.tool
@@ -133,18 +118,15 @@ async def files_remote_add(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Add a remote file."""
-    kwargs = {
-        "external_id": external_id,
-        "external_url": external_url,
-        "title": title,
-    }
-    if filetype is not None:
-        kwargs["filetype"] = filetype
-    if indexable_file_contents is not None:
-        kwargs["indexable_file_contents"] = indexable_file_contents
-    if preview_image is not None:
-        kwargs["preview_image"] = preview_image
-    return await client.api_call("files.remote.add", **kwargs)
+    return await client.api_call(
+        "files.remote.add",
+        external_id=external_id,
+        external_url=external_url,
+        title=title,
+        filetype=filetype,
+        indexable_file_contents=indexable_file_contents,
+        preview_image=preview_image,
+    )
 
 
 @mcp.tool
@@ -154,12 +136,9 @@ async def files_remote_info(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get information about a remote file."""
-    kwargs = {}
-    if external_id is not None:
-        kwargs["external_id"] = external_id
-    if file is not None:
-        kwargs["file"] = file
-    return await client.api_call("files.remote.info", **kwargs)
+    return await client.api_call(
+        "files.remote.info", external_id=external_id, file=file
+    )
 
 
 @mcp.tool
@@ -172,18 +151,14 @@ async def files_remote_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List remote files."""
-    kwargs = {}
-    if channel is not None:
-        kwargs["channel"] = channel
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if limit is not None:
-        kwargs["limit"] = limit
-    if ts_from is not None:
-        kwargs["ts_from"] = ts_from
-    if ts_to is not None:
-        kwargs["ts_to"] = ts_to
-    return await client.api_call("files.remote.list", **kwargs)
+    return await client.api_call(
+        "files.remote.list",
+        channel=channel,
+        cursor=cursor,
+        limit=limit,
+        ts_from=ts_from,
+        ts_to=ts_to,
+    )
 
 
 @mcp.tool
@@ -193,12 +168,9 @@ async def files_remote_remove(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Remove a remote file."""
-    kwargs = {}
-    if external_id is not None:
-        kwargs["external_id"] = external_id
-    if file is not None:
-        kwargs["file"] = file
-    return await client.api_call("files.remote.remove", **kwargs)
+    return await client.api_call(
+        "files.remote.remove", external_id=external_id, file=file
+    )
 
 
 @mcp.tool
@@ -209,12 +181,9 @@ async def files_remote_share(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Share a remote file into a channel."""
-    kwargs = {"channels": channels}
-    if external_id is not None:
-        kwargs["external_id"] = external_id
-    if file is not None:
-        kwargs["file"] = file
-    return await client.api_call("files.remote.share", **kwargs)
+    return await client.api_call(
+        "files.remote.share", channels=channels, external_id=external_id, file=file
+    )
 
 
 @mcp.tool
@@ -229,22 +198,16 @@ async def files_remote_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update a remote file."""
-    kwargs = {}
-    if external_id is not None:
-        kwargs["external_id"] = external_id
-    if external_url is not None:
-        kwargs["external_url"] = external_url
-    if file is not None:
-        kwargs["file"] = file
-    if filetype is not None:
-        kwargs["filetype"] = filetype
-    if indexable_file_contents is not None:
-        kwargs["indexable_file_contents"] = indexable_file_contents
-    if preview_image is not None:
-        kwargs["preview_image"] = preview_image
-    if title is not None:
-        kwargs["title"] = title
-    return await client.api_call("files.remote.update", **kwargs)
+    return await client.api_call(
+        "files.remote.update",
+        external_id=external_id,
+        external_url=external_url,
+        file=file,
+        filetype=filetype,
+        indexable_file_contents=indexable_file_contents,
+        preview_image=preview_image,
+        title=title,
+    )
 
 
 @mcp.tool
@@ -277,22 +240,16 @@ async def files_upload(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Upload a file (legacy)."""
-    kwargs = {}
-    if channels is not None:
-        kwargs["channels"] = channels
-    if content is not None:
-        kwargs["content"] = content
-    if filename is not None:
-        kwargs["filename"] = filename
-    if filetype is not None:
-        kwargs["filetype"] = filetype
-    if initial_comment is not None:
-        kwargs["initial_comment"] = initial_comment
-    if thread_ts is not None:
-        kwargs["thread_ts"] = thread_ts
-    if title is not None:
-        kwargs["title"] = title
-    return await client.api_call("files.upload", **kwargs)
+    return await client.api_call(
+        "files.upload",
+        channels=channels,
+        content=content,
+        filename=filename,
+        filetype=filetype,
+        initial_comment=initial_comment,
+        thread_ts=thread_ts,
+        title=title,
+    )
 
 
 @mcp.tool
@@ -309,23 +266,15 @@ async def files_upload_v2(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Upload a file using v2 API."""
-    kwargs = {}
-    if channel_id is not None:
-        kwargs["channel_id"] = channel_id
-    if content is not None:
-        kwargs["content"] = content
-    if filename is not None:
-        kwargs["filename"] = filename
-    if filetype is not None:
-        kwargs["filetype"] = filetype
-    if initial_comment is not None:
-        kwargs["initial_comment"] = initial_comment
-    if length is not None:
-        kwargs["length"] = length
-    if snippet_type is not None:
-        kwargs["snippet_type"] = snippet_type
-    if thread_ts is not None:
-        kwargs["thread_ts"] = thread_ts
-    if title is not None:
-        kwargs["title"] = title
-    return await client.api_call("files.upload.v2", **kwargs)
+    return await client.api_call(
+        "files.upload.v2",
+        channel_id=channel_id,
+        content=content,
+        filename=filename,
+        filetype=filetype,
+        initial_comment=initial_comment,
+        length=length,
+        snippet_type=snippet_type,
+        thread_ts=thread_ts,
+        title=title,
+    )

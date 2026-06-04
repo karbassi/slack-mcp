@@ -11,12 +11,7 @@ async def bots_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List all bots in a workspace (legacy undocumented)."""
-    kwargs = {}
-    if cursor is not None:
-        kwargs["cursor"] = cursor
-    if limit is not None:
-        kwargs["limit"] = limit
-    return await client.session_call("bots.list", **kwargs)
+    return await client.session_call("bots.list", cursor=cursor, limit=limit)
 
 
 @mcp.tool
@@ -36,10 +31,9 @@ async def chat_command(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Execute a slash command (legacy undocumented)."""
-    kwargs = {"channel": channel, "command": command}
-    if text is not None:
-        kwargs["text"] = text
-    return await client.session_call("chat.command", **kwargs)
+    return await client.session_call(
+        "chat.command", channel=channel, command=command, text=text
+    )
 
 
 @mcp.tool
@@ -59,14 +53,9 @@ async def files_edit(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Edit a file (legacy undocumented)."""
-    kwargs = {"file": file}
-    if title is not None:
-        kwargs["title"] = title
-    if filetype is not None:
-        kwargs["filetype"] = filetype
-    if content is not None:
-        kwargs["content"] = content
-    return await client.session_call_form("files.edit", **kwargs)
+    return await client.session_call_form(
+        "files.edit", file=file, title=title, filetype=filetype, content=content
+    )
 
 
 @mcp.tool
@@ -95,12 +84,9 @@ async def users_admin_invite(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Invite a user to the workspace as admin (legacy undocumented)."""
-    kwargs = {"email": email}
-    if channels is not None:
-        kwargs["channels"] = channels
-    if real_name is not None:
-        kwargs["real_name"] = real_name
-    return await client.session_call("users.admin.invite", **kwargs)
+    return await client.session_call(
+        "users.admin.invite", email=email, channels=channels, real_name=real_name
+    )
 
 
 @mcp.tool
