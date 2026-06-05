@@ -105,6 +105,46 @@ def _pad_draft_ts(ts: str) -> str:
     return ts
 
 
+def _draft_body(
+    channel_id: str,
+    text: str,
+    thread_ts: str | None = None,
+    broadcast: bool = False,
+    file_ids: list[str] | None = None,
+) -> dict:
+    """Build the shared wire payload for drafts.create / drafts.update.
+
+    A draft is plain text wrapped as a Block Kit ``rich_text`` block, addressed
+    to a destination (a channel, optionally a thread with ``broadcast``), with
+    attached files and a fresh ``client_msg_id``.
+
+    The drafts endpoints expect ``blocks``, ``destinations`` and ``file_ids`` as
+    JSON *strings* nested inside the JSON request body (double-encoded) — that
+    quirk is centralized here so the two callers can't drift.
+    """
+    blocks = [
+        {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [{"type": "text", "text": text}],
+                }
+            ],
+        }
+    ]
+    destination: dict = {"channel_id": channel_id}
+    if thread_ts is not None:
+        destination["thread_ts"] = thread_ts
+        destination["broadcast"] = broadcast
+    return {
+        "blocks": json.dumps(blocks),
+        "destinations": json.dumps([destination]),
+        "client_msg_id": str(uuid.uuid4()),
+        "file_ids": json.dumps(file_ids or []),
+    }
+
+
 # --- Drafts ---
 
 
@@ -137,31 +177,13 @@ async def drafts_create(
 
     Text is automatically wrapped in Block Kit rich_text format.
     """
-    blocks = [
-        {
-            "type": "rich_text",
-            "elements": [
-                {
-                    "type": "rich_text_section",
-                    "elements": [{"type": "text", "text": text}],
-                }
-            ],
-        }
-    ]
-    destination: dict = {"channel_id": channel_id}
-    if thread_ts is not None:
-        destination["thread_ts"] = thread_ts
-        destination["broadcast"] = broadcast
-    kwargs: dict = {
-        "blocks": json.dumps(blocks),
-        "destinations": json.dumps([destination]),
-        "client_msg_id": str(uuid.uuid4()),
-        "file_ids": json.dumps(file_ids or []),
-        "is_from_composer": "true",
-    }
-    if date_scheduled is not None:
-        kwargs["date_scheduled"] = date_scheduled
-    return await client.session_call("drafts.create", **kwargs)
+    # is_from_composer is sent on create only (matches observed Slack behavior).
+    return await client.session_call(
+        "drafts.create",
+        **_draft_body(channel_id, text, thread_ts, broadcast, file_ids),
+        is_from_composer="true",
+        date_scheduled=date_scheduled,
+    )
 
 
 @mcp.tool
@@ -176,29 +198,11 @@ async def drafts_update(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update an existing draft (undocumented session endpoint)."""
-    blocks = [
-        {
-            "type": "rich_text",
-            "elements": [
-                {
-                    "type": "rich_text_section",
-                    "elements": [{"type": "text", "text": text}],
-                }
-            ],
-        }
-    ]
-    destination: dict = {"channel_id": channel_id}
-    if thread_ts is not None:
-        destination["thread_ts"] = thread_ts
-        destination["broadcast"] = broadcast
     return await client.session_call(
         "drafts.update",
+        **_draft_body(channel_id, text, thread_ts, broadcast, file_ids),
         draft_id=draft_id,
         client_last_updated_ts=_pad_draft_ts(client_last_updated_ts),
-        blocks=json.dumps(blocks),
-        destinations=json.dumps([destination]),
-        client_msg_id=str(uuid.uuid4()),
-        file_ids=json.dumps(file_ids or []),
     )
 
 

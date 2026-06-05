@@ -1,9 +1,11 @@
+import json
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from slack_mcp.compact import compact_items, compact_message_list, get_compactor
 from slack_mcp.tools.undocumented import (
+    _draft_body,
     ai_apps_list,
     api_features,
     client_boot,
@@ -101,6 +103,45 @@ async def test_drafts_list_with_params(mock_client):
     mock_client.session_call.assert_called_once_with(
         "drafts.list", is_active="true", limit="10"
     )
+
+
+class TestDraftBody:
+    def test_wraps_text_in_rich_text(self):
+        body = _draft_body("C123", "hello")
+        blocks = json.loads(body["blocks"])
+        assert blocks[0]["type"] == "rich_text"
+        section = blocks[0]["elements"][0]
+        assert section["elements"][0] == {"type": "text", "text": "hello"}
+
+    def test_minimal_destination(self):
+        body = _draft_body("C123", "hi")
+        assert json.loads(body["destinations"]) == [{"channel_id": "C123"}]
+
+    def test_thread_destination_includes_broadcast(self):
+        body = _draft_body("C123", "hi", thread_ts="1234.5678", broadcast=True)
+        assert json.loads(body["destinations"]) == [
+            {"channel_id": "C123", "thread_ts": "1234.5678", "broadcast": True}
+        ]
+
+    def test_file_ids_default_empty(self):
+        assert json.loads(_draft_body("C123", "hi")["file_ids"]) == []
+
+    def test_file_ids_passed_through(self):
+        body = _draft_body("C123", "hi", file_ids=["F1", "F2"])
+        assert json.loads(body["file_ids"]) == ["F1", "F2"]
+
+    def test_client_msg_id_is_unique(self):
+        a = _draft_body("C123", "hi")["client_msg_id"]
+        b = _draft_body("C123", "hi")["client_msg_id"]
+        assert a != b
+
+    def test_fields_are_json_strings(self):
+        # Endpoint quirk: blocks/destinations/file_ids are double-encoded.
+        body = _draft_body("C123", "hi")
+        assert all(
+            isinstance(body[k], str)
+            for k in ("blocks", "destinations", "file_ids")
+        )
 
 
 @pytest.mark.asyncio
