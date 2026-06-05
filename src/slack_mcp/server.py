@@ -118,7 +118,9 @@ async def _cache_ttl(
 class CachingMiddleware(Middleware):
     """Cache read-only tool responses keyed by args, with a per-tool TTL declared
     in the tool's meta. The cached value is the fully-processed response (after
-    name resolution and compaction), since this middleware is outermost."""
+    name resolution and compaction), since those middlewares run inside this one.
+    Only SlackErrorMiddleware sits outside it, re-flagging is_error on each call
+    (including cache hits) because the cache wrapper drops that flag."""
 
     def __init__(self, cache_storage: Any) -> None:
         self._store = cache_storage
@@ -150,6 +152,26 @@ class CachingMiddleware(Middleware):
             collection=RESPONSE_CACHE_COLLECTION,
             ttl=ttl,
         )
+        return result
+
+
+class SlackErrorMiddleware(Middleware):
+    """Flag Slack ``ok: false`` responses as MCP tool errors.
+
+    Slack's session/undocumented endpoints return ``{"ok": false, ...}`` with
+    HTTP 200, so FastMCP would otherwise report them as successful calls. We set
+    ``is_error = True`` for those responses on every call — registered outermost
+    so the flag is re-applied on cache hits (the cache wrapper drops it)."""
+
+    async def on_call_tool(
+        self,
+        context: MiddlewareContext[CallToolRequestParams],
+        call_next: CallNext[CallToolRequestParams, ToolResult],
+    ) -> ToolResult:
+        result = await call_next(context)
+        content = result.structured_content
+        if isinstance(content, dict) and content.get("ok") is False:
+            result.is_error = True
         return result
 
 
@@ -207,8 +229,13 @@ class ThreadCachingMiddleware(Middleware):
         return result
 
 
-# Caching is outermost (registered first) so a hit short-circuits resolution
-# and compaction; the thread cache handles the old-message special case.
+# SlackErrorMiddleware is outermost (registered first) so it re-flags
+# ok:false errors after every call, including cache hits — the cache wrapper
+# drops is_error on the round-trip, so we re-apply the flag here. Setting it is
+# idempotent, so cache hits stay correct.
+# CachingMiddleware is next so a hit short-circuits resolution and compaction;
+# the thread cache handles the old-message special case.
+mcp.add_middleware(SlackErrorMiddleware())
 mcp.add_middleware(CachingMiddleware(cache_storage=cache_store))
 mcp.add_middleware(ThreadCachingMiddleware(cache_storage=cache_store))
 

@@ -5,7 +5,7 @@ description = "MCP server exposing Slack Web API methods as tools"
 license = "MIT"
 requires-python = ">=3.13"
 dependencies = [
-    "fastmcp>=3.1.1",
+    "fastmcp>=3.4.0",
     "slack-sdk",
     "aiohttp",
     "httpx",

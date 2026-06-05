@@ -1495,7 +1495,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp" },
-    { name = "fastmcp", specifier = ">=3.1.1" },
+    { name = "fastmcp", specifier = ">=3.4.0" },
     { name = "httpx" },
     { name = "platformdirs", specifier = ">=4.5.1" },
     { name = "py-key-value-aio", extras = ["disk"] },
