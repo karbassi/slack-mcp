@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-06-04
+
+### Added
+
+- User-object compaction for `users_info`, `users_list`, `users_lookup_by_email`, and `users_profile_get` — strips avatar-size variants, normalized name duplicates, status display info, timezone offsets, and other profile bloat (keeps one canonical avatar). Set `detailed=True` for the full response.
+- Reaction and channel topic/purpose compaction — reaction `users` ID arrays are trimmed to `{name, count}`, and channel `topic`/`purpose` to just their `.value`.
+
+### Changed
+
+- Cross-cutting tool behavior is now declared at each tool instead of in remote lists: cache TTL via `meta={"cache_ttl": ...}` and name-resolution opt-out via a `"skip-resolution"` tag, read by middleware at call time. No API changes.
+- Internal refactors with no API changes: `SlackClient` omits `None` keyword arguments so tools forward parameters unconditionally; Slack error-string classification centralized in `slack_mcp.errors`; draft-body composition deduplicated behind `_draft_body`.
+
+### Fixed
+
+- Close the httpx session client on server shutdown via the FastMCP lifespan, so session connections are no longer leaked on exit.
+
 ## [2.0.0] - 2026-04-03
 
 ### Added
