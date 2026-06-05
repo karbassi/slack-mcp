@@ -90,17 +90,26 @@ def _make_cache_key(tool_name: str, args: dict[str, Any]) -> str:
     return ":".join(key_parts)
 
 
+async def _lookup_tool(context: MiddlewareContext[CallToolRequestParams]) -> Any | None:
+    """Resolve the registered tool for this call so middleware can read its
+    meta/tags, or None when unavailable (outside a server request, or unknown
+    tool). One home for the FastMCP introspection guard."""
+    fastmcp_context = getattr(context, "fastmcp_context", None)
+    if fastmcp_context is None:
+        return None
+    try:
+        return await fastmcp_context.fastmcp.get_tool(context.message.name)
+    except Exception:
+        return None
+
+
 async def _cache_ttl(
     context: MiddlewareContext[CallToolRequestParams],
 ) -> int | None:
     """Per-tool cache TTL, declared at the tool via meta={"cache_ttl": <seconds>}
     and read here at call time. None means the tool isn't cached."""
-    fastmcp_context = getattr(context, "fastmcp_context", None)
-    if fastmcp_context is None:
-        return None
-    try:
-        tool = await fastmcp_context.fastmcp.get_tool(context.message.name)
-    except Exception:
+    tool = await _lookup_tool(context)
+    if tool is None:
         return None
     ttl = (tool.meta or {}).get("cache_ttl")
     return ttl if isinstance(ttl, int) else None
@@ -207,14 +216,8 @@ mcp.add_middleware(ThreadCachingMiddleware(cache_storage=cache_store))
 async def _skips_resolution(context: MiddlewareContext[CallToolRequestParams]) -> bool:
     """A tool opts out of name resolution with the "skip-resolution" tag —
     declared at the tool, read here at call time."""
-    fastmcp_context = getattr(context, "fastmcp_context", None)
-    if fastmcp_context is None:
-        return False
-    try:
-        tool = await fastmcp_context.fastmcp.get_tool(context.message.name)
-    except Exception:
-        return False
-    return "skip-resolution" in (tool.tags or set())
+    tool = await _lookup_tool(context)
+    return tool is not None and "skip-resolution" in (tool.tags or set())
 
 
 class NameResolutionMiddleware(Middleware):

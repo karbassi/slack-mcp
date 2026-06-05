@@ -9,7 +9,7 @@ from fastmcp.server.middleware.middleware import MiddlewareContext
 from fastmcp.tools.tool import ToolResult
 from mcp.types import CallToolRequestParams, TextContent
 
-from slack_mcp.server import NameResolutionMiddleware
+from slack_mcp.server import NameResolutionMiddleware, _lookup_tool
 
 
 def _make_context(tool_name: str, arguments: dict | None = None) -> MiddlewareContext:
@@ -262,6 +262,33 @@ async def test_untagged_tool_still_resolves():
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     assert result.structured_content["resolved_names"]["U0ADCDDNVGT"] == "Alice"
+
+
+@pytest.mark.asyncio
+async def test_lookup_tool_none_without_fastmcp_context():
+    ctx = _make_context("users_info")
+    assert await _lookup_tool(ctx) is None
+
+
+@pytest.mark.asyncio
+async def test_lookup_tool_none_when_get_tool_raises():
+    fastmcp_context = SimpleNamespace(
+        fastmcp=SimpleNamespace(get_tool=AsyncMock(side_effect=KeyError("nope")))
+    )
+    ctx = MiddlewareContext(
+        message=CallToolRequestParams(name="ghost", arguments={}),
+        method="tools/call",
+        fastmcp_context=fastmcp_context,
+    )
+    assert await _lookup_tool(ctx) is None
+
+
+@pytest.mark.asyncio
+async def test_lookup_tool_returns_tool():
+    ctx = _make_context_with_tags("users_info", {"x"})
+    tool = await _lookup_tool(ctx)
+    assert tool is not None
+    assert tool.tags == {"x"}
 
 
 @pytest.mark.asyncio
