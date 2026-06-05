@@ -23,7 +23,18 @@ async def search_all(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search for messages and files. Set detailed=True for full response."""
+    """Search for messages and files.
+
+    Args:
+        query: Search text. Supports Slack modifiers like ``in:#channel``, ``from:@user``, and ``before:2024-01-31``.
+        count: Results per page (default 20, max 100).
+        highlight: Wrap matched terms in highlight markers in the response.
+        page: 1-based page number to return.
+        sort: Sort by ``score`` (relevance, default) or ``timestamp`` (recency).
+        sort_dir: Sort direction, ``asc`` or ``desc`` (default ``desc``).
+        team_id: Encoded team ID to scope the search to (for org-wide tokens).
+        detailed: Return the full, uncompacted Slack response when True.
+    """
     return await client.api_call(
         "search.all",
         query=query,
@@ -49,7 +60,18 @@ async def search_files(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search for files matching a query. Set detailed=True for full response."""
+    """Search for files matching a query.
+
+    Args:
+        query: Search text. Supports Slack modifiers like ``in:#channel``, ``from:@user``, and ``type:`` filters.
+        count: Results per page (default 20, max 100).
+        highlight: Wrap matched terms in highlight markers in the response.
+        page: 1-based page number to return.
+        sort: Sort by ``score`` (relevance, default) or ``timestamp`` (recency).
+        sort_dir: Sort direction, ``asc`` or ``desc`` (default ``desc``).
+        team_id: Encoded team ID to scope the search to (for org-wide tokens).
+        detailed: Return the full, uncompacted Slack response when True.
+    """
     return await client.api_call(
         "search.files",
         query=query,
@@ -76,7 +98,19 @@ async def search_messages(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search for messages matching a query. Set detailed=True for full response."""
+    """Search for messages matching a query.
+
+    Args:
+        query: Search text. Supports Slack modifiers like ``in:#channel``, ``from:@user``, and ``before:2024-01-31``.
+        count: Results per page (default 20, max 100).
+        cursor: Pagination cursor from ``response_metadata.next_cursor`` in a prior response (alternative to ``page``).
+        highlight: Wrap matched terms in highlight markers in the response.
+        page: 1-based page number to return.
+        sort: Sort by ``score`` (relevance, default) or ``timestamp`` (recency).
+        sort_dir: Sort direction, ``asc`` or ``desc`` (default ``desc``).
+        team_id: Encoded team ID to scope the search to (for org-wide tokens).
+        detailed: Return the full, uncompacted Slack response when True.
+    """
     return await client.api_call(
         "search.messages",
         query=query,

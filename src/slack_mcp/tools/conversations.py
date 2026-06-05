@@ -17,7 +17,16 @@ async def conversations_accept_shared_invite(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Accept an invitation to a Slack Connect channel."""
+    """Accept an invitation to a Slack Connect channel.
+
+    Args:
+        channel_name: Name for the channel once accepted.
+        channel_id: ID of the channel the invite is for, if already known.
+        free_trial_accepted: Accept a paid-feature free trial as part of accepting the invite.
+        invite_id: ID of the invite to accept. Required unless ``channel_id`` is given.
+        is_private: Create the accepted channel as private.
+        team_id: Encoded team ID accepting the invite (for org-wide tokens).
+    """
     return await client.api_call(
         "conversations.acceptSharedInvite",
         channel_name=channel_name,
@@ -35,7 +44,12 @@ async def conversations_approve_shared_invite(
     target_team: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Approve an invitation to a Slack Connect channel."""
+    """Approve an invitation to a Slack Connect channel.
+
+    Args:
+        invite_id: ID of the shared-channel invite to approve.
+        target_team: Encoded team ID the invite is directed to (for org-wide approvals).
+    """
     return await client.api_call(
         "conversations.approveSharedInvite",
         invite_id=invite_id,
@@ -48,7 +62,11 @@ async def conversations_archive(
     channel: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Archive a conversation."""
+    """Archive a conversation.
+
+    Args:
+        channel: ID of the conversation to archive (e.g. C0123).
+    """
     return await client.api_call("conversations.archive", channel=channel)
 
 
@@ -58,7 +76,12 @@ async def conversations_canvases_create(
     document_content: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Create a canvas in a channel."""
+    """Create a canvas in a channel.
+
+    Args:
+        channel_id: ID of the channel the canvas belongs to (e.g. C0123).
+        document_content: Canvas body as a structured document object (e.g. a markdown document).
+    """
     return await client.api_call(
         "conversations.canvases.create",
         channel_id=channel_id,
@@ -71,7 +94,11 @@ async def conversations_close(
     channel: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Close a direct message or multi-party direct message."""
+    """Close a direct message or multi-party direct message.
+
+    Args:
+        channel: ID of the DM or multi-party DM to close (e.g. D0123).
+    """
     return await client.api_call("conversations.close", channel=channel)
 
 
@@ -82,7 +109,13 @@ async def conversations_create(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Create a new channel."""
+    """Create a new channel.
+
+    Args:
+        name: Channel name (lowercase, no spaces or periods, max 80 chars).
+        is_private: Create a private channel instead of a public one.
+        team_id: Encoded team ID to create the channel in (for org-wide tokens).
+    """
     return await client.api_call(
         "conversations.create",
         name=name,
@@ -97,7 +130,12 @@ async def conversations_decline_shared_invite(
     target_team: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Decline an invitation to a Slack Connect channel."""
+    """Decline an invitation to a Slack Connect channel.
+
+    Args:
+        invite_id: ID of the shared-channel invite to decline.
+        target_team: Encoded team ID the invite is directed to (for org-wide tokens).
+    """
     return await client.api_call(
         "conversations.declineSharedInvite",
         invite_id=invite_id,
@@ -111,7 +149,12 @@ async def conversations_external_invite_permissions_set(
     action: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set external invite permissions for a Slack Connect channel."""
+    """Set external invite permissions for a Slack Connect channel.
+
+    Args:
+        channel: ID of the Slack Connect channel (e.g. C0123).
+        action: Permission to apply — ``upgrade`` to allow external write access or ``downgrade`` to restrict it.
+    """
     return await client.api_call(
         "conversations.externalInvitePermissions.set", channel=channel, action=action
     )
@@ -130,7 +173,18 @@ async def conversations_history(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Fetch a conversation's history. Set detailed=True for full response."""
+    """Fetch a conversation's history.
+
+    Args:
+        channel: ID of the conversation to read (e.g. C0123).
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        inclusive: Include messages with ``latest`` or ``oldest`` timestamps in the results.
+        latest: Only include messages at or before this timestamp (e.g. 1700000000.000100). Defaults to now.
+        limit: Maximum number of messages to return per page (default 100).
+        oldest: Only include messages at or after this timestamp.
+        include_all_metadata: Include all message metadata in the response.
+        detailed: Return the full, uncompacted Slack response when True.
+    """
     return await client.api_call(
         "conversations.history",
         channel=channel,
@@ -150,7 +204,13 @@ async def conversations_info(
     include_num_members: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Retrieve information about a conversation."""
+    """Retrieve information about a conversation.
+
+    Args:
+        channel: ID of the conversation to look up (e.g. C0123).
+        include_locale: Include the channel's locale in the response.
+        include_num_members: Include the channel's member count in the response.
+    """
     return await client.api_call(
         "conversations.info",
         channel=channel,
@@ -166,7 +226,13 @@ async def conversations_invite(
     force: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Invite users to a channel."""
+    """Invite users to a channel.
+
+    Args:
+        channel: ID of the channel to invite users into (e.g. C0123).
+        users: Comma-separated list of user IDs to invite (e.g. ``U0123,U0456``), up to 1000.
+        force: Continue inviting valid users even if some IDs fail, rather than failing the whole call.
+    """
     return await client.api_call(
         "conversations.invite", channel=channel, users=users, force=force
     )
@@ -180,7 +246,14 @@ async def conversations_invite_shared(
     user_ids: list | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Send a shared channel invite."""
+    """Send a shared channel invite.
+
+    Args:
+        channel: ID of the channel to share (e.g. C0123).
+        emails: Email addresses to invite. Provide ``emails`` or ``user_ids``.
+        external_limited: Invite the external party as a limited (single-channel) guest.
+        user_ids: User IDs to invite. Provide ``emails`` or ``user_ids``.
+    """
     return await client.api_call(
         "conversations.inviteShared",
         channel=channel,
@@ -195,7 +268,11 @@ async def conversations_join(
     channel: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Join an existing conversation."""
+    """Join an existing conversation.
+
+    Args:
+        channel: ID of the channel to join (e.g. C0123).
+    """
     return await client.api_call("conversations.join", channel=channel)
 
 
@@ -205,7 +282,12 @@ async def conversations_kick(
     user: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Remove a user from a conversation."""
+    """Remove a user from a conversation.
+
+    Args:
+        channel: ID of the channel to remove the user from (e.g. C0123).
+        user: ID of the user to remove (e.g. U0123).
+    """
     return await client.api_call("conversations.kick", channel=channel, user=user)
 
 
@@ -214,7 +296,11 @@ async def conversations_leave(
     channel: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Leave a conversation."""
+    """Leave a conversation.
+
+    Args:
+        channel: ID of the conversation to leave (e.g. C0123).
+    """
     return await client.api_call("conversations.leave", channel=channel)
 
 
@@ -229,7 +315,16 @@ async def conversations_list(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List all channels. Set detailed=True for the full response."""
+    """List all channels.
+
+    Args:
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        exclude_archived: Omit archived channels from the results.
+        limit: Maximum number of channels to return per page (default 100).
+        team_id: Encoded team ID to list channels for (for org-wide tokens).
+        types: Comma-separated conversation types to include, e.g. ``public_channel,private_channel,mpim,im``.
+        detailed: Return the full, uncompacted Slack response when True.
+    """
     return await client.api_call(
         "conversations.list",
         cursor=cursor,
@@ -247,7 +342,13 @@ async def conversations_list_connect_invites(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List shared channel invites."""
+    """List shared channel invites.
+
+    Args:
+        count: Maximum number of invites to return (default 100).
+        cursor: Pagination cursor from ``response_metadata.next_cursor`` in a prior response.
+        team_id: Encoded team ID to list invites for (for org-wide tokens).
+    """
     return await client.api_call(
         "conversations.listConnectInvites",
         count=count,
@@ -262,7 +363,12 @@ async def conversations_mark(
     ts: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set the read cursor in a channel."""
+    """Set the read cursor in a channel.
+
+    Args:
+        channel: ID of the channel to mark (e.g. C0123).
+        ts: Timestamp of the most recently seen message (e.g. 1700000000.000100); everything up to it is marked read.
+    """
     try:
         return await client.api_call("conversations.mark", channel=channel, ts=ts)
     except SlackApiError as e:
@@ -280,7 +386,13 @@ async def conversations_members(
     limit: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Retrieve members of a conversation."""
+    """Retrieve members of a conversation.
+
+    Args:
+        channel: ID of the conversation to list members for (e.g. C0123).
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        limit: Maximum number of member IDs to return per page (default 100).
+    """
     return await client.api_call(
         "conversations.members", channel=channel, cursor=cursor, limit=limit
     )
@@ -294,7 +406,14 @@ async def conversations_open(
     users: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Open or resume a direct message or multi-party DM."""
+    """Open or resume a direct message or multi-party DM.
+
+    Args:
+        channel: ID of an existing DM/MPIM to resume. Provide ``channel`` or ``users``.
+        prevent_creation: For 1:1 DMs, don't create a new conversation if one doesn't already exist.
+        return_im: Return the full IM/MPIM channel object rather than just its ID.
+        users: Comma-separated user IDs to open a DM/MPIM with (e.g. ``U0123,U0456``).
+    """
     return await client.api_call(
         "conversations.open",
         channel=channel,
@@ -310,7 +429,12 @@ async def conversations_rename(
     name: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Rename a conversation."""
+    """Rename a conversation.
+
+    Args:
+        channel: ID of the channel to rename (e.g. C0123).
+        name: New channel name (lowercase, no spaces or periods, max 80 chars).
+    """
     return await client.api_call("conversations.rename", channel=channel, name=name)
 
 
@@ -328,7 +452,19 @@ async def conversations_replies(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Retrieve a thread of messages. Set detailed=True for full response."""
+    """Retrieve a thread of messages.
+
+    Args:
+        channel: ID of the conversation containing the thread (e.g. C0123).
+        ts: Timestamp of the thread's parent message (e.g. 1700000000.000100).
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        inclusive: Include messages with ``latest`` or ``oldest`` timestamps in the results.
+        latest: Only include messages at or before this timestamp. Defaults to now.
+        limit: Maximum number of messages to return per page (default 100).
+        oldest: Only include messages at or after this timestamp.
+        include_all_metadata: Include all message metadata in the response.
+        detailed: Return the full, uncompacted Slack response when True.
+    """
     return await client.api_call(
         "conversations.replies",
         channel=channel,
@@ -350,7 +486,14 @@ async def conversations_request_shared_invite_approve(
     message: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Approve a shared channel invite request."""
+    """Approve a shared channel invite request.
+
+    Args:
+        invite_id: ID of the shared-invite request to approve.
+        channel_id: ID of the channel the request is for, if disambiguation is needed.
+        is_approved: Whether the request is approved. Set False to record a rejection.
+        message: Optional message object to attach to the approval.
+    """
     return await client.api_call(
         "conversations.requestSharedInvite.approve",
         invite_id=invite_id,
@@ -366,7 +509,12 @@ async def conversations_request_shared_invite_deny(
     message: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Deny a shared channel invite request."""
+    """Deny a shared channel invite request.
+
+    Args:
+        invite_id: ID of the shared-invite request to deny.
+        message: Optional message object explaining the denial.
+    """
     return await client.api_call(
         "conversations.requestSharedInvite.deny",
         invite_id=invite_id,
@@ -385,7 +533,17 @@ async def conversations_request_shared_invite_list(
     user_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List shared channel invite requests."""
+    """List shared channel invite requests.
+
+    Args:
+        cursor: Pagination cursor from ``response_metadata.next_cursor`` in a prior response.
+        include_approved: Include already-approved requests in the results.
+        include_denied: Include denied requests in the results.
+        include_expired: Include expired requests in the results.
+        invite_ids: Restrict results to these specific invite request IDs.
+        limit: Maximum number of requests to return per page.
+        user_id: Only return requests made by this user ID.
+    """
     return await client.api_call(
         "conversations.requestSharedInvite.list",
         cursor=cursor,
@@ -404,7 +562,12 @@ async def conversations_set_purpose(
     purpose: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set the purpose for a conversation."""
+    """Set the purpose for a conversation.
+
+    Args:
+        channel: ID of the conversation to update (e.g. C0123).
+        purpose: New purpose text (max 250 chars).
+    """
     return await client.api_call(
         "conversations.setPurpose", channel=channel, purpose=purpose
     )
@@ -416,7 +579,12 @@ async def conversations_set_topic(
     topic: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set the topic for a conversation."""
+    """Set the topic for a conversation.
+
+    Args:
+        channel: ID of the conversation to update (e.g. C0123).
+        topic: New topic text (max 250 chars).
+    """
     return await client.api_call("conversations.setTopic", channel=channel, topic=topic)
 
 
@@ -425,5 +593,9 @@ async def conversations_unarchive(
     channel: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Reverse a conversation archive."""
+    """Reverse a conversation archive.
+
+    Args:
+        channel: ID of the archived conversation to restore (e.g. C0123).
+    """
     return await client.api_call("conversations.unarchive", channel=channel)
