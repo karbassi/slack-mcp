@@ -207,12 +207,17 @@ class ThreadCachingMiddleware(Middleware):
 
 mcp.add_middleware(ThreadCachingMiddleware(cache_storage=cache_store))
 
-# Tools that never return IDs — skip resolution to avoid overhead
-_SKIP_RESOLUTION = {
-    "api_test",
-    "cache_clear",
-    "resolve_names",
-}
+async def _skips_resolution(context: MiddlewareContext[CallToolRequestParams]) -> bool:
+    """A tool opts out of name resolution with the "skip-resolution" tag —
+    declared at the tool, read here at call time."""
+    fastmcp_context = getattr(context, "fastmcp_context", None)
+    if fastmcp_context is None:
+        return False
+    try:
+        tool = await fastmcp_context.fastmcp.get_tool(context.message.name)
+    except Exception:
+        return False
+    return "skip-resolution" in (tool.tags or set())
 
 
 class NameResolutionMiddleware(Middleware):
@@ -225,7 +230,7 @@ class NameResolutionMiddleware(Middleware):
     ) -> ToolResult:
         result = await call_next(context)
 
-        if context.message.name in _SKIP_RESOLUTION:
+        if await _skips_resolution(context):
             return result
 
         if not result.structured_content:
@@ -283,7 +288,7 @@ mcp.add_middleware(NameResolutionMiddleware())
 mcp.add_middleware(CompactResponseMiddleware())
 
 
-@mcp.tool
+@mcp.tool(tags={"skip-resolution"})
 def cache_clear() -> str:
     """Clear the Slack MCP cache so subsequent calls fetch fresh data from the API."""
     count = cache_store._cache.clear()

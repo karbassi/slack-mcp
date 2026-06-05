@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -15,6 +16,19 @@ def _make_context(tool_name: str, arguments: dict | None = None) -> MiddlewareCo
     return MiddlewareContext(
         message=CallToolRequestParams(name=tool_name, arguments=arguments),
         method="tools/call",
+    )
+
+
+def _make_context_with_tags(tool_name: str, tags: set[str]) -> MiddlewareContext:
+    """A context whose FastMCP can resolve the tool to one carrying ``tags``."""
+    tool = SimpleNamespace(tags=tags)
+    fastmcp_context = SimpleNamespace(
+        fastmcp=SimpleNamespace(get_tool=AsyncMock(return_value=tool))
+    )
+    return MiddlewareContext(
+        message=CallToolRequestParams(name=tool_name, arguments={}),
+        method="tools/call",
+        fastmcp_context=fastmcp_context,
     )
 
 
@@ -211,6 +225,43 @@ async def test_resolution_error_returns_original_result():
         result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     assert "resolved_names" not in result.structured_content
+
+
+@pytest.mark.asyncio
+async def test_skip_resolution_tag_bypasses_enrichment():
+    """A tool tagged 'skip-resolution' returns unmodified even if its response
+    contains IDs (e.g. resolve_names, whose output is already resolved)."""
+    middleware = NameResolutionMiddleware()
+    data = {"ok": True, "U0ADCDDNVGT": "Alice"}  # ids present in the payload
+
+    async def fake_call_next(_ctx):
+        return _make_result(data)
+
+    ctx = _make_context_with_tags("resolve_names", {"skip-resolution"})
+
+    # get_client is not patched: if resolution ran it would error out, but the
+    # tag must short-circuit before any client call.
+    result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
+
+    assert "resolved_names" not in result.structured_content
+
+
+@pytest.mark.asyncio
+async def test_untagged_tool_still_resolves():
+    """A tool without the tag (via the tag-aware context) still enriches."""
+    middleware = NameResolutionMiddleware()
+    data = {"ok": True, "messages": [{"user": "U0ADCDDNVGT", "text": "hi"}]}
+
+    async def fake_call_next(_ctx):
+        return _make_result(data)
+
+    ctx = _make_context_with_tags("conversations_history", set())
+    client = _mock_client(_api_side_effect)
+
+    with patch("slack_mcp.server.get_client", return_value=client):
+        result = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
+
+    assert result.structured_content["resolved_names"]["U0ADCDDNVGT"] == "Alice"
 
 
 @pytest.mark.asyncio

@@ -4,7 +4,7 @@ from slack_mcp.client import SlackClient
 from slack_mcp.server import mcp, slack_client
 
 
-@mcp.tool
+@mcp.tool(tags={"skip-resolution"})
 async def api_test(
     error: str | None = None,
     foo: str | None = None,

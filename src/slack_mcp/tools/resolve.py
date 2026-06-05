@@ -5,7 +5,7 @@ from slack_mcp.resolve import resolve_ids
 from slack_mcp.server import mcp, slack_client
 
 
-@mcp.tool
+@mcp.tool(tags={"skip-resolution"})
 async def resolve_names(
     user_ids: list[str] | None = None,
     channel_ids: list[str] | None = None,

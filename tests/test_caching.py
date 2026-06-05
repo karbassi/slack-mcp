@@ -24,6 +24,20 @@ def test_cached_tools_list_is_not_empty():
     assert len(CACHED_TOOLS) > 0
 
 
+@pytest.mark.asyncio
+async def test_cached_tools_all_exist():
+    """Every name in the cache lists must resolve to a registered tool.
+
+    The lists are hand-maintained strings remote from the tools; a typo or a
+    renamed/removed tool would otherwise silently stop being cached. This guard
+    turns that silent drift into a loud failure.
+    """
+    tools = await mcp.list_tools()
+    names = {t.name for t in tools}
+    missing = sorted(n for n in CACHED_TOOLS if n not in names)
+    assert not missing, f"CACHED_TOOLS references unknown tools: {missing}"
+
+
 def _make_context(tool_name: str, arguments: dict | None = None) -> MiddlewareContext:
     return MiddlewareContext(
         message=CallToolRequestParams(name=tool_name, arguments=arguments),
