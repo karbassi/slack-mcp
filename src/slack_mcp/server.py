@@ -38,6 +38,7 @@ mcp = FastMCP(name="Slack MCP", version=version("slack-mcp"), lifespan=_lifespan
 # meta={"cache_ttl": LONG_TTL} and read by CachingMiddleware at call time.
 LONG_TTL = 3600  # stable identity data — rarely changes
 SHORT_TTL = 300  # more dynamic data — can change within minutes
+SLOW_CALL_TIMEOUT = 30.0  # seconds: cap slow paginated reads
 
 from platformdirs import user_cache_dir
 

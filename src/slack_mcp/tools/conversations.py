@@ -4,7 +4,7 @@ from slack_sdk.errors import SlackApiError
 from slack_mcp.client import SlackClient
 from slack_mcp.compact import compact_channel_list, compact_message_list, compactable
 from slack_mcp.errors import is_missing_scope
-from slack_mcp.server import SHORT_TTL, mcp, slack_client
+from slack_mcp.server import SHORT_TTL, SLOW_CALL_TIMEOUT, mcp, slack_client
 
 
 @mcp.tool
@@ -117,7 +117,7 @@ async def conversations_external_invite_permissions_set(
     )
 
 
-@mcp.tool
+@mcp.tool(timeout=SLOW_CALL_TIMEOUT)
 @compactable(compact_message_list)
 async def conversations_history(
     channel: str,
@@ -314,7 +314,7 @@ async def conversations_rename(
     return await client.api_call("conversations.rename", channel=channel, name=name)
 
 
-@mcp.tool
+@mcp.tool(timeout=SLOW_CALL_TIMEOUT)
 @compactable(compact_message_list)
 async def conversations_replies(
     channel: str,

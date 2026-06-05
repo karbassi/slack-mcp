@@ -7,10 +7,10 @@ from slack_mcp.compact import (
     compact_search_messages,
     compactable,
 )
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import SLOW_CALL_TIMEOUT, mcp, slack_client
 
 
-@mcp.tool
+@mcp.tool(timeout=SLOW_CALL_TIMEOUT)
 @compactable(compact_search_all)
 async def search_all(
     query: str,
@@ -36,7 +36,7 @@ async def search_all(
     )
 
 
-@mcp.tool
+@mcp.tool(timeout=SLOW_CALL_TIMEOUT)
 @compactable(compact_search_files)
 async def search_files(
     query: str,
@@ -62,7 +62,7 @@ async def search_files(
     )
 
 
-@mcp.tool
+@mcp.tool(timeout=SLOW_CALL_TIMEOUT)
 @compactable(compact_search_messages)
 async def search_messages(
     query: str,
