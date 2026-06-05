@@ -2,7 +2,7 @@ from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
 from slack_mcp.compact import compact_file_list, compactable
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import SHORT_TTL, mcp, slack_client
 
 
 @mcp.tool
@@ -60,7 +60,7 @@ async def files_get_upload_url_external(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 @compactable(compact_file_list)
 async def files_info(
     file: str,

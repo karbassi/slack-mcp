@@ -3,7 +3,7 @@ from importlib.metadata import version
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import LONG_TTL, mcp, slack_client
 
 
 @mcp.tool
@@ -15,7 +15,7 @@ async def auth_revoke(
     return await client.api_call("auth.revoke", test=test)
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def auth_teams_list(
     cursor: str | None = None,
     limit: int | None = None,
@@ -28,7 +28,7 @@ async def auth_teams_list(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def auth_test(
     client: SlackClient = Depends(slack_client),
 ) -> dict:

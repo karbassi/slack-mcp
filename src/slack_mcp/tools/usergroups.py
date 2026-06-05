@@ -1,7 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import SHORT_TTL, mcp, slack_client
 
 
 @mcp.tool
@@ -58,7 +58,7 @@ async def usergroups_enable(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def usergroups_list(
     include_count: bool | None = None,
     include_disabled: bool | None = None,
@@ -100,7 +100,7 @@ async def usergroups_update(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def usergroups_users_list(
     usergroup: str,
     include_disabled: bool | None = None,

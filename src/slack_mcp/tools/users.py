@@ -2,10 +2,10 @@ from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
 from slack_mcp.compact import compact_users, compactable
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import LONG_TTL, SHORT_TTL, mcp, slack_client
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def users_conversations(
     cursor: str | None = None,
     exclude_archived: bool | None = None,
@@ -53,7 +53,7 @@ async def users_get_presence(
     return await client.api_call("users.getPresence", user=user)
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def users_identity(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -61,7 +61,7 @@ async def users_identity(
     return await client.api_call("users.identity")
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 @compactable(compact_users)
 async def users_info(
     user: str,
@@ -75,7 +75,7 @@ async def users_info(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 @compactable(compact_users)
 async def users_list(
     cursor: str | None = None,
@@ -95,7 +95,7 @@ async def users_list(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 @compactable(compact_users)
 async def users_lookup_by_email(
     email: str,
@@ -106,7 +106,7 @@ async def users_lookup_by_email(
     return await client.api_call("users.lookupByEmail", email=email)
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 @compactable(compact_users)
 async def users_profile_get(
     include_labels: bool | None = None,

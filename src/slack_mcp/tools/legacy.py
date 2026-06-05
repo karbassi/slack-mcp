@@ -1,10 +1,10 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import LONG_TTL, mcp, slack_client
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def bots_list(
     cursor: str | None = None,
     limit: int | None = None,
@@ -36,7 +36,7 @@ async def chat_command(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def commands_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -68,7 +68,7 @@ async def files_share_legacy(
     return await client.session_call("files.share", file=file, channel=channel)
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def team_prefs_get(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -98,7 +98,7 @@ async def users_admin_set_inactive(
     return await client.session_call("users.admin.setInactive", user=user)
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def users_prefs_get(
     client: SlackClient = Depends(slack_client),
 ) -> dict:

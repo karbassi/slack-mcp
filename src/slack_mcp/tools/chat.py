@@ -1,7 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import SHORT_TTL, mcp, slack_client
 
 
 @mcp.tool
@@ -46,7 +46,7 @@ async def chat_delete_scheduled_message(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def chat_get_permalink(
     channel: str,
     message_ts: str,

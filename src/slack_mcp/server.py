@@ -15,11 +15,7 @@ from typing import Any
 import pydantic_core
 from fastmcp import FastMCP
 from fastmcp.dependencies import Depends
-from fastmcp.server.middleware.caching import (
-    CachableToolResult,
-    CallToolSettings,
-    ResponseCachingMiddleware,
-)
+from fastmcp.server.middleware.caching import CachableToolResult
 from fastmcp.server.middleware.middleware import CallNext, Middleware, MiddlewareContext
 from fastmcp.tools.tool import ToolResult
 from key_value.aio.stores.disk import DiskStore
@@ -38,49 +34,10 @@ async def _lifespan(_server: FastMCP) -> AsyncIterator[dict]:
 
 mcp = FastMCP(name="Slack MCP", version=version("slack-mcp"), lifespan=_lifespan)
 
-# Stable identity data — rarely changes (1 hour)
-LONG_CACHED_TOOLS = [
-    # Identity / Team
-    "auth_test",
-    "auth_teams_list",
-    "team_info",
-    "team_profile_get",
-    "team_preferences_list",
-    "team_prefs_get",
-    "users_prefs_get",
-    "emoji_list",
-    "commands_list",
-    "migration_exchange",
-    # Bulk resolution (names are stable identity data)
-    "resolve_names",
-    # Users
-    "users_info",
-    "users_list",
-    "users_lookup_by_email",
-    "users_profile_get",
-    "users_identity",
-    # Bots
-    "bots_info",
-    "bots_list",
-]
-
-# More dynamic data — can change within minutes (5 minutes)
-SHORT_CACHED_TOOLS = [
-    "users_conversations",
-    # Channels / Groups
-    "conversations_info",
-    "conversations_list",
-    "conversations_members",
-    "usergroups_list",
-    "usergroups_users_list",
-    # Other reads
-    "bookmarks_list",
-    "files_info",
-    "team_external_teams_list",
-    "chat_get_permalink",
-]
-
-CACHED_TOOLS = LONG_CACHED_TOOLS + SHORT_CACHED_TOOLS
+# Cache TTLs (seconds). Per-tool TTL is declared at the tool via
+# meta={"cache_ttl": LONG_TTL} and read by CachingMiddleware at call time.
+LONG_TTL = 3600  # stable identity data — rarely changes
+SHORT_TTL = 300  # more dynamic data — can change within minutes
 
 from platformdirs import user_cache_dir
 
@@ -96,27 +53,9 @@ from slack_mcp.resolve import set_cache_store
 
 set_cache_store(cache_store)
 
-mcp.add_middleware(
-    ResponseCachingMiddleware(
-        cache_storage=cache_store,
-        call_tool_settings=CallToolSettings(
-            ttl=3600,
-            included_tools=LONG_CACHED_TOOLS,
-        ),
-    )
-)
-mcp.add_middleware(
-    ResponseCachingMiddleware(
-        cache_storage=cache_store,
-        call_tool_settings=CallToolSettings(
-            ttl=300,
-            included_tools=SHORT_CACHED_TOOLS,
-        ),
-    )
-)
-
 ONE_HOUR = 3600
 THREAD_CACHE_COLLECTION = "thread_cache"
+RESPONSE_CACHE_COLLECTION = "response_cache"
 
 
 def _is_old_timestamp(ts: str) -> bool:
@@ -149,6 +88,60 @@ def _make_cache_key(tool_name: str, args: dict[str, Any]) -> str:
     if other:
         key_parts.append(pydantic_core.to_json(other, fallback=str).decode())
     return ":".join(key_parts)
+
+
+async def _cache_ttl(
+    context: MiddlewareContext[CallToolRequestParams],
+) -> int | None:
+    """Per-tool cache TTL, declared at the tool via meta={"cache_ttl": <seconds>}
+    and read here at call time. None means the tool isn't cached."""
+    fastmcp_context = getattr(context, "fastmcp_context", None)
+    if fastmcp_context is None:
+        return None
+    try:
+        tool = await fastmcp_context.fastmcp.get_tool(context.message.name)
+    except Exception:
+        return None
+    ttl = (tool.meta or {}).get("cache_ttl")
+    return ttl if isinstance(ttl, int) else None
+
+
+class CachingMiddleware(Middleware):
+    """Cache read-only tool responses keyed by args, with a per-tool TTL declared
+    in the tool's meta. The cached value is the fully-processed response (after
+    name resolution and compaction), since this middleware is outermost."""
+
+    def __init__(self, cache_storage: Any) -> None:
+        self._store = cache_storage
+        super().__init__()
+
+    async def on_call_tool(
+        self,
+        context: MiddlewareContext[CallToolRequestParams],
+        call_next: CallNext[CallToolRequestParams, ToolResult],
+    ) -> ToolResult:
+        ttl = await _cache_ttl(context)
+        if ttl is None:
+            return await call_next(context)
+
+        args = context.message.arguments or {}
+        cache_key = _make_cache_key(context.message.name, args)
+
+        cached = await self._store.get(
+            key=cache_key, collection=RESPONSE_CACHE_COLLECTION
+        )
+        if cached is not None:
+            return CachableToolResult.model_validate(cached).unwrap()
+
+        result: ToolResult = await call_next(context)
+        cachable = CachableToolResult.wrap(result)
+        await self._store.put(
+            key=cache_key,
+            value=cachable.model_dump(mode="json"),
+            collection=RESPONSE_CACHE_COLLECTION,
+            ttl=ttl,
+        )
+        return result
 
 
 class ThreadCachingMiddleware(Middleware):
@@ -205,7 +198,11 @@ class ThreadCachingMiddleware(Middleware):
         return result
 
 
+# Caching is outermost (registered first) so a hit short-circuits resolution
+# and compaction; the thread cache handles the old-message special case.
+mcp.add_middleware(CachingMiddleware(cache_storage=cache_store))
 mcp.add_middleware(ThreadCachingMiddleware(cache_storage=cache_store))
+
 
 async def _skips_resolution(context: MiddlewareContext[CallToolRequestParams]) -> bool:
     """A tool opts out of name resolution with the "skip-resolution" tag —

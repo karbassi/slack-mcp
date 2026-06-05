@@ -1,7 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import SHORT_TTL, mcp, slack_client
 
 
 @mcp.tool
@@ -48,7 +48,7 @@ async def bookmarks_edit(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def bookmarks_list(
     channel_id: str,
     client: SlackClient = Depends(slack_client),

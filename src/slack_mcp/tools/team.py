@@ -1,7 +1,7 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import LONG_TTL, SHORT_TTL, mcp, slack_client
 
 
 @mcp.tool
@@ -63,7 +63,7 @@ async def team_external_teams_disconnect(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def team_external_teams_list(
     connection_status_filter: str | None = None,
     cursor: str | None = None,
@@ -87,7 +87,7 @@ async def team_external_teams_list(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def team_info(
     team: str | None = None,
     domain: str | None = None,
@@ -121,7 +121,7 @@ async def team_integration_logs(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def team_preferences_list(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -129,7 +129,7 @@ async def team_preferences_list(
     return await client.api_call("team.preferences.list")
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
 async def team_profile_get(
     visibility: str | None = None,
     client: SlackClient = Depends(slack_client),

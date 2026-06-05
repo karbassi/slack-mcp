@@ -1,58 +1,71 @@
 from __future__ import annotations
 
 import time
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
-from fastmcp.server.middleware.caching import ResponseCachingMiddleware
 from fastmcp.server.middleware.middleware import MiddlewareContext
 from fastmcp.tools.tool import ToolResult
 from key_value.aio.stores.memory import MemoryStore
 from mcp.types import CallToolRequestParams, TextContent
 
-from slack_mcp.server import CACHED_TOOLS, ThreadCachingMiddleware, _make_cache_key, mcp
+from slack_mcp.server import (
+    LONG_TTL,
+    SHORT_TTL,
+    CachingMiddleware,
+    ThreadCachingMiddleware,
+    _make_cache_key,
+    mcp,
+)
 
 
 def test_caching_middleware_attached():
-    """ResponseCachingMiddleware is registered on the server."""
-    assert any(
-        isinstance(m, ResponseCachingMiddleware) for m in mcp.middleware
-    )
-
-
-def test_cached_tools_list_is_not_empty():
-    """Sanity check: CACHED_TOOLS contains entries."""
-    assert len(CACHED_TOOLS) > 0
+    """CachingMiddleware is registered on the server."""
+    assert any(isinstance(m, CachingMiddleware) for m in mcp.middleware)
 
 
 @pytest.mark.asyncio
-async def test_cached_tools_all_exist():
-    """Every name in the cache lists must resolve to a registered tool.
-
-    The lists are hand-maintained strings remote from the tools; a typo or a
-    renamed/removed tool would otherwise silently stop being cached. This guard
-    turns that silent drift into a loud failure.
+async def test_cache_ttl_meta_declared_at_tools():
+    """Cache TTL is declared at the tool via meta={"cache_ttl": ...}. Spot-check
+    a long- and short-cached tool, and assert every cache_ttl is a known value —
+    catching a typo'd TTL or a tool that lost its meta in a rename.
     """
-    tools = await mcp.list_tools()
-    names = {t.name for t in tools}
-    missing = sorted(n for n in CACHED_TOOLS if n not in names)
-    assert not missing, f"CACHED_TOOLS references unknown tools: {missing}"
+    users_info = await mcp.get_tool("users_info")
+    assert (users_info.meta or {}).get("cache_ttl") == LONG_TTL
+
+    permalink = await mcp.get_tool("chat_get_permalink")
+    assert (permalink.meta or {}).get("cache_ttl") == SHORT_TTL
+
+    for tool in await mcp.list_tools():
+        ttl = (tool.meta or {}).get("cache_ttl")
+        assert ttl in (None, LONG_TTL, SHORT_TTL), (
+            f"{tool.name} has unexpected cache_ttl {ttl!r}"
+        )
 
 
-def _make_context(tool_name: str, arguments: dict | None = None) -> MiddlewareContext:
+def _ctx_with_ttl(
+    tool_name: str, cache_ttl: int | None, arguments: dict | None = None
+) -> MiddlewareContext:
+    """A context whose FastMCP resolves the tool to one carrying cache_ttl meta."""
+    meta = {"cache_ttl": cache_ttl} if cache_ttl is not None else {}
+    tool = SimpleNamespace(meta=meta, tags=set())
+    fastmcp_context = SimpleNamespace(
+        fastmcp=SimpleNamespace(get_tool=AsyncMock(return_value=tool))
+    )
     return MiddlewareContext(
         message=CallToolRequestParams(name=tool_name, arguments=arguments),
         method="tools/call",
+        fastmcp_context=fastmcp_context,
     )
 
 
 @pytest.mark.asyncio
-async def test_cached_tool_returns_same_result():
-    """A cached tool should return the cached result on the second call."""
+async def test_tool_with_cache_ttl_is_cached():
+    """A tool whose meta declares a cache_ttl returns the cached result on the
+    second call."""
     store = MemoryStore()
-    middleware = ResponseCachingMiddleware(
-        cache_storage=store,
-        call_tool_settings={"ttl": 300, "included_tools": ["users_info"]},
-    )
+    middleware = CachingMiddleware(cache_storage=store)
 
     call_count = 0
 
@@ -60,33 +73,23 @@ async def test_cached_tool_returns_same_result():
         nonlocal call_count
         call_count += 1
         return ToolResult(
-            content=[
-                TextContent(
-                    type="text",
-                    text='{"ok": true, "user": {"id": "U123"}}',
-                )
-            ]
+            content=[TextContent(type="text", text='{"ok": true, "user": {}}')]
         )
 
-    ctx = _make_context("users_info", {"user": "U123"})
+    ctx = _ctx_with_ttl("users_info", SHORT_TTL, {"user": "U123"})
 
     result1 = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
     result2 = await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
     assert result1.content[0].text == result2.content[0].text
-    assert call_count == 1, (
-        "API should only be called once; second call should be cached"
-    )
+    assert call_count == 1, "Second call should be served from cache"
 
 
 @pytest.mark.asyncio
-async def test_non_cached_tool_always_hits_api():
-    """A tool not in the cached list should always call through."""
+async def test_tool_without_cache_ttl_always_hits_api():
+    """A tool whose meta has no cache_ttl always calls through."""
     store = MemoryStore()
-    middleware = ResponseCachingMiddleware(
-        cache_storage=store,
-        call_tool_settings={"ttl": 300, "included_tools": ["users_info"]},
-    )
+    middleware = CachingMiddleware(cache_storage=store)
 
     call_count = 0
 
@@ -95,12 +98,19 @@ async def test_non_cached_tool_always_hits_api():
         call_count += 1
         return ToolResult(content=[TextContent(type="text", text='{"ok": true}')])
 
-    ctx = _make_context("chat_post_message", {"channel": "C123", "text": "hi"})
+    ctx = _ctx_with_ttl("chat_post_message", None, {"channel": "C123", "text": "hi"})
 
     await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
     await middleware.on_call_tool(context=ctx, call_next=fake_call_next)
 
-    assert call_count == 2, "Non-cached tool should always call through"
+    assert call_count == 2, "Uncached tool should always call through"
+
+
+def _make_context(tool_name: str, arguments: dict | None = None) -> MiddlewareContext:
+    return MiddlewareContext(
+        message=CallToolRequestParams(name=tool_name, arguments=arguments),
+        method="tools/call",
+    )
 
 
 # --- ThreadCachingMiddleware tests ---

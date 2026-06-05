@@ -4,7 +4,7 @@ from slack_sdk.errors import SlackApiError
 from slack_mcp.client import SlackClient
 from slack_mcp.compact import compact_channel_list, compact_message_list, compactable
 from slack_mcp.errors import is_missing_scope
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import SHORT_TTL, mcp, slack_client
 
 
 @mcp.tool
@@ -143,7 +143,7 @@ async def conversations_history(
     )
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def conversations_info(
     channel: str,
     include_locale: bool | None = None,
@@ -218,7 +218,7 @@ async def conversations_leave(
     return await client.api_call("conversations.leave", channel=channel)
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 @compactable(compact_channel_list)
 async def conversations_list(
     cursor: str | None = None,
@@ -273,7 +273,7 @@ async def conversations_mark(
         raise
 
 
-@mcp.tool
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def conversations_members(
     channel: str,
     cursor: str | None = None,
