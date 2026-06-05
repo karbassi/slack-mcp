@@ -48,6 +48,12 @@ CHANNEL_REF_FIELDS = frozenset({
     "id", "name", "is_im", "is_mpim", "is_private", "is_channel",
 })
 
+# A reaction keeps its name and tally; the per-user ID array is dropped.
+REACTION_FIELDS = frozenset({"name", "count"})
+
+# topic/purpose collapse to just their text; creator/last_set are dropped.
+TOPIC_FIELDS = frozenset({"value"})
+
 USER_FIELDS = frozenset({
     "id", "name", "real_name", "team_id", "deleted", "is_bot", "is_app_user",
     "is_admin", "is_owner", "is_primary_owner", "is_restricted",
@@ -78,6 +84,12 @@ def strip_message(msg: dict) -> None:
     for f in files:
         if isinstance(f, dict):
             strip_file(f)
+    reactions = msg.get("reactions", [])
+    if not isinstance(reactions, list):
+        reactions = []
+    for r in reactions:
+        if isinstance(r, dict):
+            _strip_to(r, REACTION_FIELDS)
 
 
 def strip_file(f: dict) -> None:
@@ -86,6 +98,10 @@ def strip_file(f: dict) -> None:
 
 def strip_channel(ch: dict) -> None:
     _strip_to(ch, CHANNEL_FIELDS)
+    for field in ("topic", "purpose"):
+        sub = ch.get(field)
+        if isinstance(sub, dict):
+            _strip_to(sub, TOPIC_FIELDS)
 
 
 def strip_channel_ref(ch: dict) -> None:

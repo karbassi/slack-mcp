@@ -15,7 +15,9 @@ def _bloated_message():
         "thread_ts": "1234567890.000000",
         "reply_count": 3,
         "reply_users_count": 2,
-        "reactions": [{"name": "thumbsup", "count": 1}],
+        "reactions": [
+            {"name": "thumbsup", "count": 2, "users": ["U1", "U2"]},
+        ],
         "permalink": "https://slack.com/archives/C123/p123",
         "bot_id": None,
         "files": [
@@ -88,8 +90,16 @@ def _bloated_channel():
         "is_archived": False,
         "is_member": True,
         "num_members": 42,
-        "topic": {"value": "General chat"},
-        "purpose": {"value": "A place for everything"},
+        "topic": {
+            "value": "General chat",
+            "creator": "U001",
+            "last_set": 1700000000,
+        },
+        "purpose": {
+            "value": "A place for everything",
+            "creator": "U001",
+            "last_set": 1700000000,
+        },
         "created": 1600000000,
         "creator": "U001",
         "updated": 1700000000,
@@ -207,6 +217,20 @@ class TestStripMessage:
         assert "thumb_64" not in f
         assert "thumb_80" not in f
 
+    def test_strips_reaction_user_arrays(self):
+        from slack_mcp.compact import strip_message
+        msg = _bloated_message()
+        strip_message(msg)
+        reaction = msg["reactions"][0]
+        assert reaction == {"name": "thumbsup", "count": 2}
+        assert "users" not in reaction
+
+    def test_reactions_non_list_does_not_crash(self):
+        from slack_mcp.compact import strip_message
+        msg = {"ts": "1", "text": "hi", "reactions": "nope"}
+        strip_message(msg)
+        assert "ts" in msg
+
     def test_no_files_key_ok(self):
         from slack_mcp.compact import strip_message
         msg = {"ts": "123", "text": "hi", "blocks": []}
@@ -268,6 +292,19 @@ class TestStripChannel:
         assert "name_normalized" not in ch
         assert "is_org_shared" not in ch
         assert "previous_names" not in ch
+
+    def test_trims_topic_and_purpose_to_value(self):
+        from slack_mcp.compact import strip_channel
+        ch = _bloated_channel()
+        strip_channel(ch)
+        assert ch["topic"] == {"value": "General chat"}
+        assert ch["purpose"] == {"value": "A place for everything"}
+
+    def test_non_dict_topic_does_not_crash(self):
+        from slack_mcp.compact import strip_channel
+        ch = {"id": "C1", "name": "x", "topic": None, "purpose": "str"}
+        strip_channel(ch)
+        assert ch["id"] == "C1"
 
 
 # -- strip_channel_ref --
