@@ -6,19 +6,13 @@ from typing import Any
 from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient
+from slack_mcp.errors import is_not_found
 
 MAX_CONCURRENCY = 10
 _RESOLVE_COLLECTION = "resolve_cache"
 _USER_TTL = 3600  # 1 hour — names are stable
 _CHANNEL_TTL = 300  # 5 minutes — channels can be renamed
 _BOT_TTL = 3600  # 1 hour
-
-_NOT_FOUND_ERRORS = {
-    "user_not_found",
-    "user_not_visible",
-    "channel_not_found",
-    "bot_not_found",
-}
 
 _cache_store: Any = None
 
@@ -58,7 +52,7 @@ async def _resolve_user(
         try:
             resp = await client.api_call("users.info", user=uid)
         except SlackApiError as e:
-            if e.response.get("error") in _NOT_FOUND_ERRORS:
+            if is_not_found(e.response.get("error")):
                 return uid, None
             raise
         user = resp.get("user", {})
@@ -79,7 +73,7 @@ async def _resolve_channel(
         try:
             resp = await client.api_call("conversations.info", channel=cid)
         except SlackApiError as e:
-            if e.response.get("error") in _NOT_FOUND_ERRORS:
+            if is_not_found(e.response.get("error")):
                 return cid, None
             raise
         return cid, resp.get("channel", {}).get("name")
@@ -92,7 +86,7 @@ async def _resolve_bot(
         try:
             resp = await client.api_call("bots.info", bot=bid)
         except SlackApiError as e:
-            if e.response.get("error") in _NOT_FOUND_ERRORS:
+            if is_not_found(e.response.get("error")):
                 return bid, None
             raise
         return bid, resp.get("bot", {}).get("name")

@@ -6,6 +6,8 @@ import httpx
 from dotenv import load_dotenv
 from slack_sdk.web.async_client import AsyncWebClient
 
+from slack_mcp.errors import is_auth_failure
+
 load_dotenv()
 
 _SLACK_BASE_URL = "https://slack.com/api/"
@@ -65,12 +67,7 @@ class SlackClient:
     def _check_session_response(self, data: dict, method: str) -> dict:
         if not data.get("ok"):
             error = data.get("error", "unknown_error")
-            if error in (
-                "not_authed",
-                "invalid_auth",
-                "token_expired",
-                "token_revoked",
-            ):
+            if is_auth_failure(error):
                 raise ValueError(  # noqa: TRY003
                     f"Session endpoint {method} failed: {error}. "
                     "Your xoxc/xoxd tokens may be expired — re-grab them "

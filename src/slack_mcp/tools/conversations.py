@@ -3,6 +3,7 @@ from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient
 from slack_mcp.compact import compact_channel_list, compact_message_list, compactable
+from slack_mcp.errors import is_missing_scope
 from slack_mcp.server import mcp, slack_client
 
 
@@ -265,7 +266,7 @@ async def conversations_mark(
     try:
         return await client.api_call("conversations.mark", channel=channel, ts=ts)
     except SlackApiError as e:
-        if e.response.get("error") == "missing_scope":
+        if is_missing_scope(e.response.get("error")):
             return await client.session_call_form(
                 "conversations.mark", channel=channel, ts=ts
             )
