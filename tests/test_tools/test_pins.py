@@ -1,36 +1,31 @@
-import pytest
-
 from slack_mcp.compact import compact_items, get_compactor
-from slack_mcp.tools.pins import pins_add, pins_list, pins_remove
+from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_pins_add(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await pins_add(channel="C123", timestamp="1234.5678", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "pins.add", channel="C123", timestamp="1234.5678"
+async def test_pins_add(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "pins_add", {"channel": "C123", "timestamp": "1234.5678"}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call, "pins.add", channel="C123", timestamp="1234.5678"
     )
 
 
-@pytest.mark.asyncio
-async def test_pins_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "items": []}
-    result = await pins_list(channel="C123", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("pins.list", channel="C123")
+async def test_pins_list(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "items": []}
+    result = await mcp_client.call_tool("pins_list", {"channel": "C123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "pins.list", channel="C123")
 
 
-@pytest.mark.asyncio
-async def test_pins_remove(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await pins_remove(
-        channel="C123", timestamp="1234.5678", client=mock_client
+async def test_pins_remove(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "pins_remove", {"channel": "C123", "timestamp": "1234.5678"}
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "pins.remove", channel="C123", timestamp="1234.5678"
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call, "pins.remove", channel="C123", timestamp="1234.5678"
     )
 
 

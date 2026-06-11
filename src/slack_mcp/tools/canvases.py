@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
@@ -41,7 +43,7 @@ async def canvases_access_set(
 @mcp.tool
 async def canvases_create(
     title: str | None = None,
-    document_content: dict[str, str] | None = None,
+    document_content: dict[str, Any] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a canvas."""
@@ -62,7 +64,7 @@ async def canvases_delete(
 @mcp.tool
 async def canvases_edit(
     canvas_id: str,
-    changes: list[dict[str, str]],
+    changes: list[dict[str, Any]],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Edit a canvas."""
@@ -74,7 +76,7 @@ async def canvases_edit(
 @mcp.tool
 async def canvases_sections_lookup(
     canvas_id: str,
-    criteria: dict[str, str],
+    criteria: dict[str, Any],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Find sections matching criteria in a canvas."""

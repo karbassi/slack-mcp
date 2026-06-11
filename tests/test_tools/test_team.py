@@ -1,90 +1,59 @@
-import pytest
-
-from slack_mcp.tools.team import (
-    team_access_logs,
-    team_billable_info,
-    team_billing_info,
-    team_external_teams_disconnect,
-    team_external_teams_list,
-    team_info,
-    team_integration_logs,
-    team_preferences_list,
-    team_profile_get,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_team_access_logs(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "logins": []}
-    result = await team_access_logs(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "team.accessLogs")
+async def test_team_access_logs(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("team_access_logs", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "team.accessLogs")
 
 
-@pytest.mark.asyncio
-async def test_team_billable_info(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await team_billable_info(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "team.billableInfo")
+async def test_team_billable_info(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("team_billable_info", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "team.billableInfo")
 
 
-@pytest.mark.asyncio
-async def test_team_billing_info(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "plan": ""}
-    result = await team_billing_info(client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("team.billing.info")
+async def test_team_billing_info(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("team_billing_info", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "team.billing.info")
 
 
-@pytest.mark.asyncio
-async def test_team_external_teams_disconnect(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await team_external_teams_disconnect(
-        target_team="T123", client=mock_client
+async def test_team_external_teams_disconnect(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "team_external_teams_disconnect", {"target_team": "T123"}
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "team.externalTeams.disconnect", target_team="T123"
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call, "team.externalTeams.disconnect", target_team="T123"
     )
 
 
-@pytest.mark.asyncio
-async def test_team_external_teams_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "external_teams": []}
-    result = await team_external_teams_list(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "team.externalTeams.list")
+async def test_team_external_teams_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("team_external_teams_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "team.externalTeams.list")
 
 
-@pytest.mark.asyncio
-async def test_team_info(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "team": {}}
-    result = await team_info(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "team.info")
+async def test_team_info(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("team_info", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "team.info")
 
 
-@pytest.mark.asyncio
-async def test_team_integration_logs(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "logs": []}
-    result = await team_integration_logs(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "team.integrationLogs")
+async def test_team_integration_logs(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("team_integration_logs", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "team.integrationLogs")
 
 
-@pytest.mark.asyncio
-async def test_team_preferences_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await team_preferences_list(client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("team.preferences.list")
+async def test_team_preferences_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("team_preferences_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "team.preferences.list")
 
 
-@pytest.mark.asyncio
-async def test_team_profile_get(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "profile": {}}
-    result = await team_profile_get(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "team.profile.get")
+async def test_team_profile_get(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("team_profile_get", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "team.profile.get")

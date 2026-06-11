@@ -1,16 +1,14 @@
-import pytest
-
-from slack_mcp.tools.entity import entity_present_details
+from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_entity_present_details(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await entity_present_details(
-        app_id="A123", entity_id="E123", entity_type="channel", client=mock_client
+async def test_entity_present_details(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "entity_present_details",
+        {"app_id": "A123", "entity_id": "E123", "entity_type": "channel"},
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
         "entity.presentDetails",
         app_id="A123",
         entity_id="E123",

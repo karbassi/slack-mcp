@@ -2,29 +2,24 @@ from __future__ import annotations
 
 import pytest
 
-from slack_mcp.tools.api import api_test
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_api_test(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await api_test(client=mock_client)
-    assert result == {"ok": True}
-    assert_api_call(mock_client.api_call, "api.test")
+async def test_api_test(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("api_test", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "api.test")
 
 
-@pytest.mark.asyncio
-async def test_api_test_with_error(mock_client):
-    mock_client.api_call.return_value = {"ok": False, "error": "my_error"}
-    result = await api_test(error="my_error", client=mock_client)
-    assert result == {"ok": False, "error": "my_error"}
-    assert_api_call(mock_client.api_call, "api.test", error="my_error")
+async def test_api_test_with_error(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": False, "error": "my_error"}
+    result = await mcp_client.call_tool("api_test", {"error": "my_error"}, raise_on_error=False)
+    assert result.is_error is True
+    assert_api_call(slack_stub.api_call, "api.test", error="my_error")
 
 
-@pytest.mark.asyncio
-async def test_api_test_with_foo(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "args": {"foo": "bar"}}
-    result = await api_test(foo="bar", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "api.test", foo="bar")
+async def test_api_test_with_foo(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "args": {"foo": "bar"}}
+    result = await mcp_client.call_tool("api_test", {"foo": "bar"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "api.test", foo="bar")

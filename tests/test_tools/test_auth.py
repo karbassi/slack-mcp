@@ -1,28 +1,19 @@
-import pytest
-
-from slack_mcp.tools.auth import auth_revoke, auth_teams_list, auth_test
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_auth_revoke(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "revoked": True}
-    result = await auth_revoke(test=True, client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "auth.revoke", test=True)
+async def test_auth_revoke(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("auth_revoke", {"test": True})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "auth.revoke", test=True)
 
 
-@pytest.mark.asyncio
-async def test_auth_teams_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "teams": []}
-    result = await auth_teams_list(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "auth.teams.list")
+async def test_auth_teams_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("auth_teams_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "auth.teams.list")
 
 
-@pytest.mark.asyncio
-async def test_auth_test(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "user_id": "U123"}
-    result = await auth_test(client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("auth.test")
+async def test_auth_test(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("auth_test", {})
+    assert result.is_error is False
+    slack_stub.api_call.assert_called_once_with("auth.test")

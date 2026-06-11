@@ -1,20 +1,13 @@
-import pytest
-
-from slack_mcp.tools.rtm import rtm_connect, rtm_start
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_rtm_connect(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "url": "wss://..."}
-    result = await rtm_connect(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "rtm.connect")
+async def test_rtm_connect(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("rtm_connect", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "rtm.connect")
 
 
-@pytest.mark.asyncio
-async def test_rtm_start(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "url": "wss://..."}
-    result = await rtm_start(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "rtm.start")
+async def test_rtm_start(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("rtm_start", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "rtm.start")

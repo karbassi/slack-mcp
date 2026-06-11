@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
@@ -42,7 +44,7 @@ async def workflows_featured_set(
 @mcp.tool
 async def workflows_step_completed(
     workflow_step_execute_id: str,
-    outputs: dict[str, str] | None = None,
+    outputs: dict[str, Any] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Indicate a workflow step has been completed successfully."""
@@ -55,7 +57,7 @@ async def workflows_step_completed(
 
 @mcp.tool
 async def workflows_step_failed(
-    error: dict[str, str],
+    error: dict[str, Any],
     workflow_step_execute_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -70,8 +72,8 @@ async def workflows_step_failed(
 @mcp.tool
 async def workflows_update_step(
     workflow_step_edit_id: str,
-    inputs: dict[str, str] | None = None,
-    outputs: list[dict[str, str]] | None = None,
+    inputs: dict[str, Any] | None = None,
+    outputs: list[dict[str, Any]] | None = None,
     step_image_url: str | None = None,
     step_name: str | None = None,
     client: SlackClient = Depends(slack_client),

@@ -1,21 +1,18 @@
-import pytest
-
-from slack_mcp.tools.assistant import (
-    assistant_threads_set_status,
-    assistant_threads_set_suggested_prompts,
-    assistant_threads_set_title,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_assistant_threads_set_status(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await assistant_threads_set_status(
-        channel_id="C123", thread_ts="1234.5678", status="thinking", client=mock_client
+async def test_assistant_threads_set_status(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "assistant_threads_set_status",
+        {
+            "channel_id": "C123",
+            "thread_ts": "1234.5678",
+            "status": "thinking",
+        },
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
         "assistant.threads.setStatus",
         channel_id="C123",
         thread_ts="1234.5678",
@@ -23,18 +20,18 @@ async def test_assistant_threads_set_status(mock_client):
     )
 
 
-@pytest.mark.asyncio
-async def test_assistant_threads_set_suggested_prompts(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await assistant_threads_set_suggested_prompts(
-        channel_id="C123",
-        thread_ts="1234.5678",
-        prompts=[{"title": "Hi", "message": "Hello"}],
-        client=mock_client,
+async def test_assistant_threads_set_suggested_prompts(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "assistant_threads_set_suggested_prompts",
+        {
+            "channel_id": "C123",
+            "thread_ts": "1234.5678",
+            "prompts": [{"title": "Hi", "message": "Hello"}],
+        },
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call,
         "assistant.threads.setSuggestedPrompts",
         channel_id="C123",
         thread_ts="1234.5678",
@@ -42,17 +39,18 @@ async def test_assistant_threads_set_suggested_prompts(mock_client):
     )
 
 
-@pytest.mark.asyncio
-async def test_assistant_threads_set_title(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await assistant_threads_set_title(
-        channel_id="C123",
-        thread_ts="1234.5678",
-        title="My Thread",
-        client=mock_client,
+async def test_assistant_threads_set_title(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "assistant_threads_set_title",
+        {
+            "channel_id": "C123",
+            "thread_ts": "1234.5678",
+            "title": "My Thread",
+        },
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
         "assistant.threads.setTitle",
         channel_id="C123",
         thread_ts="1234.5678",

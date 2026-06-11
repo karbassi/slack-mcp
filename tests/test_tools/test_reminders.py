@@ -1,54 +1,35 @@
-import pytest
-
-from slack_mcp.tools.reminders import (
-    reminders_add,
-    reminders_complete,
-    reminders_delete,
-    reminders_info,
-    reminders_list,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_reminders_add(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await reminders_add(
-        text="Do thing", time="in 5 minutes", client=mock_client
+async def test_reminders_add(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "reminders_add", {"text": "Do thing", "time": "in 5 minutes"}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "reminders.add", text="Do thing", time="in 5 minutes"
+        slack_stub.api_call, "reminders.add", text="Do thing", time="in 5 minutes"
     )
 
 
-@pytest.mark.asyncio
-async def test_reminders_complete(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await reminders_complete(reminder="Rm123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "reminders.complete", reminder="Rm123")
+async def test_reminders_complete(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("reminders_complete", {"reminder": "Rm123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "reminders.complete", reminder="Rm123")
 
 
-@pytest.mark.asyncio
-async def test_reminders_delete(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await reminders_delete(reminder="Rm123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "reminders.delete", reminder="Rm123")
+async def test_reminders_delete(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("reminders_delete", {"reminder": "Rm123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "reminders.delete", reminder="Rm123")
 
 
-@pytest.mark.asyncio
-async def test_reminders_info(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "reminder": {}}
-    result = await reminders_info(reminder="Rm123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "reminders.info", reminder="Rm123")
+async def test_reminders_info(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("reminders_info", {"reminder": "Rm123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "reminders.info", reminder="Rm123")
 
 
-@pytest.mark.asyncio
-async def test_reminders_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "reminders": []}
-    result = await reminders_list(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "reminders.list")
+async def test_reminders_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("reminders_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "reminders.list")

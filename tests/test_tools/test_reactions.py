@@ -1,56 +1,48 @@
-import pytest
-
 from slack_mcp.compact import compact_items, compact_single_item, get_compactor
-from slack_mcp.tools.reactions import (
-    reactions_add,
-    reactions_get,
-    reactions_list,
-    reactions_remove,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_reactions_add(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await reactions_add(
-        channel="C123", name="thumbsup", timestamp="1234.5678", client=mock_client
+async def test_reactions_add(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "reactions_add",
+        {"channel": "C123", "name": "thumbsup", "timestamp": "1234.5678"},
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "reactions.add", channel="C123", name="thumbsup", timestamp="1234.5678"
-    )
-
-
-@pytest.mark.asyncio
-async def test_reactions_get(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "message": {}}
-    result = await reactions_get(
-        channel="C123", timestamp="1234.5678", client=mock_client
-    )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "reactions.get", channel="C123", timestamp="1234.5678"
+        slack_stub.api_call,
+        "reactions.add",
+        channel="C123",
+        name="thumbsup",
+        timestamp="1234.5678",
     )
 
 
-@pytest.mark.asyncio
-async def test_reactions_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "items": []}
-    result = await reactions_list(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "reactions.list")
-
-
-@pytest.mark.asyncio
-async def test_reactions_remove(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await reactions_remove(
-        name="thumbsup", channel="C123", timestamp="1234.5678", client=mock_client
+async def test_reactions_get(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "message": {}}
+    result = await mcp_client.call_tool(
+        "reactions_get", {"channel": "C123", "timestamp": "1234.5678"}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call, "reactions.get", channel="C123", timestamp="1234.5678"
+    )
+
+
+async def test_reactions_list(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "items": []}
+    result = await mcp_client.call_tool("reactions_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "reactions.list")
+
+
+async def test_reactions_remove(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "reactions_remove",
+        {"name": "thumbsup", "channel": "C123", "timestamp": "1234.5678"},
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
         "reactions.remove",
         name="thumbsup",
         channel="C123",

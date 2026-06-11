@@ -1,99 +1,85 @@
-import pytest
-
-from slack_mcp.tools.workflows import (
-    workflows_featured_add,
-    workflows_featured_list,
-    workflows_featured_remove,
-    workflows_featured_set,
-    workflows_step_completed,
-    workflows_step_failed,
-    workflows_update_step,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_workflows_featured_add(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await workflows_featured_add(workflow_ids=["W123"], client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "workflows.featured.add", workflow_ids=["W123"]
+async def test_workflows_featured_add(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "workflows_featured_add", {"workflow_ids": ["W123"]}
     )
-
-
-@pytest.mark.asyncio
-async def test_workflows_featured_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "workflows": []}
-    result = await workflows_featured_list(client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("workflows.featured.list")
-
-
-@pytest.mark.asyncio
-async def test_workflows_featured_remove(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await workflows_featured_remove(workflow_ids=["W123"], client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "workflows.featured.remove", workflow_ids=["W123"]
-    )
-
-
-@pytest.mark.asyncio
-async def test_workflows_featured_set(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await workflows_featured_set(
-        workflow_ids=["W123", "W456"], client=mock_client
-    )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "workflows.featured.set", workflow_ids=["W123", "W456"]
-    )
-
-
-@pytest.mark.asyncio
-async def test_workflows_step_completed(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await workflows_step_completed(
-        workflow_step_execute_id="WS123", client=mock_client
-    )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call, "workflows.featured.add", workflow_ids=["W123"]
+    )
+
+
+async def test_workflows_featured_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("workflows_featured_list", {})
+    assert result.is_error is False
+    slack_stub.api_call.assert_called_once_with("workflows.featured.list")
+
+
+async def test_workflows_featured_remove(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "workflows_featured_remove", {"workflow_ids": ["W123"]}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call, "workflows.featured.remove", workflow_ids=["W123"]
+    )
+
+
+async def test_workflows_featured_set(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "workflows_featured_set", {"workflow_ids": ["W123", "W456"]}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call, "workflows.featured.set", workflow_ids=["W123", "W456"]
+    )
+
+
+async def test_workflows_step_completed(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "workflows_step_completed",
+        {"workflow_step_execute_id": "WS123"},
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
         "workflows.stepCompleted",
         workflow_step_execute_id="WS123",
     )
 
 
-@pytest.mark.asyncio
-async def test_workflows_step_failed(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await workflows_step_failed(
-        error={"message": "oops"},
-        workflow_step_execute_id="WS123",
-        client=mock_client,
+async def test_workflows_step_failed(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "workflows_step_failed",
+        {
+            "error": {"message": "oops"},
+            "workflow_step_execute_id": "WS123",
+        },
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
         "workflows.stepFailed",
         error={"message": "oops"},
         workflow_step_execute_id="WS123",
     )
 
 
-@pytest.mark.asyncio
-async def test_workflows_update_step(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await workflows_update_step(
-        workflow_step_edit_id="WSE123",
-        inputs={"key": {"value": "val"}},
-        client=mock_client,
+async def test_workflows_update_step(mcp_client, slack_stub):
+    inputs = {"name": {"value": "Ada", "skip_variable_replacement": False}}
+    result = await mcp_client.call_tool(
+        "workflows_update_step",
+        {
+            "workflow_step_edit_id": "WSE123",
+            "inputs": inputs,
+        },
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call,
         "workflows.updateStep",
         workflow_step_edit_id="WSE123",
-        inputs={"key": {"value": "val"}},
+        inputs=inputs,
     )

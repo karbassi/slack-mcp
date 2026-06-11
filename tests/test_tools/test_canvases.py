@@ -1,40 +1,27 @@
-import pytest
-
-from slack_mcp.tools.canvases import (
-    canvases_access_delete,
-    canvases_access_set,
-    canvases_create,
-    canvases_delete,
-    canvases_edit,
-    canvases_sections_lookup,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_canvases_access_delete(mock_client):
-    mock_client.api_call_json.return_value = {"ok": True}
-    result = await canvases_access_delete(
-        canvas_id="F123", user_ids=["U123"], client=mock_client
+async def test_canvases_access_delete(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "canvases_access_delete", {"canvas_id": "F123", "user_ids": ["U123"]}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call_json,
+        slack_stub.api_call_json,
         "canvases.access.delete",
         canvas_id="F123",
         user_ids=["U123"],
     )
 
 
-@pytest.mark.asyncio
-async def test_canvases_access_set(mock_client):
-    mock_client.api_call_json.return_value = {"ok": True}
-    result = await canvases_access_set(
-        canvas_id="F123", access_level="write", user_ids=["U123"], client=mock_client
+async def test_canvases_access_set(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "canvases_access_set",
+        {"canvas_id": "F123", "access_level": "write", "user_ids": ["U123"]},
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call_json,
+        slack_stub.api_call_json,
         "canvases.access.set",
         canvas_id="F123",
         access_level="write",
@@ -42,43 +29,47 @@ async def test_canvases_access_set(mock_client):
     )
 
 
-@pytest.mark.asyncio
-async def test_canvases_create(mock_client):
-    mock_client.api_call_json.return_value = {"ok": True, "canvas_id": "F123"}
-    result = await canvases_create(title="Test Canvas", client=mock_client)
-    assert result["ok"] is True
+async def test_canvases_create(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "canvases_create", {"title": "Test Canvas"}
+    )
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call_json, "canvases.create", title="Test Canvas"
+        slack_stub.api_call_json, "canvases.create", title="Test Canvas"
     )
 
 
-@pytest.mark.asyncio
-async def test_canvases_delete(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await canvases_delete(canvas_id="F123", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("canvases.delete", canvas_id="F123")
+async def test_canvases_delete(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("canvases_delete", {"canvas_id": "F123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "canvases.delete", canvas_id="F123")
 
 
-@pytest.mark.asyncio
-async def test_canvases_edit(mock_client):
-    mock_client.api_call_json.return_value = {"ok": True}
-    changes = [{"operation": "insert_at_end", "document_content": {"markdown": "hi"}}]
-    result = await canvases_edit(canvas_id="F123", changes=changes, client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "canvases.edit", canvas_id="F123", changes=changes
+async def test_canvases_edit(mcp_client, slack_stub):
+    changes = [
+        {
+            "operation": "insert_at_end",
+            "document_content": {"type": "markdown", "markdown": "hi"},
+        }
+    ]
+    result = await mcp_client.call_tool(
+        "canvases_edit", {"canvas_id": "F123", "changes": changes}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call_json, "canvases.edit", canvas_id="F123", changes=changes
     )
 
 
-@pytest.mark.asyncio
-async def test_canvases_sections_lookup(mock_client):
-    mock_client.api_call_json.return_value = {"ok": True, "sections": []}
+async def test_canvases_sections_lookup(mcp_client, slack_stub):
     criteria = {"section_types": ["any_header"]}
-    result = await canvases_sections_lookup(
-        canvas_id="F123", criteria=criteria, client=mock_client
+    result = await mcp_client.call_tool(
+        "canvases_sections_lookup", {"canvas_id": "F123", "criteria": criteria}
     )
-    assert result["ok"] is True
-    mock_client.api_call_json.assert_called_once_with(
-        "canvases.sections.lookup", canvas_id="F123", criteria=criteria
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call_json,
+        "canvases.sections.lookup",
+        canvas_id="F123",
+        criteria=criteria,
     )

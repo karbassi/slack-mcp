@@ -1,97 +1,77 @@
-import pytest
-
-from slack_mcp.tools.apps import (
-    apps_connections_open,
-    apps_event_authorizations_list,
-    apps_manifest_create,
-    apps_manifest_delete,
-    apps_manifest_export,
-    apps_manifest_update,
-    apps_manifest_validate,
-    apps_uninstall,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_apps_connections_open(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "url": "wss://example.com"}
-    result = await apps_connections_open(client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("apps.connections.open")
+async def test_apps_connections_open(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("apps_connections_open", {})
+    assert result.is_error is False
+    slack_stub.api_call.assert_called_once_with("apps.connections.open")
 
 
-@pytest.mark.asyncio
-async def test_apps_event_authorizations_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "authorizations": []}
-    result = await apps_event_authorizations_list(
-        event_context="test_ctx", client=mock_client
+async def test_apps_event_authorizations_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "apps_event_authorizations_list", {"event_context": "test_ctx"}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call,
         "apps.event.authorizations.list",
         event_context="test_ctx",
     )
 
 
-@pytest.mark.asyncio
-async def test_apps_manifest_create(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await apps_manifest_create(manifest='{"name":"test"}', client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "apps.manifest.create", manifest='{"name":"test"}'
+async def test_apps_manifest_create(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "apps_manifest_create", {"manifest": '{"name":"test"}'}
     )
-
-
-@pytest.mark.asyncio
-async def test_apps_manifest_delete(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await apps_manifest_delete(app_id="A123", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("apps.manifest.delete", app_id="A123")
-
-
-@pytest.mark.asyncio
-async def test_apps_manifest_export(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "manifest": {}}
-    result = await apps_manifest_export(app_id="A123", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("apps.manifest.export", app_id="A123")
-
-
-@pytest.mark.asyncio
-async def test_apps_manifest_update(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await apps_manifest_update(
-        app_id="A123", manifest='{"name":"updated"}', client=mock_client
-    )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "apps.manifest.update", app_id="A123", manifest='{"name":"updated"}'
-    )
-
-
-@pytest.mark.asyncio
-async def test_apps_manifest_validate(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "errors": []}
-    result = await apps_manifest_validate(
-        manifest='{"name":"test"}', client=mock_client
-    )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "apps.manifest.validate", manifest='{"name":"test"}'
+        slack_stub.api_call, "apps.manifest.create", manifest='{"name":"test"}'
     )
 
 
-@pytest.mark.asyncio
-async def test_apps_uninstall(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await apps_uninstall(
-        client_id="C123", client_secret="S456", client=mock_client
+async def test_apps_manifest_delete(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("apps_manifest_delete", {"app_id": "A123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "apps.manifest.delete", app_id="A123")
+
+
+async def test_apps_manifest_export(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("apps_manifest_export", {"app_id": "A123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "apps.manifest.export", app_id="A123")
+
+
+async def test_apps_manifest_update(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "apps_manifest_update", {"app_id": "A123", "manifest": '{"name":"updated"}'}
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "apps.uninstall", client_id="C123", client_secret="S456"
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
+        "apps.manifest.update",
+        app_id="A123",
+        manifest='{"name":"updated"}',
+    )
+
+
+async def test_apps_manifest_validate(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "apps_manifest_validate", {"manifest": '{"name":"test"}'}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call, "apps.manifest.validate", manifest='{"name":"test"}'
+    )
+
+
+async def test_apps_uninstall(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "apps_uninstall", {"client_id": "C123", "client_secret": "S456"}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
+        "apps.uninstall",
+        client_id="C123",
+        client_secret="S456",
     )

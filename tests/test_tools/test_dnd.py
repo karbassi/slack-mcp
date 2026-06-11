@@ -1,50 +1,31 @@
-import pytest
-
-from slack_mcp.tools.dnd import (
-    dnd_end_dnd,
-    dnd_end_snooze,
-    dnd_info,
-    dnd_set_snooze,
-    dnd_team_info,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_dnd_end_dnd(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await dnd_end_dnd(client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("dnd.endDnd")
+async def test_dnd_end_dnd(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("dnd_end_dnd", {})
+    assert result.is_error is False
+    slack_stub.api_call.assert_called_once_with("dnd.endDnd")
 
 
-@pytest.mark.asyncio
-async def test_dnd_end_snooze(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await dnd_end_snooze(client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("dnd.endSnooze")
+async def test_dnd_end_snooze(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("dnd_end_snooze", {})
+    assert result.is_error is False
+    slack_stub.api_call.assert_called_once_with("dnd.endSnooze")
 
 
-@pytest.mark.asyncio
-async def test_dnd_info(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "dnd_enabled": True}
-    result = await dnd_info(user="U123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "dnd.info", user="U123")
+async def test_dnd_info(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("dnd_info", {"user": "U123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "dnd.info", user="U123")
 
 
-@pytest.mark.asyncio
-async def test_dnd_set_snooze(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await dnd_set_snooze(num_minutes=60, client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("dnd.setSnooze", num_minutes=60)
+async def test_dnd_set_snooze(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("dnd_set_snooze", {"num_minutes": 60})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "dnd.setSnooze", num_minutes=60)
 
 
-@pytest.mark.asyncio
-async def test_dnd_team_info(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "users": {}}
-    result = await dnd_team_info(users="U123,U456", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "dnd.teamInfo", users="U123,U456")
+async def test_dnd_team_info(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("dnd_team_info", {"users": "U123,U456"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "dnd.teamInfo", users="U123,U456")

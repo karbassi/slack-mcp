@@ -1,78 +1,59 @@
-import pytest
-
-from slack_mcp.tools.usergroups import (
-    usergroups_create,
-    usergroups_disable,
-    usergroups_enable,
-    usergroups_list,
-    usergroups_update,
-    usergroups_users_list,
-    usergroups_users_update,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_usergroups_create(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await usergroups_create(name="TestGroup", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "usergroups.create", name="TestGroup")
+async def test_usergroups_create(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("usergroups_create", {"name": "TestGroup"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "usergroups.create", name="TestGroup")
 
 
-@pytest.mark.asyncio
-async def test_usergroups_disable(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await usergroups_disable(usergroup="S123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "usergroups.disable", usergroup="S123")
+async def test_usergroups_disable(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("usergroups_disable", {"usergroup": "S123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "usergroups.disable", usergroup="S123")
 
 
-@pytest.mark.asyncio
-async def test_usergroups_enable(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await usergroups_enable(usergroup="S123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "usergroups.enable", usergroup="S123")
+async def test_usergroups_enable(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("usergroups_enable", {"usergroup": "S123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "usergroups.enable", usergroup="S123")
 
 
-@pytest.mark.asyncio
-async def test_usergroups_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "usergroups": []}
-    result = await usergroups_list(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "usergroups.list")
+async def test_usergroups_list(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "usergroups": []}
+    result = await mcp_client.call_tool("usergroups_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "usergroups.list")
 
 
-@pytest.mark.asyncio
-async def test_usergroups_update(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await usergroups_update(
-        usergroup="S123", name="Updated", client=mock_client
+async def test_usergroups_update(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "usergroups_update", {"usergroup": "S123", "name": "Updated"}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "usergroups.update", usergroup="S123", name="Updated"
+        slack_stub.api_call, "usergroups.update", usergroup="S123", name="Updated"
     )
 
 
-@pytest.mark.asyncio
-async def test_usergroups_users_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "users": ["U123"]}
-    result = await usergroups_users_list(usergroup="S123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "usergroups.users.list", usergroup="S123")
-
-
-@pytest.mark.asyncio
-async def test_usergroups_users_update(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await usergroups_users_update(
-        usergroup="S123", users="U123,U456", client=mock_client
+async def test_usergroups_users_list(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "users": ["U123"]}
+    result = await mcp_client.call_tool(
+        "usergroups_users_list", {"usergroup": "S123"}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call, "usergroups.users.list", usergroup="S123"
+    )
+
+
+async def test_usergroups_users_update(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "usergroups_users_update", {"usergroup": "S123", "users": "U123,U456"}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
         "usergroups.users.update",
         usergroup="S123",
         users="U123,U456",

@@ -1,37 +1,31 @@
-import pytest
-
 from slack_mcp.compact import compact_items, get_compactor
-from slack_mcp.tools.stars import stars_add, stars_list, stars_remove
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_stars_add(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await stars_add(channel="C123", timestamp="1234.5678", client=mock_client)
-    assert result["ok"] is True
+async def test_stars_add(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "stars_add", {"channel": "C123", "timestamp": "1234.5678"}
+    )
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "stars.add", channel="C123", timestamp="1234.5678"
+        slack_stub.api_call, "stars.add", channel="C123", timestamp="1234.5678"
     )
 
 
-@pytest.mark.asyncio
-async def test_stars_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "items": []}
-    result = await stars_list(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "stars.list")
+async def test_stars_list(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "items": []}
+    result = await mcp_client.call_tool("stars_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "stars.list")
 
 
-@pytest.mark.asyncio
-async def test_stars_remove(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await stars_remove(
-        channel="C123", timestamp="1234.5678", client=mock_client
+async def test_stars_remove(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "stars_remove", {"channel": "C123", "timestamp": "1234.5678"}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "stars.remove", channel="C123", timestamp="1234.5678"
+        slack_stub.api_call, "stars.remove", channel="C123", timestamp="1234.5678"
     )
 
 

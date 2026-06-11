@@ -1,99 +1,71 @@
-import pytest
-
 from slack_mcp.compact import compact_file_list, get_compactor
-from slack_mcp.tools.files import (
-    files_comments_delete,
-    files_complete_upload_external,
-    files_delete,
-    files_get_upload_url_external,
-    files_info,
-    files_list,
-    files_remote_add,
-    files_remote_info,
-    files_remote_list,
-    files_remote_remove,
-    files_remote_share,
-    files_remote_update,
-    files_revoke_public_url,
-    files_shared_public_url,
-    files_upload,
-    files_upload_v2,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_files_comments_delete(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_comments_delete(file="F123", id="Fc123", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "files.comments.delete", file="F123", id="Fc123"
+async def test_files_comments_delete(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "files_comments_delete", {"file": "F123", "id": "Fc123"}
     )
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.comments.delete", file="F123", id="Fc123")
 
 
-@pytest.mark.asyncio
-async def test_files_complete_upload_external(mock_client):
-    mock_client.api_call_json.return_value = {"ok": True}
+async def test_files_complete_upload_external(mcp_client, slack_stub):
     files = [{"id": "F123", "title": "test.txt"}]
-    result = await files_complete_upload_external(files=files, client=mock_client)
-    assert result["ok"] is True
+    result = await mcp_client.call_tool(
+        "files_complete_upload_external", {"files": files}
+    )
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call_json, "files.completeUploadExternal", files=files
+        slack_stub.api_call_json, "files.completeUploadExternal", files=files
     )
 
 
-@pytest.mark.asyncio
-async def test_files_delete(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_delete(file="F123", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("files.delete", file="F123")
+async def test_files_delete(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("files_delete", {"file": "F123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.delete", file="F123")
 
 
-@pytest.mark.asyncio
-async def test_files_get_upload_url_external(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "upload_url": "https://..."}
-    result = await files_get_upload_url_external(
-        filename="test.txt", length=100, client=mock_client
+async def test_files_get_upload_url_external(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "files_get_upload_url_external", {"filename": "test.txt", "length": 100}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call,
         "files.getUploadURLExternal",
         filename="test.txt",
         length=100,
     )
 
 
-@pytest.mark.asyncio
-async def test_files_info(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "file": {}}
-    result = await files_info(file="F123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "files.info", file="F123")
+async def test_files_info(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "file": {}}
+    result = await mcp_client.call_tool("files_info", {"file": "F123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.info", file="F123")
 
 
-@pytest.mark.asyncio
-async def test_files_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "files": []}
-    result = await files_list(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "files.list")
+async def test_files_list(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "files": []}
+    result = await mcp_client.call_tool("files_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.list")
 
 
-@pytest.mark.asyncio
-async def test_files_remote_add(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_remote_add(
-        external_id="ext123",
-        external_url="https://example.com/file",
-        title="Test File",
-        client=mock_client,
+async def test_files_remote_add(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "files_remote_add",
+        {
+            "external_id": "ext123",
+            "external_url": "https://example.com/file",
+            "title": "Test File",
+        },
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call,
         "files.remote.add",
         external_id="ext123",
         external_url="https://example.com/file",
@@ -101,87 +73,75 @@ async def test_files_remote_add(mock_client):
     )
 
 
-@pytest.mark.asyncio
-async def test_files_remote_info(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "file": {}}
-    result = await files_remote_info(file="F123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "files.remote.info", file="F123")
+async def test_files_remote_info(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "file": {}}
+    result = await mcp_client.call_tool("files_remote_info", {"file": "F123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.remote.info", file="F123")
 
 
-@pytest.mark.asyncio
-async def test_files_remote_list(mock_client):
-    mock_client.api_call.return_value = {"ok": True, "files": []}
-    result = await files_remote_list(client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "files.remote.list")
+async def test_files_remote_list(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {"ok": True, "files": []}
+    result = await mcp_client.call_tool("files_remote_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.remote.list")
 
 
-@pytest.mark.asyncio
-async def test_files_remote_remove(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_remote_remove(file="F123", client=mock_client)
-    assert result["ok"] is True
-    assert_api_call(mock_client.api_call, "files.remote.remove", file="F123")
+async def test_files_remote_remove(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("files_remote_remove", {"file": "F123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.remote.remove", file="F123")
 
 
-@pytest.mark.asyncio
-async def test_files_remote_share(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_remote_share(channels="C123", file="F123", client=mock_client)
-    assert result["ok"] is True
+async def test_files_remote_share(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "files_remote_share", {"channels": "C123", "file": "F123"}
+    )
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "files.remote.share", channels="C123", file="F123"
+        slack_stub.api_call, "files.remote.share", channels="C123", file="F123"
     )
 
 
-@pytest.mark.asyncio
-async def test_files_remote_update(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_remote_update(file="F123", title="Updated", client=mock_client)
-    assert result["ok"] is True
+async def test_files_remote_update(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "files_remote_update", {"file": "F123", "title": "Updated"}
+    )
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "files.remote.update", file="F123", title="Updated"
+        slack_stub.api_call, "files.remote.update", file="F123", title="Updated"
     )
 
 
-@pytest.mark.asyncio
-async def test_files_revoke_public_url(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_revoke_public_url(file="F123", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("files.revokePublicURL", file="F123")
+async def test_files_revoke_public_url(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("files_revoke_public_url", {"file": "F123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.revokePublicURL", file="F123")
 
 
-@pytest.mark.asyncio
-async def test_files_shared_public_url(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_shared_public_url(file="F123", client=mock_client)
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with("files.sharedPublicURL", file="F123")
+async def test_files_shared_public_url(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("files_shared_public_url", {"file": "F123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "files.sharedPublicURL", file="F123")
 
 
-@pytest.mark.asyncio
-async def test_files_upload(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_upload(
-        content="hello", filename="test.txt", client=mock_client
+async def test_files_upload(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "files_upload", {"content": "hello", "filename": "test.txt"}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "files.upload", content="hello", filename="test.txt"
+        slack_stub.api_call, "files.upload", content="hello", filename="test.txt"
     )
 
 
-@pytest.mark.asyncio
-async def test_files_upload_v2(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await files_upload_v2(
-        content="hello", filename="test.txt", client=mock_client
+async def test_files_upload_v2(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "files_upload_v2", {"content": "hello", "filename": "test.txt"}
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call, "files.upload.v2", content="hello", filename="test.txt"
+        slack_stub.api_call, "files.upload.v2", content="hello", filename="test.txt"
     )
 
 

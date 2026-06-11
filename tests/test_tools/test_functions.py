@@ -1,35 +1,28 @@
-import pytest
-
-from slack_mcp.tools.functions import (
-    functions_complete_error,
-    functions_complete_success,
-)
 from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_functions_complete_error(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await functions_complete_error(
-        error="something broke", function_execution_id="Fn123", client=mock_client
+async def test_functions_complete_error(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "functions_complete_error",
+        {"error": "something broke", "function_execution_id": "Fn123"},
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
         "functions.completeError",
         error="something broke",
         function_execution_id="Fn123",
     )
 
 
-@pytest.mark.asyncio
-async def test_functions_complete_success(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await functions_complete_success(
-        function_execution_id="Fn123", outputs={"result": "done"}, client=mock_client
+async def test_functions_complete_success(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "functions_complete_success",
+        {"function_execution_id": "Fn123", "outputs": {"result": "done"}},
     )
-    assert result["ok"] is True
+    assert result.is_error is False
     assert_api_call(
-        mock_client.api_call,
+        slack_stub.api_call,
         "functions.completeSuccess",
         function_execution_id="Fn123",
         outputs={"result": "done"},

@@ -3,12 +3,11 @@ from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 
 from slack_mcp.resolve import resolve_ids, set_cache_store
-from slack_mcp.tools.resolve import resolve_names
+from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_resolve_names_users(mock_client):
-    mock_client.api_call.return_value = {
+async def test_resolve_names_users(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {
         "ok": True,
         "user": {
             "id": "U123",
@@ -17,27 +16,25 @@ async def test_resolve_names_users(mock_client):
             "profile": {"display_name": "Jane", "real_name": "Jane Doe"},
         },
     }
-    result = await resolve_names(user_ids=["U123"], client=mock_client)
-    assert result["ok"] is True
-    assert result["names"]["U123"] == "Jane"
-    mock_client.api_call.assert_called_once_with("users.info", user="U123")
+    result = await mcp_client.call_tool("resolve_names", {"user_ids": ["U123"]})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "users.info", user="U123")
+    assert result.structured_content["names"]["U123"] == "Jane"
 
 
-@pytest.mark.asyncio
-async def test_resolve_names_channels(mock_client):
-    mock_client.api_call.return_value = {
+async def test_resolve_names_channels(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {
         "ok": True,
         "channel": {"id": "C456", "name": "general"},
     }
-    result = await resolve_names(channel_ids=["C456"], client=mock_client)
-    assert result["ok"] is True
-    assert result["names"]["C456"] == "general"
-    mock_client.api_call.assert_called_once_with("conversations.info", channel="C456")
+    result = await mcp_client.call_tool("resolve_names", {"channel_ids": ["C456"]})
+    assert result.is_error is False
+    assert_api_call(slack_stub.api_call, "conversations.info", channel="C456")
+    assert result.structured_content["names"]["C456"] == "general"
 
 
-@pytest.mark.asyncio
-async def test_resolve_names_fallback_real_name(mock_client):
-    mock_client.api_call.return_value = {
+async def test_resolve_names_fallback_real_name(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {
         "ok": True,
         "user": {
             "id": "U789",
@@ -46,13 +43,14 @@ async def test_resolve_names_fallback_real_name(mock_client):
             "profile": {"display_name": "", "real_name": "Bob Jones"},
         },
     }
-    result = await resolve_names(user_ids=["U789"], client=mock_client)
-    assert result["names"]["U789"] == "Bob Jones"
+    result = await mcp_client.call_tool("resolve_names", {"user_ids": ["U789"]})
+    assert result.is_error is False
+    # Empty display_name falls back to real_name.
+    assert result.structured_content["names"]["U789"] == "Bob Jones"
 
 
-@pytest.mark.asyncio
-async def test_resolve_names_api_failure(mock_client):
-    mock_client.api_call.side_effect = SlackApiError(
+async def test_resolve_names_api_failure(mcp_client, slack_stub):
+    slack_stub.api_call.side_effect = SlackApiError(
         message="user_not_found",
         response=AsyncSlackResponse(
             client=None,
@@ -64,14 +62,14 @@ async def test_resolve_names_api_failure(mock_client):
             status_code=200,
         ),
     )
-    result = await resolve_names(user_ids=["UBAD"], client=mock_client)
-    assert result["ok"] is True
-    assert "UBAD" not in result["names"]
+    result = await mcp_client.call_tool("resolve_names", {"user_ids": ["UBAD"]})
+    assert result.is_error is False
+    # A per-ID lookup failure is swallowed — the failed ID isn't in the map.
+    assert result.structured_content["names"] == {}
 
 
-@pytest.mark.asyncio
-async def test_resolve_names_auth_error_propagates(mock_client):
-    mock_client.api_call.side_effect = SlackApiError(
+async def test_resolve_names_auth_error_propagates(mcp_client, slack_stub):
+    slack_stub.api_call.side_effect = SlackApiError(
         message="not_authed",
         response=AsyncSlackResponse(
             client=None,
@@ -83,13 +81,14 @@ async def test_resolve_names_auth_error_propagates(mock_client):
             status_code=200,
         ),
     )
-    with pytest.raises(SlackApiError):
-        await resolve_names(user_ids=["U123"], client=mock_client)
+    result = await mcp_client.call_tool(
+        "resolve_names", {"user_ids": ["U123"]}, raise_on_error=False
+    )
+    assert result.is_error is True
 
 
-@pytest.mark.asyncio
-async def test_resolve_names_deduplicates_ids(mock_client):
-    mock_client.api_call.return_value = {
+async def test_resolve_names_deduplicates_ids(mcp_client, slack_stub):
+    slack_stub.api_call.return_value = {
         "ok": True,
         "user": {
             "id": "U123",
@@ -98,17 +97,18 @@ async def test_resolve_names_deduplicates_ids(mock_client):
             "profile": {"display_name": "Jane", "real_name": "Jane Doe"},
         },
     }
-    result = await resolve_names(user_ids=["U123", "U123", "U123"], client=mock_client)
-    assert result["names"]["U123"] == "Jane"
-    mock_client.api_call.assert_called_once_with("users.info", user="U123")
+    result = await mcp_client.call_tool(
+        "resolve_names", {"user_ids": ["U123", "U123", "U123"]}
+    )
+    assert result.is_error is False
+    slack_stub.api_call.assert_called_once_with("users.info", user="U123")
+    assert result.structured_content["names"]["U123"] == "Jane"
 
 
-@pytest.mark.asyncio
-async def test_resolve_names_empty(mock_client):
-    result = await resolve_names(client=mock_client)
-    assert result["ok"] is True
-    assert result["names"] == {}
-    mock_client.api_call.assert_not_called()
+async def test_resolve_names_empty(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("resolve_names", {})
+    assert result.is_error is False
+    slack_stub.api_call.assert_not_called()
 
 
 @pytest.mark.asyncio

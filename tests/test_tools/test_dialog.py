@@ -1,15 +1,15 @@
-import pytest
-
-from slack_mcp.tools.dialog import dialog_open
+from tests.conftest import assert_api_call
 
 
-@pytest.mark.asyncio
-async def test_dialog_open(mock_client):
-    mock_client.api_call.return_value = {"ok": True}
-    result = await dialog_open(
-        dialog={"title": "Test"}, trigger_id="T123", client=mock_client
+async def test_dialog_open(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "dialog_open",
+        {"dialog": {"title": "Test"}, "trigger_id": "T123"},
     )
-    assert result["ok"] is True
-    mock_client.api_call.assert_called_once_with(
-        "dialog.open", dialog={"title": "Test"}, trigger_id="T123"
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
+        "dialog.open",
+        dialog={"title": "Test"},
+        trigger_id="T123",
     )
