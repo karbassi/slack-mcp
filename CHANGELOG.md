@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-06-15
+
+### Added
+
+- Per-parameter descriptions for the `conversations`, `chat`, and `search` tool families, extracted from each function's docstring into the MCP tool schema (FastMCP 3.x docstring parsing) so clients get per-argument guidance.
+- 30-second timeout on the slow paginated read tools (`search_all`, `search_files`, `search_messages`, `conversations_history`, `conversations_replies`) so a hung Slack call can't hang the client.
+
+### Changed
+
+- Slack `ok:false` responses are now surfaced as MCP tool errors via `ToolResult.is_error` (an outermost middleware) instead of being reported as successful calls — primarily affects the undocumented/session endpoints (official methods already raised).
+- Widened nested-object tool parameter types from `dict[str, str]` to `dict[str, Any]` (`views.view`, workflow `inputs`/`outputs`/`error`, and canvas `changes`/`criteria`/`document_content`) so real Slack payloads are no longer rejected at the MCP schema boundary.
+- Require `fastmcp>=3.4.2`, which pulls the `starlette>=1.0.1` floor (CVE-2026-48710).
+
+### Internal
+
+- Tool tests now drive the assembled server through an in-memory FastMCP `Client`, exercising schema validation, the middleware stack, and serialization (the change that surfaced the nested-type widening above).
+
 ## [2.1.0] - 2026-06-04
 
 ### Added
