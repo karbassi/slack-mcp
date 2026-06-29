@@ -95,6 +95,15 @@ class SlackClient:
         response = await self.web_client.files_upload_v2(**_drop_none(kwargs))
         return _require_dict(response.data, "files.upload.v2")
 
+    async def users_set_photo(self, **kwargs) -> dict:
+        """Set the user profile photo via slack_sdk's multipart helper.
+
+        ``users.setPhoto`` is a binary multipart upload; delegate to the SDK
+        method (which builds the multipart body) rather than form-encoding.
+        """
+        response = await self.web_client.users_setPhoto(**_drop_none(kwargs))
+        return _require_dict(response.data, "users.setPhoto")
+
     def _require_session_tokens(self) -> None:
         if not self.xoxc_token or not self.xoxd_token:
             raise ValueError(  # noqa: TRY003

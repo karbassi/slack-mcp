@@ -139,7 +139,10 @@ async def test_users_profile_set_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="destructive: would set the user's profile photo")
 async def test_users_set_photo_live(live_client):
+    import base64
+
     result = await users_set_photo(
-        image="https://example.com/photo.png", client=live_client
+        image_base64=base64.b64encode(b"fake-png-bytes").decode(),
+        client=live_client,
     )
     assert "ok" in result

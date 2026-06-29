@@ -26,7 +26,7 @@ async def functions_complete_error(
 @mcp.tool
 async def functions_complete_success(
     function_execution_id: str,
-    outputs: dict | None = None,
+    outputs: dict,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Signal the successful completion of a function.
