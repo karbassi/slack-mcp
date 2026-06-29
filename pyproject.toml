@@ -6,7 +6,7 @@ license = "MIT"
 requires-python = ">=3.13"
 dependencies = [
     "fastmcp>=3.4.2",
-    "slack-sdk",
+    "slack-sdk>=3.19",  # files_upload_v2 helper
     "aiohttp",
     "httpx",
     "python-dotenv",

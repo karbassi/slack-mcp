@@ -31,6 +31,7 @@ _CALL_METHODS = (
     "session_call",
     "session_call_form",
     "session_call_multipart",
+    "files_upload_v2",
 )
 
 

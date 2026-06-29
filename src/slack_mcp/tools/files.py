@@ -360,39 +360,36 @@ async def files_upload(
 
 @mcp.tool
 async def files_upload_v2(
-    channel_id: str | None = None,
-    content: str | None = None,
+    content: str,
     filename: str | None = None,
-    filetype: str | None = None,
-    initial_comment: str | None = None,
-    length: int | None = None,
-    snippet_type: str | None = None,
-    thread_ts: str | None = None,
     title: str | None = None,
+    channel: str | None = None,
+    initial_comment: str | None = None,
+    thread_ts: str | None = None,
+    snippet_type: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Upload a file using v2 API.
+    """Upload file content (v2).
+
+    Runs Slack's recommended upload flow (get upload URL, upload, complete) via
+    the slack_sdk helper. Takes the file contents directly — it does not read
+    from the host filesystem.
 
     Args:
-        channel_id: ID of the channel to share the uploaded file into (e.g. ``C0123``).
-        content: File contents as a string; using this creates an editable text/snippet file instead of a binary upload.
-        filename: Name of the file (e.g. ``report.pdf``).
-        filetype: File type identifier (e.g. ``python``, ``pdf``).
-        initial_comment: Message text to post alongside the file.
-        length: Size of the file in bytes.
-        snippet_type: Syntax type of a snippet being uploaded (e.g. ``python``).
-        thread_ts: Timestamp of the parent message to share the file into as a thread reply (e.g. ``1700000000.00``).
+        content: File contents to upload as a string.
+        filename: Name of the file (e.g. ``notes.txt``).
         title: Title of the file shown in Slack.
+        channel: ID of the channel to share the uploaded file into (e.g. ``C0123``).
+        initial_comment: Message text to post alongside the file.
+        thread_ts: Timestamp of the parent message to share the file into as a thread reply (e.g. ``1700000000.0001``).
+        snippet_type: Syntax type of a snippet being uploaded (e.g. ``python``).
     """
-    return await client.api_call(
-        "files.upload.v2",
-        channel_id=channel_id,
+    return await client.files_upload_v2(
         content=content,
         filename=filename,
-        filetype=filetype,
-        initial_comment=initial_comment,
-        length=length,
-        snippet_type=snippet_type,
-        thread_ts=thread_ts,
         title=title,
+        channel=channel,
+        initial_comment=initial_comment,
+        thread_ts=thread_ts,
+        snippet_type=snippet_type,
     )

@@ -1553,7 +1553,7 @@ requires-dist = [
     { name = "platformdirs", specifier = ">=4.5.1" },
     { name = "py-key-value-aio", extras = ["disk"] },
     { name = "python-dotenv" },
-    { name = "slack-sdk" },
+    { name = "slack-sdk", specifier = ">=3.19" },
 ]
 
 [package.metadata.requires-dev]

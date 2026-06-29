@@ -84,6 +84,17 @@ class SlackClient:
         response = await self.web_client.api_call(method, json=_drop_none(kwargs))
         return _require_dict(response.data, method)
 
+    async def files_upload_v2(self, **kwargs) -> dict:
+        """Upload a file via slack_sdk's ``files_upload_v2`` helper.
+
+        ``files.upload.v2`` is not a real HTTP method — it is an SDK helper that
+        runs the ``files.getUploadURLExternal`` -> upload-to-URL ->
+        ``files.completeUploadExternal`` flow. Delegate to it rather than POSTing
+        the bogus method name.
+        """
+        response = await self.web_client.files_upload_v2(**_drop_none(kwargs))
+        return _require_dict(response.data, "files.upload.v2")
+
     def _require_session_tokens(self) -> None:
         if not self.xoxc_token or not self.xoxd_token:
             raise ValueError(  # noqa: TRY003

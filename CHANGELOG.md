@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- `tooling_tokens_rotate` now sends only `refresh_token` (was also sending `client_id`/`client_secret`/`grant_type`, which the method does not accept). **Breaking:** the `client_id`/`client_secret`/`grant_type` parameters were removed.
+- `entity_present_details` now sends `trigger_id` plus optional `metadata`/`user_auth_required`/`user_auth_url`/`error`. **Breaking:** the previous `app_id`/`entity_id`/`entity_type` parameters (none accepted by the API) were replaced.
+- `files_upload_v2` now runs Slack's real upload flow via the slack_sdk helper (`files.upload.v2` is not an HTTP method, so the call always failed). **Breaking:** `content` is now required, `channel_id` became `channel`, and the unused `filetype`/`length` parameters were removed.
 - `workflows_featured_add`, `workflows_featured_remove`, and `workflows_featured_set` now send the `channel_id` and `trigger_ids` the Slack Web API actually requires, instead of a bare `workflow_ids` list that would fail.
 - Tools forwarding a `dict` or `list` parameter (`blocks`, `attachments`, `view`, `recurrence`, `trigger_ids`, `emails`, …) now send a JSON request body. Form-encoding mangled nested values (a dict collapsed to its first key, a list of dicts to a Python `repr`), so those calls silently sent malformed data.
 - Corrected the `chat` streaming tools: `chat_append_stream` and `chat_stop_stream` now use `ts`/`markdown_text` (was `thread_ts`/`text`), `chat_start_stream` exposes the `recipient_user_id`/`recipient_team_id` required for channel streams, and the non-existent `chat_stream` (`chat.stream` is not a Web API method) was removed.
