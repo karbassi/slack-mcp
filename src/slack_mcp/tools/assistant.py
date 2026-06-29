@@ -1,7 +1,56 @@
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import SLOW_CALL_TIMEOUT, mcp, slack_client
+
+
+@mcp.tool(timeout=SLOW_CALL_TIMEOUT)
+async def assistant_search_context(
+    query: str,
+    action_token: str | None = None,
+    channel_types: str | None = None,
+    content_types: str | None = None,
+    context_channel_id: str | None = None,
+    include_bots: bool | None = None,
+    include_context_messages: bool | None = None,
+    cursor: str | None = None,
+    limit: int | None = None,
+    before: int | None = None,
+    after: int | None = None,
+    sort: str | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Search messages, files, channels, and users to provide context to an AI assistant.
+
+    Args:
+        query: The search query or user prompt, e.g. ``"What is project gizmo?"``.
+        action_token: Required when calling with a bot token; not needed for user tokens.
+        channel_types: Comma-separated: ``public_channel``, ``private_channel``, ``mpim``, ``im``.
+        content_types: Comma-separated: ``messages``, ``files``, ``channels``, ``users``.
+        context_channel_id: Channel to bias results toward.
+        include_bots: Include messages from bots in results.
+        include_context_messages: Return surrounding messages for each match.
+        cursor: Pagination cursor from a prior response.
+        limit: Results per page (max 20).
+        before: Only results before this UNIX timestamp.
+        after: Only results after this UNIX timestamp.
+        sort: ``score`` (relevance) or ``timestamp`` (recency).
+    """
+    return await client.api_call(
+        "assistant.search.context",
+        query=query,
+        action_token=action_token,
+        channel_types=channel_types,
+        content_types=content_types,
+        context_channel_id=context_channel_id,
+        include_bots=include_bots,
+        include_context_messages=include_context_messages,
+        cursor=cursor,
+        limit=limit,
+        before=before,
+        after=after,
+        sort=sort,
+    )
 
 
 @mcp.tool
