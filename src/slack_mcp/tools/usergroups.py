@@ -12,6 +12,8 @@ async def usergroups_create(
     handle: str | None = None,
     include_count: bool | None = None,
     team_id: str | None = None,
+    additional_channels: str | None = None,
+    enable_section: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a User Group.
@@ -23,6 +25,8 @@ async def usergroups_create(
         handle: A mention handle (must be unique among channels, users, and User Groups).
         include_count: Include the number of users in each User Group in the response.
         team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+        additional_channels: Comma-separated additional default channel IDs to add beyond ``channels`` (e.g. ``C0789``).
+        enable_section: Whether to enable a section for the User Group.
     """
     return await client.api_call(
         "usergroups.create",
@@ -32,6 +36,8 @@ async def usergroups_create(
         handle=handle,
         include_count=include_count,
         team_id=team_id,
+        additional_channels=additional_channels,
+        enable_section=enable_section,
     )
 
 
@@ -113,6 +119,8 @@ async def usergroups_update(
     include_count: bool | None = None,
     name: str | None = None,
     team_id: str | None = None,
+    additional_channels: str | None = None,
+    enable_section: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update an existing User Group.
@@ -125,6 +133,8 @@ async def usergroups_update(
         include_count: Include the number of users in the User Group in the response.
         name: A name for the User Group (must be unique among User Groups).
         team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+        additional_channels: Comma-separated additional default channel IDs to add beyond ``channels`` (e.g. ``C0789``).
+        enable_section: Whether to enable a section for the User Group.
     """
     return await client.api_call(
         "usergroups.update",
@@ -135,6 +145,8 @@ async def usergroups_update(
         include_count=include_count,
         name=name,
         team_id=team_id,
+        additional_channels=additional_channels,
+        enable_section=enable_section,
     )
 
 
@@ -166,6 +178,8 @@ async def usergroups_users_update(
     users: str,
     include_count: bool | None = None,
     team_id: str | None = None,
+    is_shared: bool | None = None,
+    additional_channels: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update the list of users for a User Group.
@@ -175,11 +189,15 @@ async def usergroups_users_update(
         users: Comma-separated user IDs representing the entire list of users for the User Group (e.g. ``U0123,U0456``).
         include_count: Include the number of users in the User Group in the response.
         team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+        is_shared: Whether the User Group is shared across an org/Enterprise Grid.
+        additional_channels: Comma-separated channel IDs the User Group can add members to (e.g. ``C0123,C0456``).
     """
     return await client.api_call(
         "usergroups.users.update",
         usergroup=usergroup,
         users=users,
+        is_shared=is_shared,
+        additional_channels=additional_channels,
         include_count=include_count,
         team_id=team_id,
     )

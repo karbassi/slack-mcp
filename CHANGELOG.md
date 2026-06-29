@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - New tools: `blocks_validate`, `assistant_search_context`, `assistant_search_info`, `apps_activities_list`, `oauth_v2_user_access`, and `messages_list` (batch fetch of full message objects by channel and timestamp).
 - Per-parameter descriptions for every remaining tool family, extracted from each function's docstring into the MCP tool schema. Building on 2.2.0 (which covered `conversations`, `chat`, and `search`), all tools now expose per-argument guidance to clients.
+- Exposed previously-missing optional parameters: PKCE `code_verifier` on `oauth_v2_access` and `openid_connect_token`; `additional_channels`/`enable_section` on `usergroups_create`/`usergroups_update` and `additional_channels`/`is_shared` on `usergroups_users_update`; `archived`/`include_is_subscribed`/`include_archived` on the `slackLists` item and download tools; and `sort_dir` on `assistant_search_context`.
 
 ### Fixed
 
@@ -22,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Corrected `slackLists` tool parameters to match the Slack API: `slack_lists_create` uses `schema`/`description_blocks` (was `columns`/`description`), `slack_lists_items_create` uses `initial_fields` (was `column_values`), `slack_lists_items_update` uses `cells` (was `item_id`/`column_values`), and `slack_lists_update` uses `description_blocks`. Previously the field data was silently dropped.
 - Corrected `conversations` shared-invite tools: `conversations_request_shared_invite_approve` drops the unsupported `is_approved` and adds `is_external_limited`; `conversations_external_invite_permissions_set` adds the required `target_team`; and `conversations_request_shared_invite_deny`'s `message` is now a string (the API rejects an object there).
 - `users_get_presence`'s `user` argument is now optional (defaults to the authenticated user, matching the API). `functions_complete_success` now requires `outputs` (the API requires it). **Breaking:** `users_set_photo` now takes `image_base64` (base64-encoded image bytes, uploaded via multipart) instead of `image` — the old form-string path could never upload a real image.
+- `drafts_delete` no longer raises `KeyError` on a malformed `drafts.list` entry while auto-fetching the latest timestamp.
 
 ### Internal
 

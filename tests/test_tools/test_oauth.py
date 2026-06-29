@@ -19,7 +19,12 @@ async def test_oauth_access(mcp_client, slack_stub):
 async def test_oauth_v2_access(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "oauth_v2_access",
-        {"client_id": "C123", "client_secret": "S456", "code": "code789"},
+        {
+            "client_id": "C123",
+            "client_secret": "S456",
+            "code": "code789",
+            "code_verifier": "pkce-verifier",
+        },
     )
     assert result.is_error is False
     assert_api_call(
@@ -28,6 +33,7 @@ async def test_oauth_v2_access(mcp_client, slack_stub):
         client_id="C123",
         client_secret="S456",
         code="code789",
+        code_verifier="pkce-verifier",
     )
 
 

@@ -40,7 +40,7 @@ async def canvases_access_set(
 
     Args:
         canvas_id: Encoded ID of the canvas to set access on (e.g. ``F0123ABC456``).
-        access_level: Access level granted to the entities, either ``read`` or ``write``.
+        access_level: Access level granted to the entities — ``read``, ``write``, or ``owner``.
         channel_ids: Channel IDs to grant the access level to (e.g. ``["C0123"]``).
         user_ids: User IDs to grant the access level to (e.g. ``["U0123"]``).
     """
