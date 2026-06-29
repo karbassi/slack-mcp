@@ -46,6 +46,29 @@ async def test_oauth_v2_user_access(mcp_client, slack_stub):
     )
 
 
+async def test_oauth_v2_user_access_pkce(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "oauth_v2_user_access",
+        {
+            "client_id": "C123",
+            "client_secret": "S456",
+            "code": "code789",
+            "code_verifier": "pkce-verifier",
+            "redirect_uri": "https://example.com/cb",
+        },
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call,
+        "oauth.v2.user.access",
+        client_id="C123",
+        client_secret="S456",
+        code="code789",
+        code_verifier="pkce-verifier",
+        redirect_uri="https://example.com/cb",
+    )
+
+
 async def test_oauth_v2_user_access_refresh_omits_code(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "oauth_v2_user_access",
