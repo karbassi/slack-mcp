@@ -47,6 +47,49 @@ async def oauth_v2_access(
 
 
 @mcp.tool
+async def oauth_v2_user_access(
+    client_id: str,
+    client_secret: str | None = None,
+    code: str | None = None,
+    code_verifier: str | None = None,
+    grant_type: str | None = None,
+    redirect_uri: str | None = None,
+    refresh_token: str | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Exchange a temporary OAuth verifier code for a user access token (V2).
+
+    Args:
+        client_id: Your app's client ID.
+        client_secret: Your app's client secret (omit for public PKCE clients).
+        code: The OAuth callback code (omit when refreshing).
+        code_verifier: PKCE verifier matching the original challenge.
+        grant_type: ``authorization_code`` (default) or ``refresh_token``.
+        redirect_uri: Must match the value used to request the code.
+        refresh_token: The refresh token, when ``grant_type=refresh_token``.
+    """
+    if (grant_type or "authorization_code") == "refresh_token":
+        if not refresh_token:
+            raise ValueError(  # noqa: TRY003
+                "grant_type=refresh_token requires refresh_token."
+            )
+    elif not code:
+        raise ValueError(  # noqa: TRY003
+            "grant_type=authorization_code requires code."
+        )
+    return await client.api_call(
+        "oauth.v2.user.access",
+        client_id=client_id,
+        client_secret=client_secret,
+        code=code,
+        code_verifier=code_verifier,
+        grant_type=grant_type,
+        redirect_uri=redirect_uri,
+        refresh_token=refresh_token,
+    )
+
+
+@mcp.tool
 async def oauth_v2_exchange(
     client_id: str,
     client_secret: str,
