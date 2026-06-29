@@ -25,6 +25,23 @@ def _drop_none(kwargs: dict) -> dict:
     return {k: v for k, v in kwargs.items() if v is not None}
 
 
+def _require_dict(data: object, method: str) -> dict:
+    """Enforce that a Slack response payload is a ``dict``.
+
+    ``SlackResponse.data`` is typed as ``dict | bytes`` — bytes appear when a
+    method streams a raw file body. Every method routed through ``api_call`` /
+    ``api_call_json`` returns JSON, so a non-dict payload is a contract
+    violation; raise a clear error naming the method instead of letting a
+    downstream ``dict()`` conversion fail opaquely.
+    """
+    if not isinstance(data, dict):
+        raise TypeError(  # noqa: TRY003
+            f"Slack method {method} returned non-dict data "
+            f"({type(data).__name__}); expected a JSON object."
+        )
+    return data
+
+
 class SlackClient:
     """Unified Slack API client using xoxp for official methods
     and xoxc + xoxd for undocumented session endpoints."""
@@ -45,7 +62,7 @@ class SlackClient:
     async def api_call(self, method: str, **kwargs) -> dict:
         """Call an official Slack Web API method via slack_sdk (form-encoded)."""
         response = await self.web_client.api_call(method, data=_drop_none(kwargs))
-        return dict(response.data)
+        return _require_dict(response.data, method)
 
     async def api_call_json(self, method: str, **kwargs) -> dict:
         """Call an official Slack Web API method via slack_sdk (JSON body).
@@ -54,7 +71,7 @@ class SlackClient:
         nested objects that must be sent as JSON rather than form-encoded.
         """
         response = await self.web_client.api_call(method, json=_drop_none(kwargs))
-        return dict(response.data)
+        return _require_dict(response.data, method)
 
     def _require_session_tokens(self) -> None:
         if not self.xoxc_token or not self.xoxd_token:

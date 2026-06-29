@@ -17,7 +17,7 @@ from fastmcp import FastMCP
 from fastmcp.dependencies import Depends
 from fastmcp.server.middleware.caching import CachableToolResult
 from fastmcp.server.middleware.middleware import CallNext, Middleware, MiddlewareContext
-from fastmcp.tools.tool import ToolResult
+from fastmcp.tools import ToolResult
 from key_value.aio.stores.disk import DiskStore
 from mcp.types import CallToolRequestParams
 from slack_sdk.errors import SlackApiError

@@ -65,6 +65,33 @@ class TestApiCallDropsNone:
         client.web_client.api_call.assert_called_once_with("canvas.x", json={"a": 1})
 
 
+class TestApiCallEnforcesDict:
+    @pytest.mark.asyncio
+    async def test_form_call_returns_dict(self):
+        client = _client_with_mock_web()
+        result = await client.api_call("users.list")
+        assert result == {"ok": True}
+        assert type(result) is dict
+
+    @pytest.mark.asyncio
+    async def test_form_call_raises_on_non_dict_data(self):
+        client = object.__new__(SlackClient)
+        client.web_client = SimpleNamespace(
+            api_call=AsyncMock(return_value=SimpleNamespace(data=b"raw bytes"))
+        )
+        with pytest.raises(TypeError, match=r"users\.list"):
+            await client.api_call("users.list")
+
+    @pytest.mark.asyncio
+    async def test_json_call_raises_on_non_dict_data(self):
+        client = object.__new__(SlackClient)
+        client.web_client = SimpleNamespace(
+            api_call=AsyncMock(return_value=SimpleNamespace(data=b"raw bytes"))
+        )
+        with pytest.raises(TypeError, match=r"canvas\.x"):
+            await client.api_call_json("canvas.x")
+
+
 class TestSessionCallDropsNone:
     @pytest.mark.asyncio
     async def test_session_json_drops_none(self):
