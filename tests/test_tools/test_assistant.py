@@ -18,7 +18,7 @@ async def test_assistant_search_context(mcp_client, slack_stub):
 async def test_assistant_search_info(mcp_client, slack_stub):
     result = await mcp_client.call_tool("assistant_search_info", {})
     assert result.is_error is False
-    slack_stub.api_call.assert_called_once_with("assistant.search.info")
+    assert_api_call(slack_stub.api_call, "assistant.search.info")
 
 
 async def test_assistant_threads_set_status(mcp_client, slack_stub):
