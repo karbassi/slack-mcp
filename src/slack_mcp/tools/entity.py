@@ -11,7 +11,13 @@ async def entity_present_details(
     entity_type: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Present details about an entity."""
+    """Present details about an entity.
+
+    Args:
+        app_id: ID of the app presenting the entity (e.g. ``A0123``).
+        entity_id: Identifier of the entity to present, as understood by the app.
+        entity_type: Type of the entity being presented (e.g. ``slack#/entities/file``).
+    """
     return await client.api_call(
         "entity.presentDetails",
         app_id=app_id,

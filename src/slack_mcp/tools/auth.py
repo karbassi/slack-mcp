@@ -11,7 +11,11 @@ async def auth_revoke(
     test: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Revoke a token."""
+    """Revoke a token.
+
+    Args:
+        test: When ``true``, validate the request but do not actually revoke the token.
+    """
     return await client.api_call("auth.revoke", test=test)
 
 
@@ -22,7 +26,13 @@ async def auth_teams_list(
     include_icon: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List the workspaces a token can access."""
+    """List the workspaces a token can access.
+
+    Args:
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor`` to fetch the next page.
+        limit: Maximum number of workspaces to return per page (default ``100``).
+        include_icon: When ``true``, include the workspace icon URLs in each team object.
+    """
     return await client.api_call(
         "auth.teams.list", cursor=cursor, limit=limit, include_icon=include_icon
     )

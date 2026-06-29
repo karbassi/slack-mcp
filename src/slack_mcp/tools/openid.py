@@ -14,7 +14,16 @@ async def openid_connect_token(
     refresh_token: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Exchange a temporary OAuth code for an access token for Sign in with Slack."""
+    """Exchange a temporary OAuth code for an access token for Sign in with Slack.
+
+    Args:
+        client_id: Issued client ID for your Slack app.
+        client_secret: Issued client secret for your Slack app.
+        code: The temporary authorization code returned via the OAuth redirect.
+        grant_type: The grant type: ``authorization_code`` (default) or ``refresh_token``.
+        redirect_uri: Redirect URI used in the initial authorization request; must match exactly.
+        refresh_token: The refresh token, used when ``grant_type`` is ``refresh_token``.
+    """
     return await client.api_call(
         "openid.connect.token",
         client_id=client_id,

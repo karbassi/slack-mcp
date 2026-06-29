@@ -13,7 +13,15 @@ async def oauth_access(
     single_channel: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Exchange a temporary OAuth verifier code for an access token (V1)."""
+    """Exchange a temporary OAuth verifier code for an access token (V1).
+
+    Args:
+        client_id: Your app's client ID.
+        client_secret: Your app's client secret.
+        code: The OAuth verifier code received via the OAuth callback.
+        redirect_uri: Must match the value used to request the code.
+        single_channel: Request a single-channel installation token.
+    """
     return await client.api_call(
         "oauth.access",
         client_id=client_id,
@@ -34,7 +42,16 @@ async def oauth_v2_access(
     refresh_token: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Exchange a temporary OAuth verifier code for an access token (V2)."""
+    """Exchange a temporary OAuth verifier code for an access token (V2).
+
+    Args:
+        client_id: Your app's client ID.
+        client_secret: Your app's client secret.
+        code: The OAuth callback code (omit when refreshing).
+        grant_type: ``authorization_code`` (default) or ``refresh_token``.
+        redirect_uri: Must match the value used to request the code.
+        refresh_token: The refresh token, when ``grant_type=refresh_token``.
+    """
     return await client.api_call(
         "oauth.v2.access",
         client_id=client_id,
@@ -96,7 +113,13 @@ async def oauth_v2_exchange(
     token: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Exchange a legacy access token for a new expiring access token."""
+    """Exchange a legacy access token for a new expiring access token.
+
+    Args:
+        client_id: Your app's client ID.
+        client_secret: Your app's client secret.
+        token: The legacy (non-expiring) access token to exchange.
+    """
     return await client.api_call(
         "oauth.v2.exchange",
         client_id=client_id,
