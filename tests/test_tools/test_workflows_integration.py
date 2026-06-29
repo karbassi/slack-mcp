@@ -13,7 +13,7 @@ from slack_mcp.tools.workflows import (
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires valid workflow IDs")
+@pytest.mark.skip(reason="requires a valid channel ID and workflow trigger IDs (Ft…)")
 async def test_workflows_featured_add_live(live_client):
     pass
 
@@ -29,7 +29,7 @@ async def test_workflows_featured_list_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires valid workflow IDs")
+@pytest.mark.skip(reason="requires a valid channel ID and workflow trigger IDs (Ft…)")
 async def test_workflows_featured_remove_live(live_client):
     """Remove workflows from the featured list."""
     result = await workflows_featured_remove(
@@ -42,7 +42,7 @@ async def test_workflows_featured_remove_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="requires valid workflow IDs")
+@pytest.mark.skip(reason="requires a valid channel ID and workflow trigger IDs (Ft…)")
 async def test_workflows_featured_set_live(live_client):
     """Set the featured workflows list (replaces entire list)."""
     result = await workflows_featured_set(
