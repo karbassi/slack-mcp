@@ -33,7 +33,8 @@ async def test_workflows_featured_list_live(live_client):
 async def test_workflows_featured_remove_live(live_client):
     """Remove workflows from the featured list."""
     result = await workflows_featured_remove(
-        workflow_ids=["Wf0000000000"],
+        channel_id="C0000000000",
+        trigger_ids=["Ft0000000000"],
         client=live_client,
     )
     assert "ok" in result
@@ -45,7 +46,8 @@ async def test_workflows_featured_remove_live(live_client):
 async def test_workflows_featured_set_live(live_client):
     """Set the featured workflows list (replaces entire list)."""
     result = await workflows_featured_set(
-        workflow_ids=["Wf0000000000"],
+        channel_id="C0000000000",
+        trigger_ids=["Ft0000000000"],
         client=live_client,
     )
     assert "ok" in result
