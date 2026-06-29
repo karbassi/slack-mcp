@@ -3,7 +3,12 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from slack_mcp.compact import compact_items, compact_message_list, get_compactor
+from slack_mcp.compact import (
+    compact_items,
+    compact_message_list,
+    compact_messages_by_channel,
+    get_compactor,
+)
 from slack_mcp.tools.undocumented import _draft_body
 from tests.conftest import assert_api_call
 
@@ -300,6 +305,7 @@ async def test_messages_list(mcp_client, slack_stub):
     result = await mcp_client.call_tool("messages_list", {"message_ids": groups})
     assert result.is_error is False
     assert_api_call(slack_stub.session_call, "messages.list", message_ids=groups)
+    assert get_compactor("messages_list") is compact_messages_by_channel
 
 
 async def test_conversations_view(mcp_client, slack_stub):

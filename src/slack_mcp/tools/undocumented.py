@@ -1,11 +1,17 @@
 import json
 import uuid
+from typing import Any
 
 import httpx
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.compact import compact_items, compact_message_list, compactable
+from slack_mcp.compact import (
+    compact_items,
+    compact_message_list,
+    compact_messages_by_channel,
+    compactable,
+)
 from slack_mcp.server import mcp, slack_client
 
 
@@ -389,14 +395,17 @@ async def search_modules_dms(
 
 
 @mcp.tool
+@compactable(compact_messages_by_channel)
 async def messages_list(
-    message_ids: list[dict],
+    message_ids: list[dict[str, Any]],
+    detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Batch-fetch full message objects by channel and timestamp (undocumented session endpoint).
 
     Resolves both top-level messages and thread replies in one call — useful for
     hydrating saved/bookmarked items without one ``conversations.history`` call each.
+    Set detailed=True for the full, uncompacted response.
 
     Args:
         message_ids: Groups of messages to fetch, each

@@ -444,6 +444,33 @@ class TestCompactMessageList:
         compact_message_list(data)  # should not raise
 
 
+# -- compact_messages_by_channel --
+
+class TestCompactMessagesByChannel:
+    def test_strips_messages_keyed_by_channel(self):
+        from slack_mcp.compact import compact_messages_by_channel
+        data = {
+            "ok": True,
+            "messages": {"C123": [_bloated_message(), _bloated_message()]},
+        }
+        compact_messages_by_channel(data)
+        for msg in data["messages"]["C123"]:
+            assert "blocks" not in msg
+            assert "ts" in msg
+
+    def test_passthrough_on_not_ok(self):
+        from slack_mcp.compact import compact_messages_by_channel
+        data = {"ok": False, "error": "channel_not_found"}
+        original = copy.deepcopy(data)
+        compact_messages_by_channel(data)
+        assert data == original
+
+    def test_missing_messages_key(self):
+        from slack_mcp.compact import compact_messages_by_channel
+        data = {"ok": True}
+        compact_messages_by_channel(data)  # should not raise
+
+
 # -- compact_search_messages --
 
 class TestCompactSearchMessages:
