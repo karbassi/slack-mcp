@@ -129,6 +129,20 @@ def compact_message_list(data: dict[str, Any]) -> None:
         strip_message(msg)
 
 
+def compact_messages_by_channel(data: dict[str, Any]) -> None:
+    """messages.list — messages keyed by channel id."""
+    if not data.get("ok"):
+        return
+    messages = data.get("messages")
+    if not isinstance(messages, dict):
+        return
+    for msgs in messages.values():
+        if isinstance(msgs, list):
+            for msg in msgs:
+                if isinstance(msg, dict):
+                    strip_message(msg)
+
+
 def compact_search_messages(data: dict[str, Any]) -> None:
     """search.messages"""
     if not data.get("ok"):

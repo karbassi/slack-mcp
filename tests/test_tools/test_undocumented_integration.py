@@ -3,6 +3,7 @@ import uuid
 
 import pytest
 
+from slack_mcp.tools.chat import chat_delete, chat_post_message
 from slack_mcp.tools.conversations import conversations_archive, conversations_create
 from slack_mcp.tools.undocumented import (
     ai_apps_list,
@@ -20,6 +21,7 @@ from slack_mcp.tools.undocumented import (
     emoji_admin_list,
     emoji_remove,
     experiments_get_by_user,
+    messages_list,
     saved_add,
     saved_delete,
     saved_list,
@@ -330,3 +332,20 @@ async def test_api_features_live(live_client):
 async def test_ai_apps_list_live(live_client):
     result = await ai_apps_list(client=live_client)
     assert "ok" in result
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_messages_list_live(live_client, temp_channel):
+    """Post a message, then batch-fetch it back by channel + ts."""
+    posted = await chat_post_message(
+        channel=temp_channel, text="messages.list integration", client=live_client
+    )
+    ts = posted["ts"]
+    result = await messages_list(
+        message_ids=[{"channel": temp_channel, "timestamps": [ts]}],
+        client=live_client,
+    )
+    assert result["ok"] is True
+    fetched = result["messages"][temp_channel]
+    assert any(m["ts"] == ts for m in fetched)
+    await chat_delete(channel=temp_channel, ts=ts, client=live_client)
