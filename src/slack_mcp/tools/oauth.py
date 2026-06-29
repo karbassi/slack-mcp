@@ -49,7 +49,7 @@ async def oauth_v2_access(
 @mcp.tool
 async def oauth_v2_user_access(
     client_id: str,
-    client_secret: str,
+    client_secret: str | None = None,
     code: str | None = None,
     code_verifier: str | None = None,
     grant_type: str | None = None,
@@ -61,7 +61,7 @@ async def oauth_v2_user_access(
 
     Args:
         client_id: Your app's client ID.
-        client_secret: Your app's client secret.
+        client_secret: Your app's client secret (omit for public PKCE clients).
         code: The OAuth callback code (omit when refreshing).
         code_verifier: PKCE verifier matching the original challenge.
         grant_type: ``authorization_code`` (default) or ``refresh_token``.
