@@ -20,6 +20,7 @@ dev = [
     "pytest-asyncio",
     "respx",
     "ruff",
+    "ty>=0.0.55",
 ]
 
 [tool.pytest.ini_options]

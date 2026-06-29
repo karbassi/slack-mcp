@@ -14,10 +14,14 @@ run = "uv run ruff check ."
 description = "Run ruff with auto-fix"
 run = "uv run ruff check . --fix"
 
+[tasks.typecheck]
+description = "Run ty type checker"
+run = "uv run ty check src/"
+
 [tasks.security]
 description = "Run semgrep security + custom rules"
 run = "semgrep --config .semgrep.yml --config p/bandit --config p/secrets --config p/security-audit --config p/owasp-top-ten --config p/ai-best-practices src/"
 
 [tasks.check]
 description = "Run all checks (test + lint + security)"
-depends = ["test", "lint", "security"]
+depends = ["test", "lint", "typecheck", "security"]

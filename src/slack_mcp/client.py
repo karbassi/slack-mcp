@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from typing import cast
 
 import httpx
 from dotenv import load_dotenv
@@ -45,7 +46,7 @@ class SlackClient:
     async def api_call(self, method: str, **kwargs) -> dict:
         """Call an official Slack Web API method via slack_sdk (form-encoded)."""
         response = await self.web_client.api_call(method, data=_drop_none(kwargs))
-        return dict(response.data)
+        return dict(cast("dict", response.data))
 
     async def api_call_json(self, method: str, **kwargs) -> dict:
         """Call an official Slack Web API method via slack_sdk (JSON body).
@@ -54,7 +55,7 @@ class SlackClient:
         nested objects that must be sent as JSON rather than form-encoded.
         """
         response = await self.web_client.api_call(method, json=_drop_none(kwargs))
-        return dict(response.data)
+        return dict(cast("dict", response.data))
 
     def _require_session_tokens(self) -> None:
         if not self.xoxc_token or not self.xoxd_token:

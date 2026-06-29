@@ -129,7 +129,7 @@ def extract_ids_from_json(data: object) -> tuple[set[str], set[str], set[str]]:
                     bot_ids.add(match)
         elif isinstance(obj, dict):
             for k, v in obj.items():
-                _scan(v, k)
+                _scan(v, k if isinstance(k, str) else None)
         elif isinstance(obj, list):
             for item in obj:
                 _scan(item, key)
