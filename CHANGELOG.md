@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- New tools: `blocks_validate`, `assistant_search_context`, `assistant_search_info`, `apps_activities_list`, `oauth_v2_user_access`, and `messages_list` (batch fetch of full message objects by channel and timestamp).
+- Per-parameter descriptions for every remaining tool family, extracted from each function's docstring into the MCP tool schema. Building on 2.2.0 (which covered `conversations`, `chat`, and `search`), all 225 tools now expose per-argument guidance to clients.
+
+### Fixed
+
+- `workflows_featured_add`, `workflows_featured_remove`, and `workflows_featured_set` now send the `channel_id` and `trigger_ids` the Slack Web API actually requires, instead of a bare `workflow_ids` list that would fail.
+
+### Internal
+
+- Added the `ty` type checker (`mise run typecheck`, included in `mise run check`) and pre-commit hooks.
+
 ## [2.2.0] - 2026-06-15
 
 ### Added

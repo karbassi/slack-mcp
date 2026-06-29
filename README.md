@@ -10,7 +10,7 @@
 A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives LLMs full access to [Slack](https://slack.com).<br>
 Messages, channels, files, canvases, lists, search, reactions — all of it.
 
-**220 tools** · **36 API families** · **Every Slack feature**
+**225 tools** · **36 API families** · **Every Slack feature**
 
 </div>
 
@@ -154,14 +154,14 @@ Add to your VS Code `settings.json`:
 | Domain | Tools | Highlights |
 |---|---|---|
 | **Conversations** | 28 | History, threads, replies, create, archive, invite, mark read |
-| **Undocumented** | 28 | Drafts, saved items, emoji management, granular search, sidebar, threads |
+| **Undocumented** | 29 | Drafts, saved items, emoji management, granular search, sidebar, threads, batch message fetch |
 | **Files** | 16 | Upload, share, edit, list, remote files |
 | **Chat** | 14 | Send, reply, schedule, update, delete, ephemeral |
 | **Users** | 12 | Profile, presence, lookup, list |
 | **Lists** | 12 | Create, edit items, manage access |
 | **Legacy** | 11 | Slash commands, file editing, bot listing |
 | **Team** | 9 | Info, preferences, access logs, billing |
-| **Apps** | 8 | Manifests, connections, authorizations |
+| **Apps** | 9 | Manifests, connections, authorizations, activities |
 | **Usergroups** | 7 | Create, update, manage members |
 | **Workflows** | 7 | Featured workflows, step completion |
 | **Canvases** | 6 | Create, edit, sections, access control |
