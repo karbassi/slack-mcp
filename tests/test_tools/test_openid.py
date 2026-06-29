@@ -4,7 +4,12 @@ from tests.conftest import assert_api_call
 async def test_openid_connect_token(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "openid_connect_token",
-        {"client_id": "C123", "client_secret": "S456", "code": "code789"},
+        {
+            "client_id": "C123",
+            "client_secret": "S456",
+            "code": "code789",
+            "code_verifier": "pkce-verifier",
+        },
     )
     assert result.is_error is False
     assert_api_call(
@@ -13,6 +18,7 @@ async def test_openid_connect_token(mcp_client, slack_stub):
         client_id="C123",
         client_secret="S456",
         code="code789",
+        code_verifier="pkce-verifier",
     )
 
 

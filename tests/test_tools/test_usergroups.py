@@ -37,11 +37,22 @@ async def test_usergroups_list(mcp_client, slack_stub):
 
 async def test_usergroups_update(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "usergroups_update", {"usergroup": "S123", "name": "Updated"}
+        "usergroups_update",
+        {
+            "usergroup": "S123",
+            "name": "Updated",
+            "additional_channels": "C789",
+            "enable_section": True,
+        },
     )
     assert result.is_error is False
     assert_api_call(
-        slack_stub.api_call, "usergroups.update", usergroup="S123", name="Updated"
+        slack_stub.api_call,
+        "usergroups.update",
+        usergroup="S123",
+        name="Updated",
+        additional_channels="C789",
+        enable_section=True,
     )
 
 
@@ -58,7 +69,8 @@ async def test_usergroups_users_list(mcp_client, slack_stub):
 
 async def test_usergroups_users_update(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "usergroups_users_update", {"usergroup": "S123", "users": "U123,U456"}
+        "usergroups_users_update",
+        {"usergroup": "S123", "users": "U123,U456", "is_shared": True},
     )
     assert result.is_error is False
     assert_api_call(
@@ -66,4 +78,5 @@ async def test_usergroups_users_update(mcp_client, slack_stub):
         "usergroups.users.update",
         usergroup="S123",
         users="U123,U456",
+        is_shared=True,
     )
