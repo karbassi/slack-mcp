@@ -360,8 +360,7 @@ async def files_upload(
 
 @mcp.tool
 async def files_upload_v2(
-    file: str | None = None,
-    content: str | None = None,
+    content: str,
     filename: str | None = None,
     title: str | None = None,
     channel: str | None = None,
@@ -370,15 +369,15 @@ async def files_upload_v2(
     snippet_type: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Upload a file (v2).
+    """Upload file content (v2).
 
     Runs Slack's recommended upload flow (get upload URL, upload, complete) via
-    the slack_sdk helper. Provide exactly one of ``file`` or ``content``.
+    the slack_sdk helper. Takes the file contents directly — it does not read
+    from the host filesystem.
 
     Args:
-        file: Path to a local file to upload (binary or text).
-        content: File contents as a string; creates an editable text/snippet file instead of a binary upload.
-        filename: Name of the file (e.g. ``report.pdf``).
+        content: File contents to upload as a string.
+        filename: Name of the file (e.g. ``notes.txt``).
         title: Title of the file shown in Slack.
         channel: ID of the channel to share the uploaded file into (e.g. ``C0123``).
         initial_comment: Message text to post alongside the file.
@@ -386,7 +385,6 @@ async def files_upload_v2(
         snippet_type: Syntax type of a snippet being uploaded (e.g. ``python``).
     """
     return await client.files_upload_v2(
-        file=file,
         content=content,
         filename=filename,
         title=title,
