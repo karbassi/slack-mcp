@@ -65,6 +65,37 @@ class TestApiCallDropsNone:
         client.web_client.api_call.assert_called_once_with("canvas.x", json={"a": 1})
 
 
+class TestApiCallRoutesComplexToJson:
+    """Form-encoding mangles nested params (aiohttp serializes a dict to its
+    first key and a list to a Python repr), so api_call sends any call carrying
+    a dict/list value as a JSON body instead — matching slack_sdk's typed
+    methods. Scalar-only calls stay form-encoded."""
+
+    @pytest.mark.asyncio
+    async def test_dict_param_routes_to_json(self):
+        client = _client_with_mock_web()
+        await client.api_call("views.open", trigger_id="T", view={"type": "modal"})
+        client.web_client.api_call.assert_called_once_with(
+            "views.open", json={"trigger_id": "T", "view": {"type": "modal"}}
+        )
+
+    @pytest.mark.asyncio
+    async def test_list_param_routes_to_json(self):
+        client = _client_with_mock_web()
+        await client.api_call("conversations.inviteShared", channel="C", emails=["a@x"])
+        client.web_client.api_call.assert_called_once_with(
+            "conversations.inviteShared", json={"channel": "C", "emails": ["a@x"]}
+        )
+
+    @pytest.mark.asyncio
+    async def test_scalar_only_stays_form_encoded(self):
+        client = _client_with_mock_web()
+        await client.api_call("chat.delete", channel="C", ts="123")
+        client.web_client.api_call.assert_called_once_with(
+            "chat.delete", data={"channel": "C", "ts": "123"}
+        )
+
+
 class TestApiCallEnforcesDict:
     @pytest.mark.asyncio
     async def test_form_call_returns_dict(self):
