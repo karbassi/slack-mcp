@@ -50,7 +50,7 @@ async def oauth_v2_access(
 async def oauth_v2_user_access(
     client_id: str,
     client_secret: str,
-    code: str,
+    code: str | None = None,
     code_verifier: str | None = None,
     grant_type: str | None = None,
     redirect_uri: str | None = None,
