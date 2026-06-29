@@ -1,3 +1,5 @@
+import base64
+
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
@@ -59,13 +61,13 @@ async def users_discoverable_contacts_lookup(
 
 @mcp.tool
 async def users_get_presence(
-    user: str,
+    user: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get user presence information.
 
     Args:
-        user: ID of the user to get presence info for (e.g. ``U0123``).
+        user: ID of the user to get presence info for; defaults to the authenticated user if omitted (e.g. ``U0123``).
     """
     return await client.api_call("users.getPresence", user=user)
 
@@ -185,7 +187,7 @@ async def users_profile_set(
 
 @mcp.tool
 async def users_set_photo(
-    image: str,
+    image_base64: str,
     crop_w: int | None = None,
     crop_x: int | None = None,
     crop_y: int | None = None,
@@ -194,13 +196,16 @@ async def users_set_photo(
     """Set the user profile photo.
 
     Args:
-        image: Path to the image file to set as the profile photo.
+        image_base64: The image to set, as a base64-encoded string of the raw image bytes.
         crop_w: Width/height of the square crop box, in pixels (the crop is always square).
         crop_x: X coordinate of the top-left corner of the crop box, in pixels.
         crop_y: Y coordinate of the top-left corner of the crop box, in pixels.
     """
-    return await client.api_call(
-        "users.setPhoto", image=image, crop_w=crop_w, crop_x=crop_x, crop_y=crop_y
+    return await client.users_set_photo(
+        image=base64.b64decode(image_base64),
+        crop_w=crop_w,
+        crop_x=crop_x,
+        crop_y=crop_y,
     )
 
 

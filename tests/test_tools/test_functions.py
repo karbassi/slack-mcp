@@ -27,3 +27,13 @@ async def test_functions_complete_success(mcp_client, slack_stub):
         function_execution_id="Fn123",
         outputs={"result": "done"},
     )
+
+
+async def test_functions_complete_success_requires_outputs(mcp_client):
+    # outputs is required by functions.completeSuccess.
+    result = await mcp_client.call_tool(
+        "functions_complete_success",
+        {"function_execution_id": "Fn123"},
+        raise_on_error=False,
+    )
+    assert result.is_error is True
