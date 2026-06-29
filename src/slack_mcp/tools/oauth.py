@@ -68,6 +68,15 @@ async def oauth_v2_user_access(
         redirect_uri: Must match the value used to request the code.
         refresh_token: The refresh token, when ``grant_type=refresh_token``.
     """
+    if (grant_type or "authorization_code") == "refresh_token":
+        if not refresh_token:
+            raise ValueError(  # noqa: TRY003
+                "grant_type=refresh_token requires refresh_token."
+            )
+    elif not code:
+        raise ValueError(  # noqa: TRY003
+            "grant_type=authorization_code requires code."
+        )
     return await client.api_call(
         "oauth.v2.user.access",
         client_id=client_id,

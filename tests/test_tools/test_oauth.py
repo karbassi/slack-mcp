@@ -67,6 +67,34 @@ async def test_oauth_v2_user_access_refresh_omits_code(mcp_client, slack_stub):
     )
 
 
+async def test_oauth_v2_user_access_refresh_without_token_errors(
+    mcp_client, slack_stub
+):
+    result = await mcp_client.call_tool(
+        "oauth_v2_user_access",
+        {
+            "client_id": "C123",
+            "client_secret": "S456",
+            "grant_type": "refresh_token",
+        },
+        raise_on_error=False,
+    )
+    assert result.is_error is True
+    slack_stub.api_call.assert_not_called()
+
+
+async def test_oauth_v2_user_access_without_code_or_refresh_errors(
+    mcp_client, slack_stub
+):
+    result = await mcp_client.call_tool(
+        "oauth_v2_user_access",
+        {"client_id": "C123", "client_secret": "S456"},
+        raise_on_error=False,
+    )
+    assert result.is_error is True
+    slack_stub.api_call.assert_not_called()
+
+
 async def test_oauth_v2_exchange(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "oauth_v2_exchange",
