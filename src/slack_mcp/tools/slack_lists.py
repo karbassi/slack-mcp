@@ -179,7 +179,7 @@ async def slack_lists_items_list(
 
     Args:
         list_id: ID of the list (a file ID) whose items to return (e.g. ``F0123``).
-        cursor: Pagination cursor (``next_cursor``) from a previous response.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
         limit: Maximum number of items to return per page.
     """
     return await client.api_call_json(

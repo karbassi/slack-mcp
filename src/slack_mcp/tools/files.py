@@ -99,7 +99,7 @@ async def files_info(
     Args:
         file: ID of the file to get info about (e.g. ``F0123``).
         count: Number of comments to return per page (deprecated pagination).
-        cursor: Pagination cursor for the next page of comments, from a prior response's ``next_cursor``.
+        cursor: Pagination cursor from a prior response's ``response_metadata.next_cursor``.
         limit: Maximum number of comments to return per page.
         page: Page number of comments to return (deprecated pagination).
         detailed: Return the full Slack response instead of the compacted summary when ``True``.

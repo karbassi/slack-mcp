@@ -45,7 +45,7 @@ async def stars_list(
 
     Args:
         count: Number of items to return per page (legacy paging).
-        cursor: Pagination cursor (``next_cursor``) from a previous response.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
         limit: Maximum number of items to return per page (cursor paging).
         page: Page number of results to return (legacy paging).
         team_id: Encoded team ID to list stars for; required if the token belongs to an org-level app (e.g. ``T0123``).

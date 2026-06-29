@@ -65,7 +65,7 @@ async def users_get_presence(
     """Get user presence information.
 
     Args:
-        user: ID of the user to get presence info for; defaults to the authenticated user if omitted (e.g. ``U0123``).
+        user: ID of the user to get presence info for (e.g. ``U0123``).
     """
     return await client.api_call("users.getPresence", user=user)
 

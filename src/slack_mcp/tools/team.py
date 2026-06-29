@@ -19,7 +19,7 @@ async def team_access_logs(
     Args:
         before: Return logs from before this Unix timestamp (in seconds).
         count: Number of items to return per page (legacy paging).
-        cursor: Pagination cursor (``next_cursor``) from a previous response.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
         limit: Maximum number of items to return per page (cursor paging).
         page: Page number of results to return (legacy paging).
         team_id: Encoded team ID to get logs for; required if the token belongs to an org-level app (e.g. ``T0123``).
@@ -46,7 +46,7 @@ async def team_billable_info(
     """Get billable users information for the current team.
 
     Args:
-        cursor: Pagination cursor (``next_cursor``) from a previous response.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
         limit: Maximum number of items to return per page.
         team_id: Encoded team ID to get billable info for; required for org-level app tokens (e.g. ``T0123``).
         user: A single user to retrieve billable information for, rather than the whole team (e.g. ``U0123``).
@@ -98,7 +98,7 @@ async def team_external_teams_list(
 
     Args:
         connection_status_filter: Filter results by connection status (e.g. ``CONNECTED``, ``DISCONNECTED``).
-        cursor: Pagination cursor (``next_cursor``) from a previous response.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
         limit: Maximum number of items to return per page.
         slack_connect_pref_filter: Filter results by Slack Connect preferences (e.g. ``["approved_orgs_only"]``).
         sort_direction: Direction to sort results, ``asc`` or ``desc``.
