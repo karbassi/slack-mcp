@@ -6,8 +6,9 @@
 mise run test              # unit tests
 mise run test:integration  # integration tests (requires .env tokens)
 mise run lint              # ruff linter
+mise run typecheck         # ty type checker
 mise run security          # semgrep security + AI best practices + custom rules
-mise run check             # all checks (test + lint + security)
+mise run check             # all checks (test + lint + typecheck + security)
 ```
 
 ## Testing
