@@ -332,6 +332,7 @@ import slack_mcp.tools.api
 import slack_mcp.tools.apps
 import slack_mcp.tools.assistant
 import slack_mcp.tools.auth
+import slack_mcp.tools.blocks
 import slack_mcp.tools.bookmarks
 import slack_mcp.tools.bots
 import slack_mcp.tools.calls

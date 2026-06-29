@@ -1,6 +1,16 @@
 from tests.conftest import assert_api_call
 
 
+async def test_apps_activities_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "apps_activities_list", {"app_id": "A123", "limit": 100}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.api_call, "apps.activities.list", app_id="A123", limit=100
+    )
+
+
 async def test_apps_connections_open(mcp_client, slack_stub):
     result = await mcp_client.call_tool("apps_connections_open", {})
     assert result.is_error is False

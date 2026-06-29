@@ -5,6 +5,52 @@ from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
+async def apps_activities_list(
+    app_id: str,
+    team_id: str | None = None,
+    cursor: str | None = None,
+    limit: int | None = None,
+    min_log_level: str | None = None,
+    log_event_type: str | None = None,
+    source: str | None = None,
+    component_type: str | None = None,
+    min_date_created: int | None = None,
+    max_date_created: int | None = None,
+    sort_direction: str | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get logs for a specified workflow app.
+
+    Args:
+        app_id: The app whose activity logs to return.
+        team_id: Workspace to scope logs to (org-wide tokens).
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        limit: Maximum number of log entries to return.
+        min_log_level: Minimum severity: ``trace``, ``debug``, ``info``, ``warn``, ``error``, or ``fatal``.
+        log_event_type: Filter to a specific event type.
+        source: Origin of logs: ``slack`` or ``developer``.
+        component_type: ``events_api``, ``workflows``, ``functions``, or ``tables``.
+        min_date_created: Earliest creation time, epoch microseconds.
+        max_date_created: Latest creation time, epoch microseconds.
+        sort_direction: ``asc`` or ``desc``.
+    """
+    return await client.api_call(
+        "apps.activities.list",
+        app_id=app_id,
+        team_id=team_id,
+        cursor=cursor,
+        limit=limit,
+        min_log_level=min_log_level,
+        log_event_type=log_event_type,
+        source=source,
+        component_type=component_type,
+        min_date_created=min_date_created,
+        max_date_created=max_date_created,
+        sort_direction=sort_direction,
+    )
+
+
+@mcp.tool
 async def apps_connections_open(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
