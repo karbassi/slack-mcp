@@ -14,7 +14,7 @@ async def auth_revoke(
     """Revoke a token.
 
     Args:
-        test: When ``true``, validate the request but do not actually revoke the token.
+        test: When ``True``, validate the request but do not actually revoke the token.
     """
     return await client.api_call("auth.revoke", test=test)
 
@@ -31,7 +31,7 @@ async def auth_teams_list(
     Args:
         cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor`` to fetch the next page.
         limit: Maximum number of workspaces to return per page (default ``100``).
-        include_icon: When ``true``, include the workspace icon URLs in each team object.
+        include_icon: When ``True``, include the workspace icon URLs in each team object.
     """
     return await client.api_call(
         "auth.teams.list", cursor=cursor, limit=limit, include_icon=include_icon

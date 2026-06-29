@@ -194,7 +194,7 @@ async def users_set_photo(
     """Set the user profile photo.
 
     Args:
-        image: File contents of the image to set as the profile photo.
+        image: Path to the image file to set as the profile photo.
         crop_w: Width/height of the square crop box, in pixels (the crop is always square).
         crop_x: X coordinate of the top-left corner of the crop box, in pixels.
         crop_y: Y coordinate of the top-left corner of the crop box, in pixels.
