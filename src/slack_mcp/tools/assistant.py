@@ -30,7 +30,7 @@ async def assistant_search_context(
         context_channel_id: Channel to bias results toward.
         include_bots: Include messages from bots in results.
         include_context_messages: Return surrounding messages for each match.
-        cursor: Pagination cursor from a prior response.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
         limit: Results per page (max 20).
         before: Only results before this UNIX timestamp.
         after: Only results after this UNIX timestamp.

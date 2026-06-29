@@ -24,7 +24,7 @@ async def apps_activities_list(
     Args:
         app_id: The app whose activity logs to return.
         team_id: Workspace to scope logs to (org-wide tokens).
-        cursor: Pagination cursor from a prior response.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
         limit: Maximum number of log entries to return.
         min_log_level: Minimum severity: ``trace``, ``debug``, ``info``, ``warn``, ``error``, or ``fatal``.
         log_event_type: Filter to a specific event type.
