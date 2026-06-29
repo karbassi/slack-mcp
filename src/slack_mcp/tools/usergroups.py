@@ -179,6 +179,7 @@ async def usergroups_users_update(
     include_count: bool | None = None,
     team_id: str | None = None,
     is_shared: bool | None = None,
+    additional_channels: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update the list of users for a User Group.
@@ -189,12 +190,14 @@ async def usergroups_users_update(
         include_count: Include the number of users in the User Group in the response.
         team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
         is_shared: Whether the User Group is shared across an org/Enterprise Grid.
+        additional_channels: Comma-separated channel IDs the User Group can add members to (e.g. ``C0123,C0456``).
     """
     return await client.api_call(
         "usergroups.users.update",
         usergroup=usergroup,
         users=users,
         is_shared=is_shared,
+        additional_channels=additional_channels,
         include_count=include_count,
         team_id=team_id,
     )

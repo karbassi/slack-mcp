@@ -70,7 +70,12 @@ async def test_usergroups_users_list(mcp_client, slack_stub):
 async def test_usergroups_users_update(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "usergroups_users_update",
-        {"usergroup": "S123", "users": "U123,U456", "is_shared": True},
+        {
+            "usergroup": "S123",
+            "users": "U123,U456",
+            "is_shared": True,
+            "additional_channels": "C789",
+        },
     )
     assert result.is_error is False
     assert_api_call(
@@ -79,4 +84,5 @@ async def test_usergroups_users_update(mcp_client, slack_stub):
         usergroup="S123",
         users="U123,U456",
         is_shared=True,
+        additional_channels="C789",
     )

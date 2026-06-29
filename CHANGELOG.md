@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - New tools: `blocks_validate`, `assistant_search_context`, `assistant_search_info`, `apps_activities_list`, `oauth_v2_user_access`, and `messages_list` (batch fetch of full message objects by channel and timestamp).
 - Per-parameter descriptions for every remaining tool family, extracted from each function's docstring into the MCP tool schema. Building on 2.2.0 (which covered `conversations`, `chat`, and `search`), all tools now expose per-argument guidance to clients.
-- Exposed previously-missing optional parameters: PKCE `code_verifier` on `oauth_v2_access` and `openid_connect_token`; `additional_channels`/`enable_section` on `usergroups_create`/`usergroups_update` and `is_shared` on `usergroups_users_update`; `archived`/`include_is_subscribed`/`include_archived` on the `slackLists` item and download tools; and `sort_dir` on `assistant_search_context`.
+- Exposed previously-missing optional parameters: PKCE `code_verifier` on `oauth_v2_access` and `openid_connect_token`; `additional_channels`/`enable_section` on `usergroups_create`/`usergroups_update` and `additional_channels`/`is_shared` on `usergroups_users_update`; `archived`/`include_is_subscribed`/`include_archived` on the `slackLists` item and download tools; and `sort_dir` on `assistant_search_context`.
 
 ### Fixed
 
