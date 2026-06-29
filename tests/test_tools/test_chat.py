@@ -4,15 +4,15 @@ from tests.conftest import assert_api_call
 async def test_chat_append_stream(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "chat_append_stream",
-        {"channel": "C123", "thread_ts": "1234.5678", "text": "hello"},
+        {"channel": "C123", "ts": "1234.5678", "markdown_text": "hello"},
     )
     assert result.is_error is False
     assert_api_call(
         slack_stub.api_call,
         "chat.appendStream",
         channel="C123",
-        thread_ts="1234.5678",
-        text="hello",
+        ts="1234.5678",
+        markdown_text="hello",
     )
 
 
@@ -117,7 +117,12 @@ async def test_chat_scheduled_messages_list(mcp_client, slack_stub):
 
 async def test_chat_start_stream(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "chat_start_stream", {"channel": "C123", "thread_ts": "1234.5678"}
+        "chat_start_stream",
+        {
+            "channel": "C123",
+            "thread_ts": "1234.5678",
+            "recipient_user_id": "U999",
+        },
     )
     assert result.is_error is False
     assert_api_call(
@@ -125,35 +130,28 @@ async def test_chat_start_stream(mcp_client, slack_stub):
         "chat.startStream",
         channel="C123",
         thread_ts="1234.5678",
+        recipient_user_id="U999",
     )
 
 
 async def test_chat_stop_stream(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "chat_stop_stream", {"channel": "C123", "thread_ts": "1234.5678"}
+        "chat_stop_stream", {"channel": "C123", "ts": "1234.5678"}
     )
     assert result.is_error is False
     assert_api_call(
         slack_stub.api_call,
         "chat.stopStream",
         channel="C123",
-        thread_ts="1234.5678",
+        ts="1234.5678",
     )
 
 
-async def test_chat_stream(mcp_client, slack_stub):
-    result = await mcp_client.call_tool(
-        "chat_stream",
-        {"channel": "C123", "thread_ts": "1234.5678", "text": "streaming"},
-    )
-    assert result.is_error is False
-    assert_api_call(
-        slack_stub.api_call,
-        "chat.stream",
-        channel="C123",
-        thread_ts="1234.5678",
-        text="streaming",
-    )
+async def test_chat_stream_tool_removed(mcp_client):
+    """chat.stream is not a real Slack Web API method; the tool was removed in
+    favor of chat_start_stream / chat_append_stream / chat_stop_stream."""
+    tools = await mcp_client.list_tools()
+    assert "chat_stream" not in {t.name for t in tools}
 
 
 async def test_chat_unfurl(mcp_client, slack_stub):

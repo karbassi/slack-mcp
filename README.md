@@ -10,7 +10,7 @@
 A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives LLMs full access to [Slack](https://slack.com).<br>
 Messages, channels, files, canvases, lists, search, reactions — all of it.
 
-**225 tools** · **36 API families** · **Every Slack feature**
+**224 tools** · **36 API families** · **Every Slack feature**
 
 </div>
 
@@ -156,7 +156,7 @@ Add to your VS Code `settings.json`:
 | **Conversations** | 28 | History, threads, replies, create, archive, invite, mark read |
 | **Undocumented** | 29 | Drafts, saved items, emoji management, granular search, sidebar, threads, batch message fetch |
 | **Files** | 16 | Upload, share, edit, list, remote files |
-| **Chat** | 14 | Send, reply, schedule, update, delete, ephemeral |
+| **Chat** | 13 | Send, reply, schedule, update, delete, ephemeral, stream |
 | **Users** | 12 | Profile, presence, lookup, list |
 | **Lists** | 12 | Create, edit items, manage access |
 | **Legacy** | 11 | Slash commands, file editing, bot listing |

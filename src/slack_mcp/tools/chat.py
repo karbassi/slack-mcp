@@ -7,19 +7,19 @@ from slack_mcp.server import SHORT_TTL, mcp, slack_client
 @mcp.tool
 async def chat_append_stream(
     channel: str,
-    thread_ts: str,
-    text: str,
+    ts: str,
+    markdown_text: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Append text to an AI assistant streaming message.
 
     Args:
         channel: ID of the channel containing the stream (e.g. ``C0123``).
-        thread_ts: Timestamp of the parent thread that owns the stream (e.g. ``1700000000.000100``).
-        text: Text chunk to append to the streaming message.
+        ts: Timestamp of the streaming message to append to (e.g. ``1700000000.000100``).
+        markdown_text: Markdown-formatted text chunk to append (max 12,000 characters).
     """
     return await client.api_call(
-        "chat.appendStream", channel=channel, thread_ts=thread_ts, text=text
+        "chat.appendStream", channel=channel, ts=ts, markdown_text=markdown_text
     )
 
 
@@ -272,6 +272,9 @@ async def chat_scheduled_messages_list(
 async def chat_start_stream(
     channel: str,
     thread_ts: str,
+    recipient_user_id: str | None = None,
+    recipient_team_id: str | None = None,
+    markdown_text: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Start an AI assistant streaming message.
@@ -279,46 +282,33 @@ async def chat_start_stream(
     Args:
         channel: ID of the channel to start the stream in (e.g. ``C0123``).
         thread_ts: Timestamp of the parent thread to attach the stream to (e.g. ``1700000000.000100``).
+        recipient_user_id: User to receive the streaming text; required when streaming to a channel (e.g. ``U0123``).
+        recipient_team_id: Team the receiving user belongs to (e.g. ``T0123``).
+        markdown_text: Initial markdown-formatted text for the stream (max 12,000 characters).
     """
     return await client.api_call(
-        "chat.startStream", channel=channel, thread_ts=thread_ts
+        "chat.startStream",
+        channel=channel,
+        thread_ts=thread_ts,
+        recipient_user_id=recipient_user_id,
+        recipient_team_id=recipient_team_id,
+        markdown_text=markdown_text,
     )
 
 
 @mcp.tool
 async def chat_stop_stream(
     channel: str,
-    thread_ts: str,
+    ts: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Stop an AI assistant streaming message.
 
     Args:
         channel: ID of the channel containing the stream (e.g. ``C0123``).
-        thread_ts: Timestamp of the parent thread whose stream should be stopped (e.g. ``1700000000.000100``).
+        ts: Timestamp of the streaming message to stop (e.g. ``1700000000.000100``).
     """
-    return await client.api_call(
-        "chat.stopStream", channel=channel, thread_ts=thread_ts
-    )
-
-
-@mcp.tool
-async def chat_stream(
-    channel: str,
-    thread_ts: str,
-    text: str,
-    client: SlackClient = Depends(slack_client),
-) -> dict:
-    """Stream a message to an AI assistant thread.
-
-    Args:
-        channel: ID of the channel containing the stream (e.g. ``C0123``).
-        thread_ts: Timestamp of the parent thread to stream text into (e.g. ``1700000000.000100``).
-        text: Text chunk to stream into the message.
-    """
-    return await client.api_call(
-        "chat.stream", channel=channel, thread_ts=thread_ts, text=text
-    )
+    return await client.api_call("chat.stopStream", channel=channel, ts=ts)
 
 
 @mcp.tool
