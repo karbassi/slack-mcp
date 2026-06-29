@@ -15,7 +15,6 @@ from slack_mcp.tools.chat import (
     chat_scheduled_messages_list,
     chat_start_stream,
     chat_stop_stream,
-    chat_stream,
     chat_unfurl,
     chat_update,
 )
@@ -130,13 +129,6 @@ async def test_chat_start_stream_live(live_client):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="not_allowed_token_type: requires bot token (xoxb)")
 async def test_chat_stop_stream_live(live_client):
-    pass
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-@pytest.mark.skip(reason="not_allowed_token_type: requires bot token (xoxb)")
-async def test_chat_stream_live(live_client):
     pass
 
 

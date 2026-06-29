@@ -9,11 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - New tools: `blocks_validate`, `assistant_search_context`, `assistant_search_info`, `apps_activities_list`, `oauth_v2_user_access`, and `messages_list` (batch fetch of full message objects by channel and timestamp).
-- Per-parameter descriptions for every remaining tool family, extracted from each function's docstring into the MCP tool schema. Building on 2.2.0 (which covered `conversations`, `chat`, and `search`), all 225 tools now expose per-argument guidance to clients.
+- Per-parameter descriptions for every remaining tool family, extracted from each function's docstring into the MCP tool schema. Building on 2.2.0 (which covered `conversations`, `chat`, and `search`), all tools now expose per-argument guidance to clients.
 
 ### Fixed
 
 - `workflows_featured_add`, `workflows_featured_remove`, and `workflows_featured_set` now send the `channel_id` and `trigger_ids` the Slack Web API actually requires, instead of a bare `workflow_ids` list that would fail.
+- Tools forwarding a `dict` or `list` parameter (`blocks`, `attachments`, `view`, `recurrence`, `trigger_ids`, `emails`, …) now send a JSON request body. Form-encoding mangled nested values (a dict collapsed to its first key, a list of dicts to a Python `repr`), so those calls silently sent malformed data.
+- Corrected the `chat` streaming tools: `chat_append_stream` and `chat_stop_stream` now use `ts`/`markdown_text` (was `thread_ts`/`text`), `chat_start_stream` exposes the `recipient_user_id`/`recipient_team_id` required for channel streams, and the non-existent `chat_stream` (`chat.stream` is not a Web API method) was removed.
 
 ### Internal
 
