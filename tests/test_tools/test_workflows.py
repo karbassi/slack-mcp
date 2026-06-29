@@ -3,11 +3,14 @@ from tests.conftest import assert_api_call
 
 async def test_workflows_featured_add(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "workflows_featured_add", {"workflow_ids": ["W123"]}
+        "workflows_featured_add", {"channel_id": "C123", "trigger_ids": ["Ft123"]}
     )
     assert result.is_error is False
     assert_api_call(
-        slack_stub.api_call, "workflows.featured.add", workflow_ids=["W123"]
+        slack_stub.api_call,
+        "workflows.featured.add",
+        channel_id="C123",
+        trigger_ids=["Ft123"],
     )
 
 
@@ -19,21 +22,28 @@ async def test_workflows_featured_list(mcp_client, slack_stub):
 
 async def test_workflows_featured_remove(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "workflows_featured_remove", {"workflow_ids": ["W123"]}
+        "workflows_featured_remove", {"channel_id": "C123", "trigger_ids": ["Ft123"]}
     )
     assert result.is_error is False
     assert_api_call(
-        slack_stub.api_call, "workflows.featured.remove", workflow_ids=["W123"]
+        slack_stub.api_call,
+        "workflows.featured.remove",
+        channel_id="C123",
+        trigger_ids=["Ft123"],
     )
 
 
 async def test_workflows_featured_set(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "workflows_featured_set", {"workflow_ids": ["W123", "W456"]}
+        "workflows_featured_set",
+        {"channel_id": "C123", "trigger_ids": ["Ft123", "Ft456"]},
     )
     assert result.is_error is False
     assert_api_call(
-        slack_stub.api_call, "workflows.featured.set", workflow_ids=["W123", "W456"]
+        slack_stub.api_call,
+        "workflows.featured.set",
+        channel_id="C123",
+        trigger_ids=["Ft123", "Ft456"],
     )
 
 

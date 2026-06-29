@@ -8,16 +8,19 @@ from slack_mcp.server import mcp, slack_client
 
 @mcp.tool
 async def workflows_featured_add(
-    workflow_ids: list[str],
+    channel_id: str,
+    trigger_ids: list[str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Add featured workflows.
+    """Add featured workflows to a channel.
 
     Args:
-        workflow_ids: Workflow IDs forwarded as the ``workflow_ids`` param. Note: the live Slack API
-            expects ``channel_id`` + ``trigger_ids`` instead (see #37).
+        channel_id: ID of the channel to feature the workflows in (e.g. ``C0123``).
+        trigger_ids: Workflow trigger IDs to feature, max 15 (e.g. ``["Ft0123", "Ft0456"]``).
     """
-    return await client.api_call("workflows.featured.add", workflow_ids=workflow_ids)
+    return await client.api_call(
+        "workflows.featured.add", channel_id=channel_id, trigger_ids=trigger_ids
+    )
 
 
 @mcp.tool
@@ -30,30 +33,37 @@ async def workflows_featured_list(
 
 @mcp.tool
 async def workflows_featured_remove(
-    workflow_ids: list[str],
+    channel_id: str,
+    trigger_ids: list[str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Remove featured workflows.
+    """Remove featured workflows from a channel.
 
     Args:
-        workflow_ids: Workflow IDs forwarded as the ``workflow_ids`` param. Note: the live Slack API
-            expects ``channel_id`` + ``trigger_ids`` instead (see #37).
+        channel_id: ID of the channel to remove the featured workflows from (e.g. ``C0123``).
+        trigger_ids: Workflow trigger IDs to remove, max 15 (e.g. ``["Ft0123"]``).
     """
-    return await client.api_call("workflows.featured.remove", workflow_ids=workflow_ids)
+    return await client.api_call(
+        "workflows.featured.remove", channel_id=channel_id, trigger_ids=trigger_ids
+    )
 
 
 @mcp.tool
 async def workflows_featured_set(
-    workflow_ids: list[str],
+    channel_id: str,
+    trigger_ids: list[str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set featured workflows.
+    """Replace the featured workflows in a channel.
 
     Args:
-        workflow_ids: Workflow IDs forwarded as the ``workflow_ids`` param. Note: the live Slack API
-            expects ``channel_id`` + ``trigger_ids`` instead (see #37).
+        channel_id: ID of the channel to set featured workflows in (e.g. ``C0123``).
+        trigger_ids: Workflow trigger IDs that replace the channel's featured set, max 15;
+            an empty list clears all featured workflows (e.g. ``["Ft0123"]``).
     """
-    return await client.api_call("workflows.featured.set", workflow_ids=workflow_ids)
+    return await client.api_call(
+        "workflows.featured.set", channel_id=channel_id, trigger_ids=trigger_ids
+    )
 
 
 @mcp.tool
