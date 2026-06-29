@@ -28,9 +28,20 @@ async def test_slack_lists_access_set(mcp_client, slack_stub):
 
 
 async def test_slack_lists_create(mcp_client, slack_stub):
-    result = await mcp_client.call_tool("slack_lists_create", {"name": "My List"})
+    schema = [{"key": "Col1", "name": "Title", "type": "text"}]
+    desc = [{"type": "rich_text", "elements": []}]
+    result = await mcp_client.call_tool(
+        "slack_lists_create",
+        {"name": "My List", "schema": schema, "description_blocks": desc},
+    )
     assert result.is_error is False
-    assert_api_call(slack_stub.api_call_json, "slackLists.create", name="My List")
+    assert_api_call(
+        slack_stub.api_call_json,
+        "slackLists.create",
+        name="My List",
+        schema=schema,
+        description_blocks=desc,
+    )
 
 
 async def test_slack_lists_download_get(mcp_client, slack_stub):
@@ -57,12 +68,16 @@ async def test_slack_lists_download_start(mcp_client, slack_stub):
 
 
 async def test_slack_lists_items_create(mcp_client, slack_stub):
+    fields = [{"column_id": "Col123", "text": "hi"}]
     result = await mcp_client.call_tool(
-        "slack_lists_items_create", {"list_id": "L123"}
+        "slack_lists_items_create", {"list_id": "L123", "initial_fields": fields}
     )
     assert result.is_error is False
     assert_api_call(
-        slack_stub.api_call_json, "slackLists.items.create", list_id="L123"
+        slack_stub.api_call_json,
+        "slackLists.items.create",
+        list_id="L123",
+        initial_fields=fields,
     )
 
 
@@ -116,23 +131,30 @@ async def test_slack_lists_items_list(mcp_client, slack_stub):
 
 
 async def test_slack_lists_items_update(mcp_client, slack_stub):
+    cells = [{"row_id": "Rec123", "column_id": "Col123", "text": "new"}]
     result = await mcp_client.call_tool(
-        "slack_lists_items_update", {"item_id": "I123", "list_id": "L123"}
+        "slack_lists_items_update", {"list_id": "L123", "cells": cells}
     )
     assert result.is_error is False
     assert_api_call(
         slack_stub.api_call_json,
         "slackLists.items.update",
-        id="I123",
         list_id="L123",
+        cells=cells,
     )
 
 
 async def test_slack_lists_update(mcp_client, slack_stub):
+    desc = [{"type": "rich_text", "elements": []}]
     result = await mcp_client.call_tool(
-        "slack_lists_update", {"list_id": "L123", "name": "Updated"}
+        "slack_lists_update",
+        {"list_id": "L123", "name": "Updated", "description_blocks": desc},
     )
     assert result.is_error is False
     assert_api_call(
-        slack_stub.api_call_json, "slackLists.update", id="L123", name="Updated"
+        slack_stub.api_call_json,
+        "slackLists.update",
+        id="L123",
+        name="Updated",
+        description_blocks=desc,
     )

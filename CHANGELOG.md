@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `workflows_featured_add`, `workflows_featured_remove`, and `workflows_featured_set` now send the `channel_id` and `trigger_ids` the Slack Web API actually requires, instead of a bare `workflow_ids` list that would fail.
 - Tools forwarding a `dict` or `list` parameter (`blocks`, `attachments`, `view`, `recurrence`, `trigger_ids`, `emails`, …) now send a JSON request body. Form-encoding mangled nested values (a dict collapsed to its first key, a list of dicts to a Python `repr`), so those calls silently sent malformed data.
 - Corrected the `chat` streaming tools: `chat_append_stream` and `chat_stop_stream` now use `ts`/`markdown_text` (was `thread_ts`/`text`), `chat_start_stream` exposes the `recipient_user_id`/`recipient_team_id` required for channel streams, and the non-existent `chat_stream` (`chat.stream` is not a Web API method) was removed.
+- Corrected `slackLists` tool parameters to match the Slack API: `slack_lists_create` uses `schema`/`description_blocks` (was `columns`/`description`), `slack_lists_items_create` uses `initial_fields` (was `column_values`), `slack_lists_items_update` uses `cells` (was `item_id`/`column_values`), and `slack_lists_update` uses `description_blocks`. Previously the field data was silently dropped.
 
 ### Internal
 
