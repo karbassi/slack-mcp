@@ -385,6 +385,26 @@ async def search_modules_dms(
     )
 
 
+# --- Messages (batch fetch) ---
+
+
+@mcp.tool
+async def messages_list(
+    message_ids: list[dict],
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Batch-fetch full message objects by channel and timestamp (undocumented session endpoint).
+
+    Resolves both top-level messages and thread replies in one call — useful for
+    hydrating saved/bookmarked items without one ``conversations.history`` call each.
+
+    Args:
+        message_ids: Groups of messages to fetch, each
+            ``{"channel": "C0123", "timestamps": ["1700000000.000100", ...]}``.
+    """
+    return await client.session_call("messages.list", message_ids=message_ids)
+
+
 # --- Conversations (undocumented extensions) ---
 
 

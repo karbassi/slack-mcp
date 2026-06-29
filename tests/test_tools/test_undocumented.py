@@ -295,6 +295,13 @@ async def test_search_modules_dms(mcp_client, slack_stub):
     assert_api_call(slack_stub.session_call, "search.modules.dms", query="project")
 
 
+async def test_messages_list(mcp_client, slack_stub):
+    groups = [{"channel": "C123", "timestamps": ["1700000000.000100"]}]
+    result = await mcp_client.call_tool("messages_list", {"message_ids": groups})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "messages.list", message_ids=groups)
+
+
 async def test_conversations_view(mcp_client, slack_stub):
     result = await mcp_client.call_tool("conversations_view", {"channel": "C123"})
     assert result.is_error is False
