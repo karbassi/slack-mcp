@@ -14,7 +14,8 @@ async def workflows_featured_add(
     """Add featured workflows.
 
     Args:
-        workflow_ids: List of workflow IDs to feature in the channel's bookmarks (e.g. ``["Wf0123", "Wf0456"]``).
+        workflow_ids: Workflow IDs forwarded as the ``workflow_ids`` param. Note: the live Slack API
+            expects ``channel_id`` + ``trigger_ids`` instead (see #37).
     """
     return await client.api_call("workflows.featured.add", workflow_ids=workflow_ids)
 
@@ -35,7 +36,8 @@ async def workflows_featured_remove(
     """Remove featured workflows.
 
     Args:
-        workflow_ids: List of workflow IDs to remove from the channel's featured bookmarks (e.g. ``["Wf0123"]``).
+        workflow_ids: Workflow IDs forwarded as the ``workflow_ids`` param. Note: the live Slack API
+            expects ``channel_id`` + ``trigger_ids`` instead (see #37).
     """
     return await client.api_call("workflows.featured.remove", workflow_ids=workflow_ids)
 
@@ -48,7 +50,8 @@ async def workflows_featured_set(
     """Set featured workflows.
 
     Args:
-        workflow_ids: List of workflow IDs replacing the channel's entire featured set (e.g. ``["Wf0123"]``).
+        workflow_ids: Workflow IDs forwarded as the ``workflow_ids`` param. Note: the live Slack API
+            expects ``channel_id`` + ``trigger_ids`` instead (see #37).
     """
     return await client.api_call("workflows.featured.set", workflow_ids=workflow_ids)
 

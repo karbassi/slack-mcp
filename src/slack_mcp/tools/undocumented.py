@@ -95,7 +95,7 @@ async def subscriptions_thread_mark(
     Args:
         channel: ID of the channel containing the thread (e.g. ``C0123``).
         thread_ts: Timestamp of the parent thread message (e.g. ``1700000000.000100``).
-        read: Mark the thread as read (True) or unread (False).
+        read: Mark the thread as read (``True``) or unread (``False``).
     """
     return await client.session_call(
         "subscriptions.thread.mark",
