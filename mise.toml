@@ -23,5 +23,5 @@ description = "Run semgrep security + custom rules"
 run = "semgrep --config .semgrep.yml --config p/bandit --config p/secrets --config p/security-audit --config p/owasp-top-ten --config p/ai-best-practices src/"
 
 [tasks.check]
-description = "Run all checks (test + lint + security)"
+description = "Run all checks (test + lint + typecheck + security)"
 depends = ["test", "lint", "typecheck", "security"]
