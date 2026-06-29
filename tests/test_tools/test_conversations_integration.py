@@ -180,7 +180,7 @@ async def test_conversations_decline_shared_invite_live(live_client):
 async def test_conversations_external_invite_permissions_set_live(live_client):
     """Set external invite permissions (requires Slack Connect)."""
     await conversations_external_invite_permissions_set(
-        channel="C_FAKE", action="allow", client=live_client
+        channel="C_FAKE", action="upgrade", target_team="T_FAKE", client=live_client
     )
 
 
