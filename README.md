@@ -279,6 +279,7 @@ Compaction is on by default. Pass `detailed=True` to any compactable tool to get
 git clone https://github.com/karbassi/slack-mcp.git
 cd slack-mcp
 uv sync
+uv run pre-commit install            # ruff + ty on every commit
 mise run check                       # test + lint + security scan
 mise run test:integration            # requires tokens in .env
 ```
