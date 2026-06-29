@@ -12,7 +12,7 @@ async def usergroups_create(
     handle: str | None = None,
     include_count: bool | None = None,
     team_id: str | None = None,
-    additional_channels: list[str] | None = None,
+    additional_channels: str | None = None,
     enable_section: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -25,7 +25,7 @@ async def usergroups_create(
         handle: A mention handle (must be unique among channels, users, and User Groups).
         include_count: Include the number of users in each User Group in the response.
         team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
-        additional_channels: Additional default channel IDs to add beyond ``channels`` (e.g. ``["C0789"]``).
+        additional_channels: Comma-separated additional default channel IDs to add beyond ``channels`` (e.g. ``C0789``).
         enable_section: Whether to enable a section for the User Group.
     """
     return await client.api_call(
@@ -119,7 +119,7 @@ async def usergroups_update(
     include_count: bool | None = None,
     name: str | None = None,
     team_id: str | None = None,
-    additional_channels: list[str] | None = None,
+    additional_channels: str | None = None,
     enable_section: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -133,7 +133,7 @@ async def usergroups_update(
         include_count: Include the number of users in the User Group in the response.
         name: A name for the User Group (must be unique among User Groups).
         team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
-        additional_channels: Additional default channel IDs to add beyond ``channels`` (e.g. ``["C0789"]``).
+        additional_channels: Comma-separated additional default channel IDs to add beyond ``channels`` (e.g. ``C0789``).
         enable_section: Whether to enable a section for the User Group.
     """
     return await client.api_call(
