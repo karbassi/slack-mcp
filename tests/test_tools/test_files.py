@@ -140,9 +140,12 @@ async def test_files_upload_v2(mcp_client, slack_stub):
         "files_upload_v2", {"content": "hello", "filename": "test.txt"}
     )
     assert result.is_error is False
-    assert_api_call(
-        slack_stub.api_call, "files.upload.v2", content="hello", filename="test.txt"
-    )
+    # Delegates to slack_sdk's files_upload_v2 helper (real getUploadURL ->
+    # PUT -> complete flow), not the bogus files.upload.v2 HTTP method.
+    slack_stub.files_upload_v2.assert_called_once()
+    _, kwargs = slack_stub.files_upload_v2.call_args
+    sent = {k: v for k, v in kwargs.items() if v is not None}
+    assert sent == {"content": "hello", "filename": "test.txt"}
 
 
 def test_files_info_compactable():
