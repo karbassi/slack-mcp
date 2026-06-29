@@ -26,7 +26,12 @@ async def dnd_info(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Retrieve a user's current Do Not Disturb status."""
+    """Retrieve a user's current Do Not Disturb status.
+
+    Args:
+        user: ID of the user to fetch status for; defaults to the authenticated user (e.g. ``U0123``).
+        team_id: Encoded team ID to fetch the status from, required for org-wide tokens (e.g. ``T0123``).
+    """
     return await client.api_call("dnd.info", user=user, team_id=team_id)
 
 
@@ -35,7 +40,11 @@ async def dnd_set_snooze(
     num_minutes: int,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Turn on Do Not Disturb mode for the current user."""
+    """Turn on Do Not Disturb mode for the current user.
+
+    Args:
+        num_minutes: Number of minutes, starting now, to snooze notifications for (e.g. ``60``).
+    """
     return await client.api_call("dnd.setSnooze", num_minutes=num_minutes)
 
 
@@ -45,5 +54,10 @@ async def dnd_team_info(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Retrieve the Do Not Disturb status for users on a team."""
+    """Retrieve the Do Not Disturb status for users on a team.
+
+    Args:
+        users: Comma-separated list of user IDs to fetch Do Not Disturb status for (e.g. ``U0123,U0456``).
+        team_id: Encoded team ID the users belong to, required for org-wide tokens (e.g. ``T0123``).
+    """
     return await client.api_call("dnd.teamInfo", users=users, team_id=team_id)

@@ -15,7 +15,16 @@ async def users_conversations(
     user: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List conversations the calling user may access."""
+    """List conversations the calling user may access.
+
+    Args:
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor`` to fetch the next page.
+        exclude_archived: Set to ``True`` to exclude archived channels from the list.
+        limit: Maximum number of items to return per page (1-1000, default 100).
+        team_id: Encoded team ID to list conversations in, required for org-wide app tokens (e.g. ``T0123``).
+        types: Comma-separated conversation types to include: ``public_channel``, ``private_channel``, ``mpim``, ``im``.
+        user: Browse conversations by a specific user ID rather than the calling user (e.g. ``U0123``).
+    """
     return await client.api_call(
         "users.conversations",
         cursor=cursor,
@@ -40,7 +49,11 @@ async def users_discoverable_contacts_lookup(
     email: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Look up a user by their email address for Slack Connect discovery."""
+    """Look up a user by their email address for Slack Connect discovery.
+
+    Args:
+        email: The email address of the user to look up (e.g. ``user@example.com``).
+    """
     return await client.api_call("users.discoverableContacts.lookup", email=email)
 
 
@@ -49,7 +62,11 @@ async def users_get_presence(
     user: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get user presence information."""
+    """Get user presence information.
+
+    Args:
+        user: ID of the user to get presence info for (e.g. ``U0123``).
+    """
     return await client.api_call("users.getPresence", user=user)
 
 
@@ -69,7 +86,13 @@ async def users_info(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get information about a user. Set detailed=True for full response."""
+    """Get information about a user. Set detailed=True for full response.
+
+    Args:
+        user: ID of the user to get info about (e.g. ``U0123``).
+        include_locale: Set to ``True`` to receive the locale for the user in the response.
+        detailed: Set to ``True`` to return the full, uncompacted Slack response.
+    """
     return await client.api_call(
         "users.info", user=user, include_locale=include_locale
     )
@@ -85,7 +108,15 @@ async def users_list(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List all users in a Slack team. Set detailed=True for full response."""
+    """List all users in a Slack team. Set detailed=True for full response.
+
+    Args:
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor`` to fetch the next page.
+        include_locale: Set to ``True`` to receive the locale for users in the response.
+        limit: Maximum number of users to return per page (0-1000, default 0 for no limit).
+        team_id: Encoded team ID to list users in, required if the token belongs to an org-wide app (e.g. ``T0123``).
+        detailed: Set to ``True`` to return the full, uncompacted Slack response.
+    """
     return await client.api_call(
         "users.list",
         cursor=cursor,
@@ -102,7 +133,12 @@ async def users_lookup_by_email(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Find a user with an email address. Set detailed=True for full response."""
+    """Find a user with an email address. Set detailed=True for full response.
+
+    Args:
+        email: An email address belonging to a user in the workspace (e.g. ``user@example.com``).
+        detailed: Set to ``True`` to return the full, uncompacted Slack response.
+    """
     return await client.api_call("users.lookupByEmail", email=email)
 
 
@@ -114,7 +150,13 @@ async def users_profile_get(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Retrieve a user's profile information. Set detailed=True for full response."""
+    """Retrieve a user's profile information. Set detailed=True for full response.
+
+    Args:
+        include_labels: Set to ``True`` to include labels for each ID in custom profile fields.
+        user: ID of user to retrieve profile info for; defaults to the authenticated user if omitted (e.g. ``U0123``).
+        detailed: Set to ``True`` to return the full, uncompacted Slack response.
+    """
     return await client.api_call(
         "users.profile.get", include_labels=include_labels, user=user
     )
@@ -128,7 +170,14 @@ async def users_profile_set(
     value: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set the profile information for a user."""
+    """Set the profile information for a user.
+
+    Args:
+        name: Name of a single profile field to set (e.g. ``first_name``); use with ``value``.
+        profile: Map of profile fields to set, as key-value pairs (alternative to ``name``/``value``).
+        user: ID of user to change; requires admin scope, defaults to the authenticated user (e.g. ``U0123``).
+        value: Value to set on a single profile field named by ``name``.
+    """
     return await client.api_call(
         "users.profile.set", name=name, profile=profile, user=user, value=value
     )
@@ -142,7 +191,14 @@ async def users_set_photo(
     crop_y: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set the user profile photo."""
+    """Set the user profile photo.
+
+    Args:
+        image: Path to the image file to set as the profile photo.
+        crop_w: Width/height of the square crop box, in pixels (the crop is always square).
+        crop_x: X coordinate of the top-left corner of the crop box, in pixels.
+        crop_y: Y coordinate of the top-left corner of the crop box, in pixels.
+    """
     return await client.api_call(
         "users.setPhoto", image=image, crop_w=crop_w, crop_x=crop_x, crop_y=crop_y
     )
@@ -153,5 +209,9 @@ async def users_set_presence(
     presence: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Manually set user presence."""
+    """Manually set user presence.
+
+    Args:
+        presence: Presence to set, either ``auto`` or ``away``.
+    """
     return await client.api_call("users.setPresence", presence=presence)

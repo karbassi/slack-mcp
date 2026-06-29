@@ -11,7 +11,13 @@ async def slack_lists_access_delete(
     user_ids: list[str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Remove access to a list for specified entities."""
+    """Remove access to a list for specified entities.
+
+    Args:
+        list_id: ID of the list (a file ID) to remove access from (e.g. ``F0123``).
+        channel_ids: Channel IDs to revoke access for (e.g. ``["C0123"]``).
+        user_ids: User IDs to revoke access for (e.g. ``["U0123"]``).
+    """
     return await client.api_call_json(
         "slackLists.access.delete",
         list_id=list_id,
@@ -28,7 +34,14 @@ async def slack_lists_access_set(
     user_ids: list[str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set access level to a list for specified entities."""
+    """Set access level to a list for specified entities.
+
+    Args:
+        list_id: ID of the list (a file ID) to set access on (e.g. ``F0123``).
+        access_level: Access level to grant; one of ``read``, ``write``, or ``owner``.
+        channel_ids: Channel IDs to grant access to (e.g. ``["C0123"]``).
+        user_ids: User IDs to grant access to (e.g. ``["U0123"]``).
+    """
     return await client.api_call_json(
         "slackLists.access.set",
         list_id=list_id,
@@ -45,7 +58,13 @@ async def slack_lists_create(
     columns: list[dict[str, str]] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Create a new list."""
+    """Create a new list.
+
+    Args:
+        name: Name (title) of the list to create.
+        description: Description of the list.
+        columns: Column definitions (schema) for the list, each describing a field's key, name, and type.
+    """
     return await client.api_call_json(
         "slackLists.create", name=name, description=description, columns=columns
     )
@@ -57,7 +76,12 @@ async def slack_lists_download_get(
     list_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get a list download."""
+    """Get a list download.
+
+    Args:
+        job_id: ID of the download job previously started for the list.
+        list_id: ID of the list (a file ID) being downloaded (e.g. ``F0123``).
+    """
     return await client.api_call_json(
         "slackLists.download.get", job_id=job_id, list_id=list_id
     )
@@ -68,7 +92,11 @@ async def slack_lists_download_start(
     list_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Start a list download."""
+    """Start a list download.
+
+    Args:
+        list_id: ID of the list (a file ID) to download (e.g. ``F0123``).
+    """
     return await client.api_call_json("slackLists.download.start", list_id=list_id)
 
 
@@ -78,7 +106,12 @@ async def slack_lists_items_create(
     column_values: dict[str, str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Create a new list item."""
+    """Create a new list item.
+
+    Args:
+        list_id: ID of the list (a file ID) to add the item to (e.g. ``F0123``).
+        column_values: Map of column key to value for the new item's fields.
+    """
     return await client.api_call_json(
         "slackLists.items.create", list_id=list_id, column_values=column_values
     )
@@ -90,7 +123,12 @@ async def slack_lists_items_delete(
     list_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Delete a list item."""
+    """Delete a list item.
+
+    Args:
+        item_id: ID of the list item (record) to delete.
+        list_id: ID of the list (a file ID) containing the item (e.g. ``F0123``).
+    """
     return await client.api_call_json(
         "slackLists.items.delete", id=item_id, list_id=list_id
     )
@@ -102,7 +140,12 @@ async def slack_lists_items_delete_multiple(
     list_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Delete multiple list items."""
+    """Delete multiple list items.
+
+    Args:
+        item_ids: IDs of the list items (records) to delete.
+        list_id: ID of the list (a file ID) containing the items (e.g. ``F0123``).
+    """
     return await client.api_call_json(
         "slackLists.items.deleteMultiple", ids=item_ids, list_id=list_id
     )
@@ -114,7 +157,12 @@ async def slack_lists_items_info(
     list_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get info about a list item."""
+    """Get info about a list item.
+
+    Args:
+        item_id: ID of the list item (record) to fetch.
+        list_id: ID of the list (a file ID) containing the item (e.g. ``F0123``).
+    """
     return await client.api_call_json(
         "slackLists.items.info", id=item_id, list_id=list_id
     )
@@ -127,7 +175,13 @@ async def slack_lists_items_list(
     limit: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List items in a list."""
+    """List items in a list.
+
+    Args:
+        list_id: ID of the list (a file ID) whose items to return (e.g. ``F0123``).
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        limit: Maximum number of items to return per page.
+    """
     return await client.api_call_json(
         "slackLists.items.list", list_id=list_id, cursor=cursor, limit=limit
     )
@@ -140,7 +194,13 @@ async def slack_lists_items_update(
     column_values: dict[str, str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Update a list item."""
+    """Update a list item.
+
+    Args:
+        item_id: ID of the list item (record) to update.
+        list_id: ID of the list (a file ID) containing the item (e.g. ``F0123``).
+        column_values: Map of column key to new value for the fields being changed.
+    """
     return await client.api_call_json(
         "slackLists.items.update",
         id=item_id,
@@ -156,7 +216,13 @@ async def slack_lists_update(
     description: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Update a list."""
+    """Update a list.
+
+    Args:
+        list_id: ID of the list (a file ID) to update (e.g. ``F0123``).
+        name: New name (title) for the list.
+        description: New description for the list.
+    """
     return await client.api_call_json(
         "slackLists.update", id=list_id, name=name, description=description
     )

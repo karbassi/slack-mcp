@@ -14,7 +14,16 @@ async def usergroups_create(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Create a User Group."""
+    """Create a User Group.
+
+    Args:
+        name: A name for the User Group (must be unique among User Groups).
+        channels: Comma-separated string of default channel IDs for the User Group (e.g. ``C0123,C0456``).
+        description: A short description of the User Group.
+        handle: A mention handle (must be unique among channels, users, and User Groups).
+        include_count: Include the number of users in each User Group in the response.
+        team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+    """
     return await client.api_call(
         "usergroups.create",
         name=name,
@@ -33,7 +42,13 @@ async def usergroups_disable(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Disable an existing User Group."""
+    """Disable an existing User Group.
+
+    Args:
+        usergroup: The encoded ID of the User Group to disable (e.g. ``S0123``).
+        include_count: Include the number of users in the User Group in the response.
+        team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+    """
     return await client.api_call(
         "usergroups.disable",
         usergroup=usergroup,
@@ -49,7 +64,13 @@ async def usergroups_enable(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Enable a User Group."""
+    """Enable a User Group.
+
+    Args:
+        usergroup: The encoded ID of the User Group to enable (e.g. ``S0123``).
+        include_count: Include the number of users in the User Group in the response.
+        team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+    """
     return await client.api_call(
         "usergroups.enable",
         usergroup=usergroup,
@@ -66,7 +87,14 @@ async def usergroups_list(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List all User Groups for a team."""
+    """List all User Groups for a team.
+
+    Args:
+        include_count: Include the number of users in each User Group in the response.
+        include_disabled: Include disabled User Groups in the response.
+        include_users: Include the list of users for each User Group in the response.
+        team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+    """
     return await client.api_call(
         "usergroups.list",
         include_count=include_count,
@@ -87,7 +115,17 @@ async def usergroups_update(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Update an existing User Group."""
+    """Update an existing User Group.
+
+    Args:
+        usergroup: The encoded ID of the User Group to update (e.g. ``S0123``).
+        channels: Comma-separated string of default channel IDs for the User Group (e.g. ``C0123,C0456``).
+        description: A short description of the User Group.
+        handle: A mention handle (must be unique among channels, users, and User Groups).
+        include_count: Include the number of users in the User Group in the response.
+        name: A name for the User Group (must be unique among User Groups).
+        team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+    """
     return await client.api_call(
         "usergroups.update",
         usergroup=usergroup,
@@ -107,7 +145,13 @@ async def usergroups_users_list(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List all users in a User Group."""
+    """List all users in a User Group.
+
+    Args:
+        usergroup: The encoded ID of the User Group to list users for (e.g. ``S0123``).
+        include_disabled: Include disabled User Group users in the response.
+        team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+    """
     return await client.api_call(
         "usergroups.users.list",
         usergroup=usergroup,
@@ -124,7 +168,14 @@ async def usergroups_users_update(
     team_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Update the list of users for a User Group."""
+    """Update the list of users for a User Group.
+
+    Args:
+        usergroup: The encoded ID of the User Group to update (e.g. ``S0123``).
+        users: Comma-separated user IDs representing the entire list of users for the User Group (e.g. ``U0123,U0456``).
+        include_count: Include the number of users in the User Group in the response.
+        team_id: Encoded team ID where the User Group exists, required if org token is used (e.g. ``T0123``).
+    """
     return await client.api_call(
         "usergroups.users.update",
         usergroup=usergroup,

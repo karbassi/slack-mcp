@@ -13,7 +13,13 @@ async def canvases_access_delete(
     user_ids: list[str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Remove access to a canvas for specified entities."""
+    """Remove access to a canvas for specified entities.
+
+    Args:
+        canvas_id: Encoded ID of the canvas to remove access from (e.g. ``F0123ABC456``).
+        channel_ids: Channel IDs whose access to the canvas should be removed (e.g. ``["C0123"]``).
+        user_ids: User IDs whose access to the canvas should be removed (e.g. ``["U0123"]``).
+    """
     return await client.api_call_json(
         "canvases.access.delete",
         canvas_id=canvas_id,
@@ -30,7 +36,14 @@ async def canvases_access_set(
     user_ids: list[str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set access level to a canvas for specified entities."""
+    """Set access level to a canvas for specified entities.
+
+    Args:
+        canvas_id: Encoded ID of the canvas to set access on (e.g. ``F0123ABC456``).
+        access_level: Access level granted to the entities, either ``read`` or ``write``.
+        channel_ids: Channel IDs to grant the access level to (e.g. ``["C0123"]``).
+        user_ids: User IDs to grant the access level to (e.g. ``["U0123"]``).
+    """
     return await client.api_call_json(
         "canvases.access.set",
         canvas_id=canvas_id,
@@ -46,7 +59,12 @@ async def canvases_create(
     document_content: dict[str, Any] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Create a canvas."""
+    """Create a canvas.
+
+    Args:
+        title: Title of the newly created canvas.
+        document_content: Structured content; an object with ``type`` of ``markdown`` and a ``markdown`` body field.
+    """
     return await client.api_call_json(
         "canvases.create", title=title, document_content=document_content
     )
@@ -57,7 +75,11 @@ async def canvases_delete(
     canvas_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Delete a canvas."""
+    """Delete a canvas.
+
+    Args:
+        canvas_id: Encoded ID of the canvas to delete (e.g. ``F0123ABC456``).
+    """
     return await client.api_call("canvases.delete", canvas_id=canvas_id)
 
 
@@ -67,7 +89,12 @@ async def canvases_edit(
     changes: list[dict[str, Any]],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Edit a canvas."""
+    """Edit a canvas.
+
+    Args:
+        canvas_id: Encoded ID of the canvas to edit (e.g. ``F0123ABC456``).
+        changes: Ordered edit operations, each with an operation (insert/replace/delete), document_content, section_id.
+    """
     return await client.api_call_json(
         "canvases.edit", canvas_id=canvas_id, changes=changes
     )
@@ -79,7 +106,12 @@ async def canvases_sections_lookup(
     criteria: dict[str, Any],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Find sections matching criteria in a canvas."""
+    """Find sections matching criteria in a canvas.
+
+    Args:
+        canvas_id: Encoded ID of the canvas to search within (e.g. ``F0123ABC456``).
+        criteria: Filter for which sections to return, e.g. a ``contains_text`` substring and/or ``section_types``.
+    """
     return await client.api_call_json(
         "canvases.sections.lookup", canvas_id=canvas_id, criteria=criteria
     )

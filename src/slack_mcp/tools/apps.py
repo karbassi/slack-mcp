@@ -65,7 +65,13 @@ async def apps_event_authorizations_list(
     limit: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get a list of authorizations for the given event context."""
+    """Get a list of authorizations for the given event context.
+
+    Args:
+        event_context: The ``event_context`` value from the event payload to look up authorizations for.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        limit: Maximum number of authorizations to return.
+    """
     return await client.api_call(
         "apps.event.authorizations.list",
         event_context=event_context,
@@ -79,7 +85,11 @@ async def apps_manifest_create(
     manifest: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Create an app from an app manifest."""
+    """Create an app from an app manifest.
+
+    Args:
+        manifest: The app manifest, as a JSON-encoded string, describing the app to create.
+    """
     return await client.api_call("apps.manifest.create", manifest=manifest)
 
 
@@ -88,7 +98,11 @@ async def apps_manifest_delete(
     app_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Permanently deletes an app created through app manifests."""
+    """Permanently deletes an app created through app manifests.
+
+    Args:
+        app_id: ID of the app to delete (e.g. ``A0123``).
+    """
     return await client.api_call("apps.manifest.delete", app_id=app_id)
 
 
@@ -97,7 +111,11 @@ async def apps_manifest_export(
     app_id: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Export an app manifest from an existing app."""
+    """Export an app manifest from an existing app.
+
+    Args:
+        app_id: ID of the app whose manifest to export (e.g. ``A0123``).
+    """
     return await client.api_call("apps.manifest.export", app_id=app_id)
 
 
@@ -107,7 +125,12 @@ async def apps_manifest_update(
     manifest: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Update an app from an app manifest."""
+    """Update an app from an app manifest.
+
+    Args:
+        app_id: ID of the app to update (e.g. ``A0123``).
+        manifest: The updated app manifest, as a JSON-encoded string.
+    """
     return await client.api_call(
         "apps.manifest.update", app_id=app_id, manifest=manifest
     )
@@ -119,7 +142,12 @@ async def apps_manifest_validate(
     app_id: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Validate an app manifest."""
+    """Validate an app manifest.
+
+    Args:
+        manifest: The app manifest, as a JSON-encoded string, to validate.
+        app_id: ID of an existing app to validate the manifest against (e.g. ``A0123``).
+    """
     return await client.api_call(
         "apps.manifest.validate", manifest=manifest, app_id=app_id
     )
@@ -131,7 +159,12 @@ async def apps_uninstall(
     client_secret: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Uninstall your app from a workspace."""
+    """Uninstall your app from a workspace.
+
+    Args:
+        client_id: Your app's client ID.
+        client_secret: Your app's client secret.
+    """
     return await client.api_call(
         "apps.uninstall", client_id=client_id, client_secret=client_secret
     )

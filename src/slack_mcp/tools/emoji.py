@@ -9,5 +9,9 @@ async def emoji_list(
     include_categories: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List custom emoji for a team."""
+    """List custom emoji for a team.
+
+    Args:
+        include_categories: Include the standard emoji categories in the response when ``True``.
+    """
     return await client.api_call("emoji.list", include_categories=include_categories)

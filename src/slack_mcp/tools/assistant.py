@@ -71,7 +71,13 @@ async def assistant_threads_set_status(
     status: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set the status for an AI assistant thread."""
+    """Set the status for an AI assistant thread.
+
+    Args:
+        channel_id: ID of the channel containing the assistant thread (e.g. ``C0123``).
+        thread_ts: Timestamp of the parent assistant thread (e.g. ``1700000000.000100``).
+        status: Status text to display, e.g. ``"is thinking..."``. Empty string clears the status.
+    """
     return await client.api_call(
         "assistant.threads.setStatus",
         channel_id=channel_id,
@@ -88,7 +94,14 @@ async def assistant_threads_set_suggested_prompts(
     title: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set suggested prompts for an AI assistant thread."""
+    """Set suggested prompts for an AI assistant thread.
+
+    Args:
+        channel_id: ID of the channel containing the assistant thread (e.g. ``C0123``).
+        thread_ts: Timestamp of the parent assistant thread (e.g. ``1700000000.000100``).
+        prompts: List of prompt objects, each with ``title`` and ``message`` keys.
+        title: Optional heading shown above the suggested prompts.
+    """
     return await client.api_call(
         "assistant.threads.setSuggestedPrompts",
         channel_id=channel_id,
@@ -105,7 +118,13 @@ async def assistant_threads_set_title(
     title: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Set the title for an AI assistant thread."""
+    """Set the title for an AI assistant thread.
+
+    Args:
+        channel_id: ID of the channel containing the assistant thread (e.g. ``C0123``).
+        thread_ts: Timestamp of the parent assistant thread (e.g. ``1700000000.000100``).
+        title: Title text to set for the thread.
+    """
     return await client.api_call(
         "assistant.threads.setTitle",
         channel_id=channel_id,

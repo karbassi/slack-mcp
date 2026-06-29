@@ -1,0 +1,2 @@
+# False positives for git-secrets: keyword-argument passthrough, not literal secrets.
+client_secret=client_secret

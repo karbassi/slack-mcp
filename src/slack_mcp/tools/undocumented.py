@@ -62,7 +62,12 @@ async def client_counts(
     org_wide_aware: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get unread counts and thread info (undocumented session endpoint)."""
+    """Get unread counts and thread info (undocumented session endpoint).
+
+    Args:
+        thread_count_by_last_read: Count unread threads relative to the last-read marker.
+        org_wide_aware: Include counts across all workspaces in an Enterprise org.
+    """
     return await client.session_call(
         "client.counts",
         thread_count_by_last_read=thread_count_by_last_read,
@@ -85,7 +90,13 @@ async def subscriptions_thread_mark(
     read: bool = True,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Mark a thread as read or unread (undocumented session endpoint)."""
+    """Mark a thread as read or unread (undocumented session endpoint).
+
+    Args:
+        channel: ID of the channel containing the thread (e.g. ``C0123``).
+        thread_ts: Timestamp of the parent thread message (e.g. ``1700000000.000100``).
+        read: Mark the thread as read (``True``) or unread (``False``).
+    """
     return await client.session_call(
         "subscriptions.thread.mark",
         channel=channel,
@@ -99,7 +110,11 @@ async def threads_get_view(
     current_ts: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get thread view data (undocumented session endpoint)."""
+    """Get thread view data (undocumented session endpoint).
+
+    Args:
+        current_ts: Timestamp anchoring the thread view to page from (e.g. ``1700000000.000100``).
+    """
     return await client.session_call("threads.getView", current_ts=current_ts)
 
 
@@ -160,7 +175,12 @@ async def drafts_list(
     limit: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List all unsent message drafts (undocumented session endpoint)."""
+    """List all unsent message drafts (undocumented session endpoint).
+
+    Args:
+        is_active: Only return drafts that are currently active (unsent).
+        limit: Maximum number of drafts to return.
+    """
     kwargs = {}
     if is_active is not None:
         kwargs["is_active"] = str(is_active).lower()
@@ -182,6 +202,14 @@ async def drafts_create(
     """Create a message draft (undocumented session endpoint).
 
     Text is automatically wrapped in Block Kit rich_text format.
+
+    Args:
+        channel_id: ID of the channel the draft is addressed to (e.g. ``C0123``).
+        text: Draft message body text.
+        thread_ts: Timestamp of the parent thread to draft a reply to (e.g. ``1700000000.000100``).
+        broadcast: Also send the threaded reply to the channel when posted (requires ``thread_ts``).
+        file_ids: IDs of already-uploaded files to attach to the draft (e.g. ``F0123``).
+        date_scheduled: Unix epoch timestamp (seconds) to schedule the draft for sending.
     """
     # is_from_composer is sent on create only (matches observed Slack behavior).
     return await client.session_call(
@@ -203,7 +231,17 @@ async def drafts_update(
     file_ids: list[str] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Update an existing draft (undocumented session endpoint)."""
+    """Update an existing draft (undocumented session endpoint).
+
+    Args:
+        draft_id: ID of the draft to update.
+        client_last_updated_ts: The draft's last-updated timestamp (7-decimal-place Slack draft ts).
+        channel_id: ID of the channel the draft is addressed to (e.g. ``C0123``).
+        text: Updated draft message body text.
+        thread_ts: Timestamp of the parent thread to draft a reply to (e.g. ``1700000000.000100``).
+        broadcast: Also send the threaded reply to the channel when posted (requires ``thread_ts``).
+        file_ids: IDs of already-uploaded files to attach to the draft (e.g. ``F0123``).
+    """
     return await client.session_call(
         "drafts.update",
         **_draft_body(channel_id, text, thread_ts, broadcast, file_ids),
@@ -222,6 +260,10 @@ async def drafts_delete(
 
     If client_last_updated_ts is omitted, the latest timestamp is fetched
     automatically from drafts.list to avoid conflict errors.
+
+    Args:
+        draft_id: ID of the draft to delete.
+        client_last_updated_ts: The draft's last-updated timestamp (7-decimal-place Slack draft ts).
     """
     if client_last_updated_ts is None:
         drafts = await client.session_call("drafts.list")
@@ -249,7 +291,13 @@ async def saved_list(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List saved-for-later items. Set detailed=True for full response."""
+    """List saved-for-later items. Set detailed=True for full response.
+
+    Args:
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        limit: Maximum number of saved items to return.
+        detailed: Return the full, uncompacted response instead of the compacted summary.
+    """
     return await client.session_call("saved.list", cursor=cursor, limit=limit)
 
 
@@ -261,7 +309,14 @@ async def saved_add(
     date_due: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Save a message for later (undocumented session endpoint)."""
+    """Save a message for later (undocumented session endpoint).
+
+    Args:
+        item_type: Type of item to save, e.g. ``message``.
+        item_id: ID of the item's container, e.g. the channel ID for a message (``C0123``).
+        ts: Timestamp of the item to save (e.g. ``1700000000.000100``).
+        date_due: Unix epoch timestamp (seconds) for an optional reminder/due date.
+    """
     return await client.session_call(
         "saved.add", item_type=item_type, item_id=item_id, ts=ts, date_due=date_due
     )
@@ -274,7 +329,13 @@ async def saved_delete(
     ts: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Remove a saved-for-later item (undocumented session endpoint)."""
+    """Remove a saved-for-later item (undocumented session endpoint).
+
+    Args:
+        item_type: Type of saved item to remove, e.g. ``message``.
+        item_id: ID of the item's container, e.g. the channel ID for a message (``C0123``).
+        ts: Timestamp of the saved item to remove (e.g. ``1700000000.000100``).
+    """
     return await client.session_call_form(
         "saved.delete", item_type=item_type, item_id=item_id, ts=ts
     )
@@ -289,7 +350,12 @@ async def emoji_add(
     image_url: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Add a custom emoji from a URL (undocumented session endpoint)."""
+    """Add a custom emoji from a URL (undocumented session endpoint).
+
+    Args:
+        name: Name for the new emoji, without colons (e.g. ``party_parrot``).
+        image_url: URL of the image to download and upload as the emoji.
+    """
     async with httpx.AsyncClient() as http:
         resp = await http.get(image_url)
         resp.raise_for_status()
@@ -307,7 +373,11 @@ async def emoji_remove(
     name: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Remove a custom emoji (undocumented session endpoint)."""
+    """Remove a custom emoji (undocumented session endpoint).
+
+    Args:
+        name: Name of the emoji to remove, without colons (e.g. ``party_parrot``).
+    """
     return await client.session_call_form("emoji.remove", name=name)
 
 
@@ -317,7 +387,12 @@ async def emoji_admin_list(
     count: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List custom emoji with metadata (undocumented session endpoint)."""
+    """List custom emoji with metadata (undocumented session endpoint).
+
+    Args:
+        page: 1-based page number of results to return.
+        count: Number of emoji to return per page.
+    """
     return await client.session_call("emoji.adminList", page=page, count=count)
 
 
@@ -333,7 +408,14 @@ async def search_modules_messages(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search messages (undocumented). Set detailed=True for full response."""
+    """Search messages (undocumented). Set detailed=True for full response.
+
+    Args:
+        query: Search query string, supporting Slack search operators (e.g. ``from:@user``).
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        count: Number of results to return per page.
+        detailed: Return the full, uncompacted response instead of the compacted summary.
+    """
     return await client.session_call(
         "search.modules.messages", query=query, cursor=cursor, count=count
     )
@@ -346,7 +428,13 @@ async def search_modules_files(
     count: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search files (undocumented session endpoint)."""
+    """Search files (undocumented session endpoint).
+
+    Args:
+        query: Search query string matching file names and contents.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        count: Number of results to return per page.
+    """
     return await client.session_call(
         "search.modules.files", query=query, cursor=cursor, count=count
     )
@@ -359,7 +447,13 @@ async def search_modules_channels(
     count: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search channels by name or topic (undocumented session endpoint)."""
+    """Search channels by name or topic (undocumented session endpoint).
+
+    Args:
+        query: Search query string matching channel names and topics.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        count: Number of results to return per page.
+    """
     return await client.session_call(
         "search.modules.channels", query=query, cursor=cursor, count=count
     )
@@ -372,7 +466,13 @@ async def search_modules_people(
     count: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search people by name, title, or department (undocumented session endpoint)."""
+    """Search people by name, title, or department (undocumented session endpoint).
+
+    Args:
+        query: Search query string matching member names, titles, and departments.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        count: Number of results to return per page.
+    """
     return await client.session_call(
         "search.modules.people", query=query, cursor=cursor, count=count
     )
@@ -385,7 +485,13 @@ async def search_modules_dms(
     count: int | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Search within direct messages only (undocumented session endpoint)."""
+    """Search within direct messages only (undocumented session endpoint).
+
+    Args:
+        query: Search query string matched against direct-message content.
+        cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
+        count: Number of results to return per page.
+    """
     return await client.session_call(
         "search.modules.dms", query=query, cursor=cursor, count=count
     )
@@ -410,6 +516,7 @@ async def messages_list(
     Args:
         message_ids: Groups of messages to fetch, each
             ``{"channel": "C0123", "timestamps": ["1700000000.000100", ...]}``.
+        detailed: Return the full, uncompacted response instead of the compacted summary.
     """
     return await client.session_call("messages.list", message_ids=message_ids)
 
@@ -424,7 +531,12 @@ async def conversations_view(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Get channel view with read state. Set detailed=True for full response."""
+    """Get channel view with read state. Set detailed=True for full response.
+
+    Args:
+        channel: ID of the channel to view (e.g. ``C0123``).
+        detailed: Return the full, uncompacted response instead of the compacted summary.
+    """
     return await client.session_call("conversations.view", channel=channel)
 
 

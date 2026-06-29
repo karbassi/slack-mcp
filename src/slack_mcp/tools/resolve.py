@@ -16,6 +16,10 @@ async def resolve_names(
     Accepts lists of user IDs (e.g. U12345) and/or channel IDs (e.g. C12345)
     and returns a mapping of each ID to its display name. Lookups run
     concurrently for performance.
+
+    Args:
+        user_ids: User IDs to resolve to display names (e.g. ``["U0123"]``).
+        channel_ids: Channel IDs to resolve to display names (e.g. ``["C0123"]``).
     """
     names = await resolve_ids(
         client,

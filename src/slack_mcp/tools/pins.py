@@ -11,7 +11,12 @@ async def pins_add(
     timestamp: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Pin an item to a channel."""
+    """Pin an item to a channel.
+
+    Args:
+        channel: ID of the channel to pin the item in (e.g. ``C0123``).
+        timestamp: Timestamp of the message to pin (e.g. ``1700000000.000100``).
+    """
     return await client.api_call("pins.add", channel=channel, timestamp=timestamp)
 
 
@@ -22,7 +27,12 @@ async def pins_list(
     detailed: bool = False,  # noqa: ARG001
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """List items pinned to a channel. Set detailed=True for full response."""
+    """List items pinned to a channel. Set detailed=True for full response.
+
+    Args:
+        channel: ID of the channel whose pinned items to list (e.g. ``C0123``).
+        detailed: Return the full unmodified Slack response instead of a compacted summary.
+    """
     return await client.api_call("pins.list", channel=channel)
 
 
@@ -32,5 +42,10 @@ async def pins_remove(
     timestamp: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Unpin an item from a channel."""
+    """Unpin an item from a channel.
+
+    Args:
+        channel: ID of the channel containing the pinned item (e.g. ``C0123``).
+        timestamp: Timestamp of the pinned message to remove (e.g. ``1700000000.000100``).
+    """
     return await client.api_call("pins.remove", channel=channel, timestamp=timestamp)
