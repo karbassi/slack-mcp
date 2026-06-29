@@ -268,8 +268,8 @@ async def drafts_delete(
     if client_last_updated_ts is None:
         drafts = await client.session_call("drafts.list")
         for draft in drafts.get("drafts", []):
-            if draft["id"] == draft_id:
-                client_last_updated_ts = draft["last_updated_ts"]
+            if draft.get("id") == draft_id:
+                client_last_updated_ts = draft.get("last_updated_ts")
                 break
         if client_last_updated_ts is None:
             return {"ok": False, "error": "draft_not_found"}

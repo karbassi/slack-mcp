@@ -169,6 +169,19 @@ async def test_drafts_delete(mcp_client, slack_stub):
     )
 
 
+async def test_drafts_delete_skips_malformed_list_entries(mcp_client, slack_stub):
+    # Auto-fetch path: a malformed drafts.list entry must not raise KeyError.
+    slack_stub.session_call.return_value = {
+        "ok": True,
+        "drafts": [{"no_id": True}, {"id": "D123", "last_updated_ts": "1234.567"}],
+    }
+    result = await mcp_client.call_tool("drafts_delete", {"draft_id": "D123"})
+    assert result.is_error is False
+    slack_stub.session_call_form.assert_called_once_with(
+        "drafts.delete", draft_id="D123", client_last_updated_ts="1234.5670000"
+    )
+
+
 async def test_saved_list(mcp_client, slack_stub):
     result = await mcp_client.call_tool("saved_list", {"limit": 10})
     assert result.is_error is False

@@ -18,6 +18,7 @@ async def assistant_search_context(
     before: int | None = None,
     after: int | None = None,
     sort: str | None = None,
+    sort_dir: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Search messages, files, channels, and users to provide context to an AI assistant.
@@ -35,6 +36,7 @@ async def assistant_search_context(
         before: Only results before this UNIX timestamp.
         after: Only results after this UNIX timestamp.
         sort: ``score`` (relevance) or ``timestamp`` (recency).
+        sort_dir: Sort direction — ``asc`` or ``desc``.
     """
     return await client.api_call(
         "assistant.search.context",
@@ -50,6 +52,7 @@ async def assistant_search_context(
         before=before,
         after=after,
         sort=sort,
+        sort_dir=sort_dir,
     )
 
 

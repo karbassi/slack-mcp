@@ -95,14 +95,20 @@ async def slack_lists_download_get(
 @mcp.tool
 async def slack_lists_download_start(
     list_id: str,
+    include_archived: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Start a list download.
 
     Args:
         list_id: ID of the list (a file ID) to download (e.g. ``F0123``).
+        include_archived: When ``True``, include archived items in the download.
     """
-    return await client.api_call_json("slackLists.download.start", list_id=list_id)
+    return await client.api_call_json(
+        "slackLists.download.start",
+        list_id=list_id,
+        include_archived=include_archived,
+    )
 
 
 @mcp.tool
@@ -160,6 +166,7 @@ async def slack_lists_items_delete_multiple(
 async def slack_lists_items_info(
     item_id: str,
     list_id: str,
+    include_is_subscribed: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get info about a list item.
@@ -167,9 +174,13 @@ async def slack_lists_items_info(
     Args:
         item_id: ID of the list item (record) to fetch.
         list_id: ID of the list (a file ID) containing the item (e.g. ``F0123``).
+        include_is_subscribed: When ``True``, include whether the caller is subscribed to the item.
     """
     return await client.api_call_json(
-        "slackLists.items.info", id=item_id, list_id=list_id
+        "slackLists.items.info",
+        id=item_id,
+        list_id=list_id,
+        include_is_subscribed=include_is_subscribed,
     )
 
 
@@ -178,6 +189,7 @@ async def slack_lists_items_list(
     list_id: str,
     cursor: str | None = None,
     limit: int | None = None,
+    archived: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """List items in a list.
@@ -186,9 +198,14 @@ async def slack_lists_items_list(
         list_id: ID of the list (a file ID) whose items to return (e.g. ``F0123``).
         cursor: Pagination cursor from a previous response's ``response_metadata.next_cursor``.
         limit: Maximum number of items to return per page.
+        archived: When ``True``, return archived items instead of active ones.
     """
     return await client.api_call_json(
-        "slackLists.items.list", list_id=list_id, cursor=cursor, limit=limit
+        "slackLists.items.list",
+        list_id=list_id,
+        cursor=cursor,
+        limit=limit,
+        archived=archived,
     )
 
 

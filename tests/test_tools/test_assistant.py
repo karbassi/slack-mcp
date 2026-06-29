@@ -4,7 +4,7 @@ from tests.conftest import assert_api_call
 async def test_assistant_search_context(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "assistant_search_context",
-        {"query": "what is project gizmo", "limit": 5},
+        {"query": "what is project gizmo", "limit": 5, "sort_dir": "desc"},
     )
     assert result.is_error is False
     assert_api_call(
@@ -12,6 +12,7 @@ async def test_assistant_search_context(mcp_client, slack_stub):
         "assistant.search.context",
         query="what is project gizmo",
         limit=5,
+        sort_dir="desc",
     )
 
 

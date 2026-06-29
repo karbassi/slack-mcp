@@ -123,10 +123,15 @@ async def test_slack_lists_items_info(mcp_client, slack_stub):
 
 async def test_slack_lists_items_list(mcp_client, slack_stub):
     slack_stub.api_call_json.return_value = {"ok": True, "items": []}
-    result = await mcp_client.call_tool("slack_lists_items_list", {"list_id": "L123"})
+    result = await mcp_client.call_tool(
+        "slack_lists_items_list", {"list_id": "L123", "archived": True}
+    )
     assert result.is_error is False
     assert_api_call(
-        slack_stub.api_call_json, "slackLists.items.list", list_id="L123"
+        slack_stub.api_call_json,
+        "slackLists.items.list",
+        list_id="L123",
+        archived=True,
     )
 
 

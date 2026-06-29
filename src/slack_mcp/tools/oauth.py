@@ -40,6 +40,7 @@ async def oauth_v2_access(
     grant_type: str | None = None,
     redirect_uri: str | None = None,
     refresh_token: str | None = None,
+    code_verifier: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Exchange a temporary OAuth verifier code for an access token (V2).
@@ -51,6 +52,7 @@ async def oauth_v2_access(
         grant_type: ``authorization_code`` (default) or ``refresh_token``.
         redirect_uri: Must match the value used to request the code.
         refresh_token: The refresh token, when ``grant_type=refresh_token``.
+        code_verifier: The PKCE code verifier, when the authorization request used PKCE.
     """
     return await client.api_call(
         "oauth.v2.access",
@@ -60,6 +62,7 @@ async def oauth_v2_access(
         grant_type=grant_type,
         redirect_uri=redirect_uri,
         refresh_token=refresh_token,
+        code_verifier=code_verifier,
     )
 
 

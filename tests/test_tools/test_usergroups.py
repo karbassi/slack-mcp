@@ -2,9 +2,18 @@ from tests.conftest import assert_api_call
 
 
 async def test_usergroups_create(mcp_client, slack_stub):
-    result = await mcp_client.call_tool("usergroups_create", {"name": "TestGroup"})
+    result = await mcp_client.call_tool(
+        "usergroups_create",
+        {"name": "TestGroup", "additional_channels": ["C789"], "enable_section": True},
+    )
     assert result.is_error is False
-    assert_api_call(slack_stub.api_call, "usergroups.create", name="TestGroup")
+    assert_api_call(
+        slack_stub.api_call,
+        "usergroups.create",
+        name="TestGroup",
+        additional_channels=["C789"],
+        enable_section=True,
+    )
 
 
 async def test_usergroups_disable(mcp_client, slack_stub):
