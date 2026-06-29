@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-06-29
+
 ### Added
 
 - New tools: `blocks_validate`, `assistant_search_context`, `assistant_search_info`, `apps_activities_list`, `oauth_v2_user_access`, and `messages_list` (batch fetch of full message objects by channel and timestamp).
