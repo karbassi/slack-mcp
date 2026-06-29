@@ -60,8 +60,19 @@ class SlackClient:
         )
 
     async def api_call(self, method: str, **kwargs) -> dict:
-        """Call an official Slack Web API method via slack_sdk (form-encoded)."""
-        response = await self.web_client.api_call(method, data=_drop_none(kwargs))
+        """Call an official Slack Web API method via slack_sdk.
+
+        Scalar-only params are form-encoded. If any value is a ``dict`` or
+        ``list``, the whole call is sent as a JSON body instead: aiohttp's form
+        encoder mangles nested structures (a dict serializes to its first key, a
+        list of dicts to a Python ``repr``), whereas Slack accepts JSON bodies
+        for these methods — which is what slack_sdk's own typed methods send.
+        """
+        clean = _drop_none(kwargs)
+        if any(isinstance(v, (dict, list)) for v in clean.values()):
+            response = await self.web_client.api_call(method, json=clean)
+        else:
+            response = await self.web_client.api_call(method, data=clean)
         return _require_dict(response.data, method)
 
     async def api_call_json(self, method: str, **kwargs) -> dict:
