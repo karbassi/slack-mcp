@@ -1,4 +1,5 @@
 import base64
+import binascii
 
 from fastmcp.dependencies import Depends
 
@@ -201,8 +202,14 @@ async def users_set_photo(
         crop_x: X coordinate of the top-left corner of the crop box, in pixels.
         crop_y: Y coordinate of the top-left corner of the crop box, in pixels.
     """
+    try:
+        image = base64.b64decode(image_base64, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise ValueError(  # noqa: TRY003
+            "image_base64 must be a base64-encoded string of the raw image bytes."
+        ) from exc
     return await client.users_set_photo(
-        image=base64.b64decode(image_base64),
+        image=image,
         crop_w=crop_w,
         crop_x=crop_x,
         crop_y=crop_y,

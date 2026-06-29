@@ -102,6 +102,15 @@ async def test_users_set_photo(mcp_client, slack_stub):
     assert kwargs["image"] == b"PNGDATA"
 
 
+async def test_users_set_photo_rejects_invalid_base64(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "users_set_photo", {"image_base64": "@@@not base64@@@"}, raise_on_error=False
+    )
+    assert result.is_error is True
+    assert "image_base64" in result.content[0].text
+    slack_stub.users_set_photo.assert_not_called()
+
+
 async def test_users_set_presence(mcp_client, slack_stub):
     result = await mcp_client.call_tool("users_set_presence", {"presence": "away"})
     assert result.is_error is False
