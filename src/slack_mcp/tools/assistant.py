@@ -54,6 +54,17 @@ async def assistant_search_context(
 
 
 @mcp.tool
+async def assistant_search_info(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get search capabilities for the team.
+
+    Returns whether AI/semantic search is available (``is_ai_search_enabled``).
+    """
+    return await client.api_call("assistant.search.info")
+
+
+@mcp.tool
 async def assistant_threads_set_status(
     channel_id: str,
     thread_ts: str,
