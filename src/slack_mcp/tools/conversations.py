@@ -147,16 +147,21 @@ async def conversations_decline_shared_invite(
 async def conversations_external_invite_permissions_set(
     channel: str,
     action: str,
+    target_team: str,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Set external invite permissions for a Slack Connect channel.
 
     Args:
-        channel: ID of the Slack Connect channel (e.g. C0123).
+        channel: ID of the Slack Connect channel (e.g. ``C0123``).
         action: Permission to apply — ``upgrade`` to allow external write access or ``downgrade`` to restrict it.
+        target_team: Encoded team ID of the target team to change permissions for (e.g. ``T0123``).
     """
     return await client.api_call(
-        "conversations.externalInvitePermissions.set", channel=channel, action=action
+        "conversations.externalInvitePermissions.set",
+        channel=channel,
+        action=action,
+        target_team=target_team,
     )
 
 
@@ -482,7 +487,7 @@ async def conversations_replies(
 async def conversations_request_shared_invite_approve(
     invite_id: str,
     channel_id: str | None = None,
-    is_approved: bool | None = None,
+    is_external_limited: bool | None = None,
     message: dict | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -490,15 +495,15 @@ async def conversations_request_shared_invite_approve(
 
     Args:
         invite_id: ID of the shared-invite request to approve.
-        channel_id: ID of the channel the request is for, if disambiguation is needed.
-        is_approved: Whether the request is approved. Set False to record a rejection.
-        message: Optional message object to attach to the approval.
+        channel_id: ID of the channel to override the requested invite destination.
+        is_external_limited: Restrict the invited team to post-only (limited) access.
+        message: Optional message object (``{"text": ..., "is_override": ...}``) to attach to the approval.
     """
     return await client.api_call(
         "conversations.requestSharedInvite.approve",
         invite_id=invite_id,
         channel_id=channel_id,
-        is_approved=is_approved,
+        is_external_limited=is_external_limited,
         message=message,
     )
 
@@ -506,14 +511,14 @@ async def conversations_request_shared_invite_approve(
 @mcp.tool
 async def conversations_request_shared_invite_deny(
     invite_id: str,
-    message: dict | None = None,
+    message: str | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Deny a shared channel invite request.
 
     Args:
         invite_id: ID of the shared-invite request to deny.
-        message: Optional message object explaining the denial.
+        message: Optional message explaining why the request was denied.
     """
     return await client.api_call(
         "conversations.requestSharedInvite.deny",

@@ -78,7 +78,7 @@ async def test_conversations_decline_shared_invite(mcp_client, slack_stub):
 async def test_conversations_external_invite_permissions_set(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "conversations_external_invite_permissions_set",
-        {"channel": "C123", "action": "upgrade"},
+        {"channel": "C123", "action": "upgrade", "target_team": "T999"},
     )
     assert result.is_error is False
     assert_api_call(
@@ -86,6 +86,7 @@ async def test_conversations_external_invite_permissions_set(mcp_client, slack_s
         "conversations.externalInvitePermissions.set",
         channel="C123",
         action="upgrade",
+        target_team="T999",
     )
 
 
@@ -241,25 +242,29 @@ async def test_conversations_replies(mcp_client, slack_stub):
 
 async def test_conversations_request_shared_invite_approve(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "conversations_request_shared_invite_approve", {"invite_id": "I123"}
+        "conversations_request_shared_invite_approve",
+        {"invite_id": "I123", "is_external_limited": True},
     )
     assert result.is_error is False
     assert_api_call(
         slack_stub.api_call,
         "conversations.requestSharedInvite.approve",
         invite_id="I123",
+        is_external_limited=True,
     )
 
 
 async def test_conversations_request_shared_invite_deny(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
-        "conversations_request_shared_invite_deny", {"invite_id": "I123"}
+        "conversations_request_shared_invite_deny",
+        {"invite_id": "I123", "message": "not allowed"},
     )
     assert result.is_error is False
     assert_api_call(
         slack_stub.api_call,
         "conversations.requestSharedInvite.deny",
         invite_id="I123",
+        message="not allowed",
     )
 
 

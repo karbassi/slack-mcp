@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Tools forwarding a `dict` or `list` parameter (`blocks`, `attachments`, `view`, `recurrence`, `trigger_ids`, `emails`, …) now send a JSON request body. Form-encoding mangled nested values (a dict collapsed to its first key, a list of dicts to a Python `repr`), so those calls silently sent malformed data.
 - Corrected the `chat` streaming tools: `chat_append_stream` and `chat_stop_stream` now use `ts`/`markdown_text` (was `thread_ts`/`text`), `chat_start_stream` exposes the `recipient_user_id`/`recipient_team_id` required for channel streams, and the non-existent `chat_stream` (`chat.stream` is not a Web API method) was removed.
 - Corrected `slackLists` tool parameters to match the Slack API: `slack_lists_create` uses `schema`/`description_blocks` (was `columns`/`description`), `slack_lists_items_create` uses `initial_fields` (was `column_values`), `slack_lists_items_update` uses `cells` (was `item_id`/`column_values`), and `slack_lists_update` uses `description_blocks`. Previously the field data was silently dropped.
+- Corrected `conversations` shared-invite tools: `conversations_request_shared_invite_approve` drops the unsupported `is_approved` and adds `is_external_limited`; `conversations_external_invite_permissions_set` adds the required `target_team`; and `conversations_request_shared_invite_deny`'s `message` is now a string (the API rejects an object there).
 
 ### Internal
 
