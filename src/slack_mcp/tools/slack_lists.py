@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
@@ -54,19 +56,22 @@ async def slack_lists_access_set(
 @mcp.tool
 async def slack_lists_create(
     name: str,
-    description: str | None = None,
-    columns: list[dict[str, str]] | None = None,
+    description_blocks: list[dict[str, Any]] | None = None,
+    schema: list[dict[str, Any]] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a new list.
 
     Args:
         name: Name (title) of the list to create.
-        description: Description of the list.
-        columns: Column definitions (schema) for the list, each describing a field's key, name, and type.
+        description_blocks: Rich-text blocks describing the list.
+        schema: Column definitions for the list, each describing a field's key, name, and type.
     """
     return await client.api_call_json(
-        "slackLists.create", name=name, description=description, columns=columns
+        "slackLists.create",
+        name=name,
+        description_blocks=description_blocks,
+        schema=schema,
     )
 
 
@@ -103,17 +108,17 @@ async def slack_lists_download_start(
 @mcp.tool
 async def slack_lists_items_create(
     list_id: str,
-    column_values: dict[str, str] | None = None,
+    initial_fields: list[dict[str, Any]] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Create a new list item.
 
     Args:
         list_id: ID of the list (a file ID) to add the item to (e.g. ``F0123``).
-        column_values: Map of column key to value for the new item's fields.
+        initial_fields: Field values for the new item, each an object with a ``column_id`` and a typed value.
     """
     return await client.api_call_json(
-        "slackLists.items.create", list_id=list_id, column_values=column_values
+        "slackLists.items.create", list_id=list_id, initial_fields=initial_fields
     )
 
 
@@ -189,23 +194,18 @@ async def slack_lists_items_list(
 
 @mcp.tool
 async def slack_lists_items_update(
-    item_id: str,
     list_id: str,
-    column_values: dict[str, str] | None = None,
+    cells: list[dict[str, Any]],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
-    """Update a list item.
+    """Update cells in a list item.
 
     Args:
-        item_id: ID of the list item (record) to update.
         list_id: ID of the list (a file ID) containing the item (e.g. ``F0123``).
-        column_values: Map of column key to new value for the fields being changed.
+        cells: Cells to update, each an object with ``row_id`` (the item/record), ``column_id``, and a typed value.
     """
     return await client.api_call_json(
-        "slackLists.items.update",
-        id=item_id,
-        list_id=list_id,
-        column_values=column_values,
+        "slackLists.items.update", list_id=list_id, cells=cells
     )
 
 
@@ -213,7 +213,7 @@ async def slack_lists_items_update(
 async def slack_lists_update(
     list_id: str,
     name: str | None = None,
-    description: str | None = None,
+    description_blocks: list[dict[str, Any]] | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Update a list.
@@ -221,8 +221,11 @@ async def slack_lists_update(
     Args:
         list_id: ID of the list (a file ID) to update (e.g. ``F0123``).
         name: New name (title) for the list.
-        description: New description for the list.
+        description_blocks: New rich-text blocks describing the list.
     """
     return await client.api_call_json(
-        "slackLists.update", id=list_id, name=name, description=description
+        "slackLists.update",
+        id=list_id,
+        name=name,
+        description_blocks=description_blocks,
     )

@@ -29,7 +29,6 @@ async def test_slack_lists_lifecycle_live(live_client):
     # Step 1: Create list
     created = await slack_lists_create(
         name="Integration Test List",
-        description="Created by integration test",
         client=live_client,
     )
     assert created["ok"] is True
@@ -110,13 +109,12 @@ async def test_slack_lists_lifecycle_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="undocumented cells/column_values format for items.update")
+@pytest.mark.skip(reason="requires a real list_id, row_id, and column_id")
 async def test_slack_lists_items_update_live(live_client):
-    """Update a list item's column values."""
+    """Update cells in a list item."""
     result = await slack_lists_items_update(
-        item_id="0000000000",
         list_id="0000000000",
-        column_values={},
+        cells=[{"row_id": "0000000000", "column_id": "Col000", "text": "x"}],
         client=live_client,
     )
     assert "ok" in result
