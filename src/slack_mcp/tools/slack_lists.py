@@ -7,6 +7,28 @@ from slack_mcp.server import mcp, slack_client
 
 
 @mcp.tool
+async def slack_lists_get_my_items(
+    include_approvals: bool | None = None,
+    include_subtasks: bool | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List the Slack List records assigned to the current user (undocumented session endpoint).
+
+    Surfaces the user's tasks and approvals across all their lists — answers
+    "what's on my plate". Returns ``lists``, ``records``, and ``counts``.
+
+    Args:
+        include_approvals: When ``True``, include approval records assigned to the user.
+        include_subtasks: When ``True``, include subtask records nested under parent items.
+    """
+    return await client.session_call(
+        "lists.getMyItems",
+        include_approvals=include_approvals,
+        include_subtasks=include_subtasks,
+    )
+
+
+@mcp.tool
 async def slack_lists_access_delete(
     list_id: str,
     channel_ids: list[str] | None = None,

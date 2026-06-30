@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Tier 1 undocumented session endpoints wrapped as tools (issue #58): `subscriptions_thread_get_view` (my threads with unread reply counts), `activity_feed` (activity inbox), `ai_summarize_unreads_snapshot` (AI summary of unreads), `client_dms` (open DMs and group DMs), `slack_lists_get_my_items` (Slack List tasks/approvals assigned to me), and `saved_get` (fetch saved items by id).
+
 ### Fixed
 
 - `subscriptions_thread_mark` now form-encodes its request and exposes the required `ts` parameter. Previously it posted a JSON body that Slack ignored, so the call always failed with `invalid_arguments` (issue #56).

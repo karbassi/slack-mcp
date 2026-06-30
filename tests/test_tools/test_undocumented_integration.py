@@ -6,10 +6,13 @@ import pytest
 from slack_mcp.tools.chat import chat_delete, chat_post_message
 from slack_mcp.tools.conversations import conversations_archive, conversations_create
 from slack_mcp.tools.undocumented import (
+    activity_feed,
     ai_apps_list,
+    ai_summarize_unreads_snapshot,
     api_features,
     client_boot,
     client_counts,
+    client_dms,
     client_user_boot,
     conversations_list_prefs,
     conversations_view,
@@ -24,6 +27,7 @@ from slack_mcp.tools.undocumented import (
     messages_list,
     saved_add,
     saved_delete,
+    saved_get,
     saved_list,
     search_modules_channels,
     search_modules_dms,
@@ -31,6 +35,7 @@ from slack_mcp.tools.undocumented import (
     search_modules_messages,
     search_modules_people,
     session_test,
+    subscriptions_thread_get_view,
     subscriptions_thread_mark,
     threads_get_view,
     users_channel_sections_list,
@@ -91,6 +96,18 @@ async def test_client_user_boot_live(live_client):
 async def test_threads_get_view_live(live_client):
     result = await threads_get_view(client=live_client)
     assert "ok" in result
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_subscriptions_thread_get_view_live(live_client):
+    result = await subscriptions_thread_get_view(limit=10, client=live_client)
+    assert result["ok"] is True
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_client_dms_live(live_client):
+    result = await client_dms(count=10, client=live_client)
+    assert result["ok"] is True
 
 
 # --- Drafts lifecycle ---
@@ -168,6 +185,13 @@ async def test_saved_lifecycle_live(live_client, temp_channel):
     # List saved items
     result = await saved_list(client=live_client)
     assert result["ok"] is True
+
+    # Fetch the specific saved item back by id
+    result = await saved_get(
+        items=[{"item_type": "message", "item_id": temp_channel, "ts": msg_ts}],
+        client=live_client,
+    )
+    assert "ok" in result
 
     # Unsave it
     result = await saved_delete(
@@ -337,6 +361,22 @@ async def test_api_features_live(live_client):
 async def test_ai_apps_list_live(live_client):
     result = await ai_apps_list(client=live_client)
     assert "ok" in result
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_ai_summarize_unreads_snapshot_live(live_client):
+    # ai.alpha.* may be gated by workspace AI features — tolerate ok: false.
+    result = await ai_summarize_unreads_snapshot(client=live_client)
+    assert "ok" in result
+
+
+# --- Activity inbox ---
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_activity_feed_live(live_client):
+    result = await activity_feed(limit=10, client=live_client)
+    assert result["ok"] is True
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
