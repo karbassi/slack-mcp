@@ -21,13 +21,18 @@ from slack_mcp.tools.slack_lists import (
 )
 
 
-@pytest.mark.integration
-@pytest.mark.asyncio
-async def test_slack_lists_get_my_items_live(live_client):
-    """lists.getMyItems is an undocumented session endpoint — needs xoxc/xoxd."""
+@pytest.fixture
+def requires_session_tokens():
     # session_call requires BOTH tokens; skip cleanly if either is missing.
     if not os.getenv("SLACK_XOXC_TOKEN") or not os.getenv("SLACK_XOXD_TOKEN"):
         pytest.skip("SLACK_XOXC_TOKEN/SLACK_XOXD_TOKEN not set")
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_slack_lists_get_my_items_live(live_client):
+    """lists.getMyItems is an undocumented session endpoint — needs xoxc/xoxd."""
     result = await slack_lists_get_my_items(client=live_client)
     assert result["ok"] is True
 

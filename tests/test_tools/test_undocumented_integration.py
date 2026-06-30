@@ -186,12 +186,12 @@ async def test_saved_lifecycle_live(live_client, temp_channel):
     result = await saved_list(client=live_client)
     assert result["ok"] is True
 
-    # Fetch the specific saved item back by id
+    # Fetch the specific saved item back by id (just saved above, so must succeed)
     result = await saved_get(
         items=[{"item_type": "message", "item_id": temp_channel, "ts": msg_ts}],
         client=live_client,
     )
-    assert "ok" in result
+    assert result["ok"] is True
 
     # Unsave it
     result = await saved_delete(
