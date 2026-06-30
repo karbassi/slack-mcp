@@ -237,15 +237,20 @@ async def test_subscriptions_thread_mark_live(live_client, temp_channel):
     assert parent["ok"] is True
     thread_ts = parent["ts"]
 
-    await chat_post_message(
+    reply = await chat_post_message(
         channel=temp_channel,
         text="Thread reply",
         thread_ts=thread_ts,
         client=live_client,
     )
+    assert reply["ok"] is True
 
     result = await subscriptions_thread_mark(
-        channel=temp_channel, thread_ts=thread_ts, read=True, client=live_client
+        channel=temp_channel,
+        thread_ts=thread_ts,
+        ts=reply["ts"],
+        read=True,
+        client=live_client,
     )
     assert "ok" in result
 
