@@ -99,8 +99,8 @@ async def subscriptions_thread_mark(
         ts: Timestamp to mark read up to — usually the latest reply's ts (or ``thread_ts`` for the root).
         read: Mark the thread as read (``True``) or unread (``False``).
     """
-    # ponytail: form-encoded, not JSON — a JSON body is ignored here and Slack
-    # reports every field missing (issue #56).
+    # Form-encoded, not JSON — a JSON body is ignored here and Slack reports
+    # every field missing (issue #56).
     return await client.session_call_form(
         "subscriptions.thread.mark",
         channel=channel,
