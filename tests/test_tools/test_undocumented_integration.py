@@ -1,4 +1,3 @@
-import os
 import uuid
 
 import pytest
@@ -43,12 +42,6 @@ from slack_mcp.tools.undocumented import (
 )
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
-
-
-@pytest.fixture
-def requires_session_tokens():
-    if not os.getenv("SLACK_XOXC_TOKEN"):
-        pytest.skip("SLACK_XOXC_TOKEN not set")
 
 
 @pytest.fixture

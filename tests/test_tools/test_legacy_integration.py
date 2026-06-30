@@ -1,4 +1,3 @@
-import os
 import uuid
 
 import httpx
@@ -27,38 +26,32 @@ from slack_mcp.tools.legacy import (
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
 
-@pytest.fixture
-def requires_session_token():
-    if not os.getenv("SLACK_XOXC_TOKEN"):
-        pytest.skip("SLACK_XOXC_TOKEN not set")
-
-
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_bots_list_live(live_client):
     result = await bots_list(client=live_client)
     # May or may not work with xoxc; accept ok or known error
     assert isinstance(result, dict)
 
 
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_commands_list_live(live_client):
     result = await commands_list(client=live_client)
     assert isinstance(result, dict)
 
 
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_team_prefs_get_live(live_client):
     result = await team_prefs_get(client=live_client)
     assert isinstance(result, dict)
 
 
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_users_prefs_get_live(live_client):
     result = await users_prefs_get(client=live_client)
     assert isinstance(result, dict)
 
 
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_chat_command_live(live_client):
     """Execute /shrug in a temp channel (harmless, just posts a message)."""
     name = f"test-cmd-{uuid.uuid4().hex[:8]}"
@@ -73,7 +66,7 @@ async def test_chat_command_live(live_client):
         await conversations_archive(channel=channel_id, client=live_client)
 
 
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_files_edit_live(live_client):
     """Upload a file via v2 flow, edit its title, then delete it."""
     content = b"files.edit integration test"
@@ -95,7 +88,7 @@ async def test_files_edit_live(live_client):
         await files_delete(file=file_id, client=live_client)
 
 
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_files_share_legacy_live(live_client):
     """Upload a file and share it to a temp channel."""
     name = f"test-share-{uuid.uuid4().hex[:8]}"
@@ -123,7 +116,7 @@ async def test_files_share_legacy_live(live_client):
         await conversations_archive(channel=channel_id, client=live_client)
 
 
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_users_prefs_set_live(live_client):
     """Set a preference then restore it."""
     prefs = await users_prefs_get(client=live_client)
@@ -145,7 +138,7 @@ async def test_channels_delete_live(live_client):
 
 
 @pytest.mark.skip(reason="enterprise_is_restricted: Enterprise Grid blocks invites")
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_users_admin_invite_live(live_client):
     result = await users_admin_invite(
         email="test@example.com", client=live_client
@@ -156,7 +149,7 @@ async def test_users_admin_invite_live(live_client):
 @pytest.mark.skip(
     reason="enterprise_is_restricted: Enterprise Grid requires target_team"
 )
-@pytest.mark.usefixtures("requires_session_token")
+@pytest.mark.usefixtures("requires_session_tokens")
 async def test_users_admin_set_inactive_live(live_client):
     result = await users_admin_set_inactive(user="U0000000000", client=live_client)
     assert "ok" in result

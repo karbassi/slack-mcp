@@ -131,3 +131,15 @@ def live_client() -> SlackClient:
     if not os.getenv("SLACK_XOXP_TOKEN"):
         pytest.skip("SLACK_XOXP_TOKEN not set")
     return SlackClient()
+
+
+@pytest.fixture
+def requires_session_tokens():
+    """Skip a test unless both session tokens are set.
+
+    Undocumented session endpoints (``SlackClient.session_call*``) require both
+    ``SLACK_XOXC_TOKEN`` and ``SLACK_XOXD_TOKEN`` — without both, the call raises
+    ``ValueError``. Skip cleanly when either is missing instead of failing hard.
+    """
+    if not os.getenv("SLACK_XOXC_TOKEN") or not os.getenv("SLACK_XOXD_TOKEN"):
+        pytest.skip("SLACK_XOXC_TOKEN/SLACK_XOXD_TOKEN not set")

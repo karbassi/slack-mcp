@@ -1,4 +1,3 @@
-import os
 import time
 
 import pytest
@@ -19,13 +18,6 @@ from slack_mcp.tools.slack_lists import (
     slack_lists_items_update,
     slack_lists_update,
 )
-
-
-@pytest.fixture
-def requires_session_tokens():
-    # session_call requires BOTH tokens; skip cleanly if either is missing.
-    if not os.getenv("SLACK_XOXC_TOKEN") or not os.getenv("SLACK_XOXD_TOKEN"):
-        pytest.skip("SLACK_XOXC_TOKEN/SLACK_XOXD_TOKEN not set")
 
 
 @pytest.mark.integration
