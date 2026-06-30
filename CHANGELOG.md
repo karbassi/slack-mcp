@@ -8,7 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Tier 1 undocumented session endpoints wrapped as tools (issue #58): `subscriptions_thread_get_view` (my threads with unread reply counts), `activity_feed` (activity inbox), `ai_summarize_unreads_snapshot` (AI summary of unreads), `client_dms` (open DMs and group DMs), `slack_lists_get_my_items` (Slack List tasks/approvals assigned to me), and `saved_get` (fetch saved items by id).
+- Six new tools for the personal "what's happening to me" views that the official Slack API doesn't expose — built on the same undocumented session endpoints Slack's own client uses (require `xoxc`+`xoxd` session tokens):
+  - `subscriptions_thread_get_view` — your thread inbox with per-thread unread reply counts ("catch me up on my threads").
+  - `activity_feed` — your activity inbox: mentions, reactions, replies, reminders, and invites ("what needs my attention").
+  - `ai_summarize_unreads_snapshot` — Slack's AI summary of your unread messages ("summarize what I missed").
+  - `client_dms` — your open direct messages and group DMs.
+  - `slack_lists_get_my_items` — the Slack List tasks and approvals assigned to you.
+  - `saved_get` — fetch specific saved-for-later items by id (complements `saved_list`).
 
 ### Fixed
 
