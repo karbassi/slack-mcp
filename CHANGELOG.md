@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `subscriptions_thread_mark` now form-encodes its request and exposes the required `ts` parameter. Previously it posted a JSON body that Slack ignored, so the call always failed with `invalid_arguments` (issue #56).
+
 ## [3.0.0] - 2026-06-29
 
 ### Added
