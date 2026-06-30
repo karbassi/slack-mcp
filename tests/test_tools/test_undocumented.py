@@ -38,13 +38,14 @@ async def test_client_user_boot(mcp_client, slack_stub):
 async def test_subscriptions_thread_mark(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "subscriptions_thread_mark",
-        {"channel": "C123", "thread_ts": "1234.5678"},
+        {"channel": "C123", "thread_ts": "1234.5678", "ts": "1234.9999"},
     )
     assert result.is_error is False
-    slack_stub.session_call.assert_called_once_with(
+    slack_stub.session_call_form.assert_called_once_with(
         "subscriptions.thread.mark",
         channel="C123",
         thread_ts="1234.5678",
+        ts="1234.9999",
         read=True,
     )
 

@@ -87,6 +87,7 @@ async def client_user_boot(
 async def subscriptions_thread_mark(
     channel: str,
     thread_ts: str,
+    ts: str,
     read: bool = True,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -95,12 +96,16 @@ async def subscriptions_thread_mark(
     Args:
         channel: ID of the channel containing the thread (e.g. ``C0123``).
         thread_ts: Timestamp of the parent thread message (e.g. ``1700000000.000100``).
+        ts: Timestamp to mark read up to — usually the latest reply's ts (or ``thread_ts`` for the root).
         read: Mark the thread as read (``True``) or unread (``False``).
     """
-    return await client.session_call(
+    # ponytail: form-encoded, not JSON — a JSON body is ignored here and Slack
+    # reports every field missing (issue #56).
+    return await client.session_call_form(
         "subscriptions.thread.mark",
         channel=channel,
         thread_ts=thread_ts,
+        ts=ts,
         read=read,
     )
 
