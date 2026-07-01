@@ -36,6 +36,7 @@ from slack_mcp.tools.undocumented import (
     search_modules_messages,
     search_modules_people,
     session_test,
+    subscriptions_thread_get,
     subscriptions_thread_get_view,
     subscriptions_thread_mark,
     threads_get_view,
@@ -280,6 +281,48 @@ async def test_subscriptions_thread_mark_live(live_client, temp_channel):
         client=live_client,
     )
     assert "ok" in result
+
+
+async def _find_live_thread(live_client) -> tuple[str, str] | None:
+    """Scan channels the user is in for an existing threaded message.
+
+    Returns ``(channel, thread_ts)`` for the first message with replies found,
+    or ``None`` if the workspace has no threaded messages reachable via session
+    endpoints.
+    """
+    convs = await live_client.session_call(
+        "conversations.list",
+        types="public_channel,private_channel,mpim,im",
+        limit=200,
+        exclude_archived=True,
+    )
+    for ch in convs.get("channels", []):
+        cid = ch["id"]
+        try:
+            hist = await live_client.session_call(
+                "conversations.history", channel=cid, limit=200
+            )
+        except Exception:  # skip channels we can't read
+            continue
+        for msg in hist.get("messages", []):
+            if msg.get("reply_count", 0) > 0 and msg.get("thread_ts"):
+                return cid, msg["thread_ts"]
+    return None
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_subscriptions_thread_get_live(live_client):
+    """Fetch the subscription state for a real existing thread."""
+    thread = await _find_live_thread(live_client)
+    if thread is None:
+        pytest.skip("no threaded messages found in this workspace")
+    channel, thread_ts = thread
+
+    result = await subscriptions_thread_get(
+        channel=channel, thread_ts=thread_ts, client=live_client
+    )
+    assert result["ok"] is True
+    assert "subscriptions" in result
 
 
 # --- Search modules ---

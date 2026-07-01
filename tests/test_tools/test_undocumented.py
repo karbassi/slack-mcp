@@ -50,6 +50,20 @@ async def test_subscriptions_thread_mark(mcp_client, slack_stub):
     )
 
 
+async def test_subscriptions_thread_get(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "subscriptions_thread_get",
+        {"channel": "C123", "thread_ts": "1234.5678"},
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "subscriptions.thread.get",
+        channel="C123",
+        thread_ts="1234.5678",
+    )
+
+
 async def test_threads_get_view(mcp_client, slack_stub):
     result = await mcp_client.call_tool("threads_get_view", {})
     assert result.is_error is False
