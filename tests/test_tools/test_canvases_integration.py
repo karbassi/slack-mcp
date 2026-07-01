@@ -7,8 +7,18 @@ from slack_mcp.tools.canvases import (
     canvases_create,
     canvases_delete,
     canvases_edit,
+    canvases_get_canned_templates,
     canvases_sections_lookup,
 )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_canvases_get_canned_templates_live(live_client):
+    result = await canvases_get_canned_templates(client=live_client)
+    assert result["ok"] is True
+    assert "files" in result
 
 
 @pytest.mark.integration
