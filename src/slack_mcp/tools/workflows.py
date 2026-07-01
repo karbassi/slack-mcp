@@ -130,3 +130,22 @@ async def workflows_update_step(
         step_image_url=step_image_url,
         step_name=step_name,
     )
+
+
+@mcp.tool
+async def workflows_triggers_list(
+    app_ids: list[str] | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List workflow triggers in the workspace (undocumented session endpoint).
+
+    Args:
+        app_ids: Restrict results to triggers owned by these app IDs
+            (e.g. ``["A0123"]``); omitted when unset to return all triggers.
+
+    Returns:
+        A dict with ``ok`` plus ``triggers`` (the accessible trigger objects) and
+        ``rejected_triggers`` (triggers that could not be returned, e.g. due to
+        permissions).
+    """
+    return await client.session_call("workflows.triggers.list", app_ids=app_ids)

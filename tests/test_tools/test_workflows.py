@@ -93,3 +93,21 @@ async def test_workflows_update_step(mcp_client, slack_stub):
         workflow_step_edit_id="WSE123",
         inputs=inputs,
     )
+
+
+async def test_workflows_triggers_list_no_args(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("workflows_triggers_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "workflows.triggers.list")
+
+
+async def test_workflows_triggers_list_with_app_ids(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "workflows_triggers_list", {"app_ids": ["A0123", "A0456"]}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "workflows.triggers.list",
+        app_ids=["A0123", "A0456"],
+    )

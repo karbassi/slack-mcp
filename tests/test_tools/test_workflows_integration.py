@@ -7,6 +7,7 @@ from slack_mcp.tools.workflows import (
     workflows_featured_set,
     workflows_step_completed,
     workflows_step_failed,
+    workflows_triggers_list,
     workflows_update_step,
 )
 
@@ -98,3 +99,14 @@ async def test_workflows_update_step_live(live_client):
         client=live_client,
     )
     assert "ok" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_workflows_triggers_list_live(live_client):
+    """List workflow triggers in the workspace (tolerates an empty result)."""
+    result = await workflows_triggers_list(client=live_client)
+    assert result["ok"] is True
+    assert "triggers" in result
+    assert "rejected_triggers" in result
