@@ -17,13 +17,14 @@ async def calendar_get_installed_calendars(
     return await client.session_call("calendar.getInstalledCalendars")
 
 
-@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+@mcp.tool
 async def calendar_user_status(
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get the user's current calendar status (undocumented session endpoint).
 
     Surfaces the user's in-meeting / calendar availability. Returns status: the
-    user's calendar status (e.g. current or upcoming event info).
+    user's calendar status (e.g. current or upcoming event info). Not cached,
+    since availability can change faster than the shared cache TTLs allow.
     """
     return await client.session_call("calendar.user.status")
