@@ -7,7 +7,7 @@ from slack_mcp.compact import (
     compact_search_messages,
     compactable,
 )
-from slack_mcp.server import SLOW_CALL_TIMEOUT, mcp, slack_client
+from slack_mcp.server import SHORT_TTL, SLOW_CALL_TIMEOUT, mcp, slack_client
 
 
 @mcp.tool(timeout=SLOW_CALL_TIMEOUT)
@@ -82,6 +82,85 @@ async def search_files(
         sort_dir=sort_dir,
         team_id=team_id,
     )
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def search_inline(
+    query: str,
+    count: int | None = None,
+    channel: str | None = None,
+    user: str | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Inline (quick) search scoped to a single channel or user.
+
+    Undocumented session endpoint (``search.inline``) that powers Slack's
+    in-context quick-search box. Exactly one of ``channel`` or ``user`` must be
+    supplied to scope the search; passing neither or both is rejected by Slack.
+
+    Args:
+        query: Search text. Supports Slack modifiers like ``from:@user`` and ``before:2024-01-31``.
+        count: Maximum number of results to return.
+        channel: Encoded channel ID (e.g. ``C0123ABC``) to scope the search to. Mutually exclusive with ``user``.
+        user: Encoded user ID (e.g. ``U0123ABC``) to scope the search to. Mutually exclusive with ``channel``.
+
+    Returns:
+        A dict with ``ok``, ``query`` (the parsed query), ``pagination``, and
+        ``items`` (the matched messages).
+    """
+    if (channel is None) == (user is None):
+        return {
+            "ok": False,
+            "error": "invalid_arguments",
+            "message": "Provide exactly one of 'channel' or 'user' to scope the search.",
+        }
+    return await client.session_call_form(
+        "search.inline",
+        query=query,
+        count=count,
+        channel=channel,
+        user=user,
+    )
+
+
+@mcp.tool
+async def search_save(
+    terms: str,
+    type: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Save a search so it appears in Slack's saved-searches list (WRITE).
+
+    Undocumented session endpoint (``search.save``). This mutates workspace
+    state; it is not cached.
+
+    Args:
+        terms: The search query string to save (e.g. ``from:@alice deploy``).
+        type: The kind of search to save, e.g. ``message`` or ``file``.
+
+    Returns:
+        A dict with ``ok`` indicating whether the search was saved.
+    """
+    return await client.session_call_form(
+        "search.save",
+        terms=terms,
+        type=type,
+    )
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def enterprise_search_get_connectors(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List the workspace's enterprise search connectors.
+
+    Undocumented session endpoint (``enterpriseSearch.getConnectors``). Takes no
+    arguments.
+
+    Returns:
+        A dict with ``ok`` and ``connectors`` (the configured enterprise search connectors).
+    """
+    return await client.session_call("enterpriseSearch.getConnectors")
 
 
 @mcp.tool(timeout=SLOW_CALL_TIMEOUT)
