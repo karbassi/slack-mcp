@@ -84,6 +84,62 @@ async def files_get_upload_url_external(
 
 
 @mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def files_favorites_list(
+    type: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List a user's favorited (starred/saved) files (undocumented).
+
+    Args:
+        type: File category to list favorites for (e.g. ``all``, ``images``,
+            ``pdfs``, ``snippets``, ``gdocs``, ``spaces``).
+
+    Returns:
+        ``favorites``: List of favorited file objects.
+        ``file_ids``: List of favorited file IDs.
+    """
+    return await client.session_call("files.favorites.list", type=type)
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def files_get_shares(
+    file_id: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get where a file has been shared (undocumented).
+
+    Args:
+        file_id: ID of the file to look up shares for (e.g. ``F0123``).
+
+    Returns:
+        ``conversation_shares``: Shares into conversations (channels/DMs).
+        ``file_channel_shares``: Shares into file channels.
+        ``tab_shares``: Shares surfaced as channel tabs.
+        ``viewer_count``: Number of viewers (present when the file has shares).
+    """
+    return await client.session_call("files.getShares", file_id=file_id)
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+@compactable(compact_file_list)
+async def files_recently_deleted(
+    detailed: bool = False,  # noqa: ARG001
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List recently deleted files that can still be recovered (undocumented).
+
+    Set detailed=True for the full response.
+
+    Args:
+        detailed: Return the full Slack response instead of the compacted summary when ``True``.
+
+    Returns:
+        ``files``: List of recently deleted file objects.
+    """
+    return await client.session_call("files.recentlyDeleted")
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
 @compactable(compact_file_list)
 async def files_info(
     file: str,

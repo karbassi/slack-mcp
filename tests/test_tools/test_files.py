@@ -148,6 +148,36 @@ async def test_files_upload_v2(mcp_client, slack_stub):
     assert sent == {"content": "hello", "filename": "test.txt"}
 
 
+async def test_files_favorites_list(mcp_client, slack_stub):
+    slack_stub.session_call.return_value = {"ok": True, "favorites": [], "file_ids": []}
+    result = await mcp_client.call_tool("files_favorites_list", {"type": "all"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "files.favorites.list", type="all")
+
+
+async def test_files_get_shares(mcp_client, slack_stub):
+    slack_stub.session_call.return_value = {
+        "ok": True,
+        "conversation_shares": [],
+        "file_channel_shares": [],
+        "tab_shares": [],
+    }
+    result = await mcp_client.call_tool("files_get_shares", {"file_id": "F123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "files.getShares", file_id="F123")
+
+
+async def test_files_recently_deleted(mcp_client, slack_stub):
+    slack_stub.session_call.return_value = {"ok": True, "files": []}
+    result = await mcp_client.call_tool("files_recently_deleted", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "files.recentlyDeleted")
+
+
+def test_files_recently_deleted_compactable():
+    assert get_compactor("files_recently_deleted") is compact_file_list
+
+
 def test_files_info_compactable():
     assert get_compactor("files_info") is compact_file_list
 
