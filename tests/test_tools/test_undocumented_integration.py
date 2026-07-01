@@ -7,6 +7,7 @@ from slack_mcp.tools.conversations import conversations_archive, conversations_c
 from slack_mcp.tools.undocumented import (
     activity_feed,
     ai_apps_list,
+    ai_digest_list,
     ai_summarize_unreads_snapshot,
     api_features,
     client_boot,
@@ -368,6 +369,14 @@ async def test_ai_apps_list_live(live_client):
 async def test_ai_summarize_unreads_snapshot_live(live_client):
     # ai.alpha.* may be gated by workspace AI features — tolerate ok: false.
     result = await ai_summarize_unreads_snapshot(client=live_client)
+    assert "ok" in result
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_ai_digest_list_live(live_client):
+    # ai.alpha.* may be gated by workspace AI features — tolerate ok: false.
+    # On the test workspace this returns ok: true with digests metadata.
+    result = await ai_digest_list(client=live_client)
     assert "ok" in result
 
 
