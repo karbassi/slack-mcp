@@ -8,9 +8,12 @@ from slack_mcp.tools.files import (
     files_comments_delete,
     files_complete_upload_external,
     files_delete,
+    files_favorites_list,
+    files_get_shares,
     files_get_upload_url_external,
     files_info,
     files_list,
+    files_recently_deleted,
     files_remote_add,
     files_remote_info,
     files_remote_list,
@@ -28,6 +31,36 @@ from slack_mcp.tools.files import (
 @pytest.mark.asyncio
 async def test_files_list_live(live_client):
     result = await files_list(client=live_client)
+    assert result["ok"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_files_recently_deleted_live(live_client):
+    result = await files_recently_deleted(client=live_client)
+    assert result["ok"] is True
+    assert "files" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_files_favorites_list_live(live_client):
+    result = await files_favorites_list(type="all", client=live_client)
+    assert result["ok"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_files_get_shares_live(live_client):
+    listing = await files_list(client=live_client)
+    assert listing["ok"] is True
+    files = listing.get("files") or []
+    if not files:
+        pytest.skip("workspace has no files to look up shares for")
+    result = await files_get_shares(file_id=files[0]["id"], client=live_client)
     assert result["ok"] is True
 
 
