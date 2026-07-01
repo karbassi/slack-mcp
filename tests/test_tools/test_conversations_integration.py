@@ -9,6 +9,7 @@ from slack_mcp.tools.conversations import (
     conversations_accept_shared_invite,
     conversations_approve_shared_invite,
     conversations_archive,
+    conversations_bulk_reacji_triggers,
     conversations_canvases_create,
     conversations_close,
     conversations_create,
@@ -33,6 +34,8 @@ from slack_mcp.tools.conversations import (
     conversations_request_shared_invite_list,
     conversations_set_purpose,
     conversations_set_topic,
+    conversations_suggestions,
+    conversations_team_connections,
     conversations_unarchive,
 )
 
@@ -46,6 +49,31 @@ async def temp_channel(live_client):
     channel_id = created["channel"]["id"]
     yield channel_id
     await conversations_archive(channel=channel_id, client=live_client)
+
+
+@pytest.fixture
+async def any_channel_id(requires_session_tokens, live_client):  # noqa: ARG001
+    """Return the ID of an existing channel via the session (xoxc/xoxd) API.
+
+    The Slack Connect / reacji session endpoints only need a real channel ID to
+    read against; they don't need write scopes. Fetching an existing channel
+    avoids requiring ``channels:write`` (which the read-oriented test token may
+    lack) just to mint a throwaway channel.
+
+    Depends on ``requires_session_tokens`` so a missing xoxc/xoxd token skips
+    cleanly instead of raising ``ValueError`` from ``session_call``. Includes
+    private channels so all-private workspaces still resolve a channel.
+    """
+    listed = await live_client.session_call(
+        "conversations.list",
+        limit=1,
+        exclude_archived=True,
+        types="public_channel,private_channel",
+    )
+    channels = listed.get("channels") or []
+    if not channels:
+        pytest.skip("no channels available in the test workspace")
+    return channels[0]["id"]
 
 
 @pytest.mark.integration
@@ -392,3 +420,34 @@ async def test_conversations_request_shared_invite_list_live(live_client):
             "restricted_action",
             "not_allowed_token_type",
         )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_conversations_suggestions_live(live_client):
+    """Fetch suggested channels (undocumented session endpoint, no args)."""
+    result = await conversations_suggestions(client=live_client)
+    assert result["ok"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_conversations_team_connections_live(live_client, any_channel_id):
+    """Fetch Slack Connect team connections for a channel (likely empty)."""
+    result = await conversations_team_connections(
+        channel=any_channel_id, client=live_client
+    )
+    assert result["ok"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_conversations_bulk_reacji_triggers_live(live_client, any_channel_id):
+    """Fetch reacji triggers for a channel (likely empty)."""
+    result = await conversations_bulk_reacji_triggers(
+        channel_ids=[any_channel_id], client=live_client
+    )
+    assert result["ok"] is True

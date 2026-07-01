@@ -313,6 +313,48 @@ async def test_conversations_unarchive(mcp_client, slack_stub):
     assert_api_call(slack_stub.api_call, "conversations.unarchive", channel="C123")
 
 
+async def test_conversations_bulk_reacji_triggers(mcp_client, slack_stub):
+    slack_stub.session_call.return_value = {"ok": True, "channel_triggers": []}
+    result = await mcp_client.call_tool(
+        "conversations_bulk_reacji_triggers", {"channel_ids": ["C123", "C456"]}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "conversations.bulkReacjiTriggers",
+        channel_ids=["C123", "C456"],
+    )
+
+
+async def test_conversations_suggestions(mcp_client, slack_stub):
+    slack_stub.session_call.return_value = {
+        "ok": True,
+        "status": "complete",
+        "suggestion_types_tried": [],
+    }
+    result = await mcp_client.call_tool("conversations_suggestions", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "conversations.suggestions")
+
+
+async def test_conversations_team_connections(mcp_client, slack_stub):
+    slack_stub.session_call_form.return_value = {
+        "ok": True,
+        "connections": [],
+        "pending_connections": [],
+        "previous_connections": [],
+    }
+    result = await mcp_client.call_tool(
+        "conversations_team_connections", {"channel": "C123"}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call_form,
+        "conversations.teamConnections",
+        channel="C123",
+    )
+
+
 def test_conversations_history_compactable():
     assert get_compactor("conversations_history") is compact_message_list
 

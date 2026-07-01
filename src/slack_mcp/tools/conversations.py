@@ -604,3 +604,68 @@ async def conversations_unarchive(
         channel: ID of the archived conversation to restore (e.g. C0123).
     """
     return await client.api_call("conversations.unarchive", channel=channel)
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def conversations_bulk_reacji_triggers(
+    channel_ids: list[str],
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get reacji (emoji-reaction workflow) triggers for multiple channels.
+
+    Undocumented session endpoint (requires xoxc/xoxd tokens).
+
+    Args:
+        channel_ids: List of channel IDs to fetch reacji triggers for (e.g. ``["C0123", "C0456"]``).
+
+    Returns:
+        A dict with:
+        - ``ok``: Whether the call succeeded.
+        - ``channel_triggers``: Per-channel reacji trigger definitions (empty when no triggers are configured).
+    """
+    return await client.session_call(
+        "conversations.bulkReacjiTriggers", channel_ids=channel_ids
+    )
+
+
+@mcp.tool
+async def conversations_suggestions(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get suggested channels for the current user to join.
+
+    Undocumented session endpoint (requires xoxc/xoxd tokens). Takes no arguments.
+
+    Returns:
+        A dict with:
+        - ``ok``: Whether the call succeeded.
+        - ``status``: Status of the suggestion computation (e.g. ``complete``).
+        - ``suggestion_types_tried``: The suggestion strategies Slack attempted.
+    """
+    return await client.session_call("conversations.suggestions")
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def conversations_team_connections(
+    channel: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get the Slack Connect team connections for a channel.
+
+    Undocumented session endpoint (requires xoxc/xoxd tokens). Uses form-encoded
+    transport — the JSON transport rejects the ``channel`` argument with
+    ``invalid_arguments``.
+
+    Args:
+        channel: ID of the channel to fetch team connections for (e.g. C0123).
+
+    Returns:
+        A dict with:
+        - ``ok``: Whether the call succeeded.
+        - ``connections``: Teams currently connected to the channel (empty when none).
+        - ``pending_connections``: Teams with a pending connection.
+        - ``previous_connections``: Teams previously connected to the channel.
+    """
+    return await client.session_call_form(
+        "conversations.teamConnections", channel=channel
+    )
