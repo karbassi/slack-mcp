@@ -31,10 +31,12 @@ async def emoji_collections_list(
             team has already installed, omitting the catalog of available packs.
 
     Returns:
-        A dict with:
+        The raw Slack response dict. Because this is an undocumented endpoint,
+        the exact shape is not guaranteed and may change. Typical keys include:
             installed: Emoji collections the team has installed.
-            available: Emoji collections available to install (empty when
-                ``installed_only`` is ``True``).
+            available: Emoji collections available to install. May be omitted
+                when ``installed_only`` is ``True``.
+        Slack may also add other keys (e.g. ``warning``, ``response_metadata``).
     """
     return await client.session_call(
         "emoji.collections.list", installed_only=installed_only
