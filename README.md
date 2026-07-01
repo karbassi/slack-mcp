@@ -10,7 +10,7 @@
 A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives LLMs full access to [Slack](https://slack.com).<br>
 Messages, channels, files, canvases, lists, search, reactions — all of it.
 
-**230 tools** · **36 API families** · **Every Slack feature**
+**253 tools** · **37 API families** · **Every Slack feature**
 
 </div>
 
@@ -153,26 +153,26 @@ Add to your VS Code `settings.json`:
 
 | Domain | Tools | Highlights |
 |---|---|---|
-| **Conversations** | 28 | History, threads, replies, create, archive, invite, mark read |
-| **Undocumented** | 34 | Drafts, saved items, emoji management, granular search, sidebar, threads, activity inbox, DMs, AI unread summary |
-| **Files** | 16 | Upload, share, edit, list, remote files |
+| **Conversations** | 31 | History, threads, replies, create, archive, invite, mark read, team connections, suggestions |
+| **Undocumented** | 38 | Drafts, saved items, emoji management, granular search, sidebar, threads, activity inbox, DMs, AI unread summary + digests, Today view, Connect invites |
+| **Files** | 19 | Upload, share, edit, list, remote files, shares, recently deleted, favorites |
 | **Chat** | 13 | Send, reply, schedule, update, delete, ephemeral, stream |
-| **Users** | 12 | Profile, presence, lookup, list |
-| **Lists** | 13 | Create, edit items, manage access, my assigned items |
+| **Users** | 15 | Profile, presence, lookup, list, profile extras/sections, custom statuses |
+| **Lists** | 15 | Create, edit items, manage access, my assigned items, templates, records |
 | **Legacy** | 11 | Slash commands, file editing, bot listing |
 | **Team** | 9 | Info, preferences, access logs, billing |
 | **Apps** | 9 | Manifests, connections, authorizations, activities |
+| **Workflows** | 8 | Featured workflows, step completion, workflow/trigger listing |
 | **Usergroups** | 7 | Create, update, manage members |
-| **Workflows** | 7 | Featured workflows, step completion |
-| **Canvases** | 6 | Create, edit, sections, access control |
+| **Canvases** | 7 | Create, edit, sections, access control, templates |
 | **Calls** | 6 | Start, end, manage participants |
-| **+ 23 more** | | DND, reminders, bookmarks, reactions, pins, stars, views, search, auth, bots, emoji, ... |
+| **+ 24 more** | | Calendar, DND, reminders, bookmarks, reactions, pins, stars, views, search, auth, bots, emoji, ... |
 
 Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the response cache on demand) utility tools.
 
 ### Beyond the Official API
 
-44 undocumented and legacy endpoints — the same internal APIs that Slack's own apps use. Requires session tokens (`xoxc`+`xoxd`).
+71 undocumented and legacy endpoints — the same internal APIs that Slack's own apps use. Requires session tokens (`xoxc`+`xoxd`).
 
 <details>
 <summary><strong>Session endpoints</strong> — workspace state the official API doesn't expose</summary>
@@ -212,6 +212,30 @@ Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the res
 | `api.features` | Workspace feature flags |
 | `aiApps.list` | AI applications configured in the workspace |
 | `ai.alpha.summarize.unreadsSnapshot` | AI summary of unread messages — "summarize what I missed" |
+| `ai.alpha.digest.list` | Slack's AI recaps/digests of activity across channels |
+| `subscriptions.thread.get` | Subscription/read state for a single thread |
+| `today.items.list` | Today view items (suggested to-dos, highlights) |
+| `connectInvites.list` | Pending Slack Connect channel and DM invites |
+| `conversations.teamConnections` | Slack Connect connections for a channel |
+| `conversations.suggestions` | Suggested channels for the user |
+| `conversations.bulkReacjiTriggers` | Per-channel reacji (auto-reaction) triggers |
+| `lists.templates` | Available Slack List templates |
+| `lists.records.list` | Records/items within a given Slack List |
+| `calendar.getInstalledCalendars` | Connected calendars (`gcal`, `ocal`) |
+| `calendar.user.status` | The user's current calendar status |
+| `canvases.getCannedTemplates` | Available canvas templates |
+| `emoji.collections.list` | Installed and available emoji packs |
+| `files.getShares` | Where a file is shared (channels, tabs, viewer count) |
+| `files.recentlyDeleted` | Recently deleted files |
+| `files.favorites.list` | Favorited files |
+| `functions.workflows.list` | Workflows and their triggers |
+| `workflows.triggers.list` | Triggers, filterable by app |
+| `users.profile.getExtras` | Profile extras — shared channels, onboarding state |
+| `users.profile.getSections` | Custom profile sections |
+| `users.customStatus.list` | Saved and scheduled custom statuses |
+| `search.inline` | Inline/quick search scoped to a channel or user |
+| `search.save` | Save a search |
+| `enterpriseSearch.getConnectors` | Configured enterprise search connectors |
 
 </details>
 

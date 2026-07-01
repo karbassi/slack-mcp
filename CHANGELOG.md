@@ -2,23 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
 ### Added
 
-- Six new tools for the personal "what's happening to me" views that the official Slack API doesn't expose — built on the same undocumented session endpoints Slack's own client uses (require `xoxc`+`xoxd` session tokens):
-  - `subscriptions_thread_get_view` — your thread inbox with per-thread unread reply counts ("catch me up on my threads").
-  - `activity_feed` — your activity inbox: mentions, reactions, replies, reminders, and invites ("what needs my attention").
-  - `ai_summarize_unreads_snapshot` — Slack's AI summary of your unread messages ("summarize what I missed").
-  - `client_dms` — your open direct messages and group DMs.
-  - `slack_lists_get_my_items` — the Slack List tasks and approvals assigned to you.
-  - `saved_get` — fetch specific saved-for-later items by id (complements `saved_list`).
+- Personal activity tools built on undocumented session endpoints the official API doesn't expose (require `xoxc`+`xoxd` tokens): `subscriptions_thread_get_view` (thread inbox with unread reply counts), `activity_feed` (mentions, reactions, replies, reminders, invites), `ai_summarize_unreads_snapshot` (AI summary of unreads), `client_dms` (open DMs and group DMs), `slack_lists_get_my_items` (assigned Slack List tasks and approvals), and `saved_get` (fetch saved-for-later items by id). ([#80], closes [#58], da7c35b)
+- File reads: `files_get_shares` (where a file is shared), `files_recently_deleted`, and `files_favorites_list`. ([#85], closes [#66], a1c2901)
+- Slack List reads: `slack_lists_templates` and `slack_lists_records_list`. ([#82], closes [#67], 33e41fd)
+- User profile reads: `users_profile_get_extras` (shared channels), `users_profile_get_sections`, and `users_custom_status_list`. ([#87], closes [#70], 401f285)
+- Channel-context reads: `conversations_team_connections`, `conversations_suggestions`, and `conversations_bulk_reacji_triggers`. ([#89], closes [#72], 381d36f)
+- Workflow reads: `functions_workflows_list` and `workflows_triggers_list`. ([#86], closes [#69], a419eb0)
+- Search: `search_inline` (channel/user-scoped quick search), `search_save`, and `enterprise_search_get_connectors`. ([#93], closes [#71], 4cae0da)
+- Calendar reads (new tool family): `calendar_get_installed_calendars` and `calendar_user_status`. ([#83], closes [#68], f9b7995)
+- `emoji_collections_list` (installed and available emoji packs). ([#81], closes [#77], 73d0580)
+- `canvases_get_canned_templates` (available canvas templates). ([#84], closes [#76], 4aa867c)
+- `today_items_list` (Today view items; gated by a per-workspace feature rollout). ([#88], closes [#74], 9d30072)
+- `ai_digest_list` (Slack's AI recaps/digests). ([#90], closes [#75], 24c4608)
+- `connect_invites_list` (pending Slack Connect invites). ([#91], closes [#78], 99d59e9)
+- `subscriptions_thread_get` (subscription state for a single thread). ([#92], closes [#73], 94dcbbb)
 
 ### Fixed
 
-- `subscriptions_thread_mark` now form-encodes its request and exposes the required `ts` parameter. Previously it posted a JSON body that Slack ignored, so the call always failed with `invalid_arguments` (issue #56).
+- `subscriptions_thread_mark` now form-encodes its request and exposes the required `ts` parameter. Previously it posted a JSON body that Slack ignored, so the call always failed with `invalid_arguments`. ([#57], closes [#56], 6bbb006)
 
 ## [3.0.0] - 2026-06-29
 
@@ -178,3 +185,45 @@ Initial release.
 - `uvx` support for zero-install usage
 - README with quickstart, setup, and architecture documentation
 - MIT license
+
+[unreleased]: https://github.com/karbassi/slack-mcp/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/karbassi/slack-mcp/compare/v2.2.0...v3.0.0
+[2.2.0]: https://github.com/karbassi/slack-mcp/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/karbassi/slack-mcp/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/karbassi/slack-mcp/compare/v1.3.1...v2.0.0
+[1.3.1]: https://github.com/karbassi/slack-mcp/compare/v1.3.0...v1.3.1
+[1.3.0]: https://github.com/karbassi/slack-mcp/compare/v1.1.0...v1.3.0
+[1.1.0]: https://github.com/karbassi/slack-mcp/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/karbassi/slack-mcp/compare/v0.1.0...v1.0.0
+[0.1.0]: https://github.com/karbassi/slack-mcp/releases/tag/v0.1.0
+
+[#56]: https://github.com/karbassi/slack-mcp/issues/56
+[#57]: https://github.com/karbassi/slack-mcp/pull/57
+[#58]: https://github.com/karbassi/slack-mcp/issues/58
+[#66]: https://github.com/karbassi/slack-mcp/issues/66
+[#67]: https://github.com/karbassi/slack-mcp/issues/67
+[#68]: https://github.com/karbassi/slack-mcp/issues/68
+[#69]: https://github.com/karbassi/slack-mcp/issues/69
+[#70]: https://github.com/karbassi/slack-mcp/issues/70
+[#71]: https://github.com/karbassi/slack-mcp/issues/71
+[#72]: https://github.com/karbassi/slack-mcp/issues/72
+[#73]: https://github.com/karbassi/slack-mcp/issues/73
+[#74]: https://github.com/karbassi/slack-mcp/issues/74
+[#75]: https://github.com/karbassi/slack-mcp/issues/75
+[#76]: https://github.com/karbassi/slack-mcp/issues/76
+[#77]: https://github.com/karbassi/slack-mcp/issues/77
+[#78]: https://github.com/karbassi/slack-mcp/issues/78
+[#80]: https://github.com/karbassi/slack-mcp/pull/80
+[#81]: https://github.com/karbassi/slack-mcp/pull/81
+[#82]: https://github.com/karbassi/slack-mcp/pull/82
+[#83]: https://github.com/karbassi/slack-mcp/pull/83
+[#84]: https://github.com/karbassi/slack-mcp/pull/84
+[#85]: https://github.com/karbassi/slack-mcp/pull/85
+[#86]: https://github.com/karbassi/slack-mcp/pull/86
+[#87]: https://github.com/karbassi/slack-mcp/pull/87
+[#88]: https://github.com/karbassi/slack-mcp/pull/88
+[#89]: https://github.com/karbassi/slack-mcp/pull/89
+[#90]: https://github.com/karbassi/slack-mcp/pull/90
+[#91]: https://github.com/karbassi/slack-mcp/pull/91
+[#92]: https://github.com/karbassi/slack-mcp/pull/92
+[#93]: https://github.com/karbassi/slack-mcp/pull/93
