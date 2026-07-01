@@ -21,6 +21,41 @@ async def test_slack_lists_get_my_items_with_params(mcp_client, slack_stub):
     )
 
 
+async def test_slack_lists_templates(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("slack_lists_templates", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "lists.templates")
+
+
+async def test_slack_lists_records_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "slack_lists_records_list", {"list_id": "F123"}
+    )
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "lists.records.list", list_id="F123")
+
+
+async def test_slack_lists_records_list_with_params(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "slack_lists_records_list",
+        {
+            "list_id": "F123",
+            "archived": True,
+            "include_subtasks": True,
+            "include_suggested": False,
+        },
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "lists.records.list",
+        list_id="F123",
+        archived=True,
+        include_subtasks=True,
+        include_suggested=False,
+    )
+
+
 async def test_slack_lists_access_delete(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "slack_lists_access_delete", {"list_id": "L123", "user_ids": ["U123"]}

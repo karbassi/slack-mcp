@@ -16,8 +16,33 @@ from slack_mcp.tools.slack_lists import (
     slack_lists_items_info,
     slack_lists_items_list,
     slack_lists_items_update,
+    slack_lists_records_list,
+    slack_lists_templates,
     slack_lists_update,
 )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_slack_lists_templates_live(live_client):
+    """lists.templates is an undocumented session endpoint — needs xoxc/xoxd."""
+    result = await slack_lists_templates(client=live_client)
+    assert result["ok"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_slack_lists_records_list_live(live_client):
+    """lists.records.list needs a real list_id; discover one via getMyItems or skip."""
+    my_items = await slack_lists_get_my_items(client=live_client)
+    lists = my_items.get("lists") or []
+    if not lists:
+        pytest.skip("no Slack List available in the workspace to read records from")
+    list_id = lists[0]["id"]
+    result = await slack_lists_records_list(list_id=list_id, client=live_client)
+    assert result["ok"] is True
 
 
 @pytest.mark.integration
