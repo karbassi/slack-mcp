@@ -52,19 +52,23 @@ async def temp_channel(live_client):
 
 
 @pytest.fixture
-async def any_channel_id(live_client):
+async def any_channel_id(requires_session_tokens, live_client):  # noqa: ARG001
     """Return the ID of an existing channel via the session (xoxc/xoxd) API.
 
     The Slack Connect / reacji session endpoints only need a real channel ID to
     read against; they don't need write scopes. Fetching an existing channel
     avoids requiring ``channels:write`` (which the read-oriented test token may
     lack) just to mint a throwaway channel.
+
+    Depends on ``requires_session_tokens`` so a missing xoxc/xoxd token skips
+    cleanly instead of raising ``ValueError`` from ``session_call``. Includes
+    private channels so all-private workspaces still resolve a channel.
     """
     listed = await live_client.session_call(
         "conversations.list",
         limit=1,
         exclude_archived=True,
-        types="public_channel",
+        types="public_channel,private_channel",
     )
     channels = listed.get("channels") or []
     if not channels:
