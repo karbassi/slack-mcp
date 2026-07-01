@@ -3,7 +3,7 @@ from typing import Any
 from fastmcp.dependencies import Depends
 
 from slack_mcp.client import SlackClient
-from slack_mcp.server import mcp, slack_client
+from slack_mcp.server import LONG_TTL, mcp, slack_client
 
 
 @mcp.tool
@@ -115,3 +115,22 @@ async def canvases_sections_lookup(
     return await client.api_call_json(
         "canvases.sections.lookup", canvas_id=canvas_id, criteria=criteria
     )
+
+
+@mcp.tool(meta={"cache_ttl": LONG_TTL})
+async def canvases_get_canned_templates(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List the available canned (built-in) canvas templates (undocumented).
+
+    Takes no arguments.
+
+    Returns:
+        A dict with:
+
+        - ``ok``: Whether the call succeeded.
+        - ``files``: The available canvas templates, each an object describing a
+          template canvas file (title, thumbnails, template metadata, etc.).
+        - ``response_metadata``: Warnings and other metadata, when present.
+    """
+    return await client.session_call("canvases.getCannedTemplates")

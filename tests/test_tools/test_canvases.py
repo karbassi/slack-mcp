@@ -61,6 +61,12 @@ async def test_canvases_edit(mcp_client, slack_stub):
     )
 
 
+async def test_canvases_get_canned_templates(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("canvases_get_canned_templates", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "canvases.getCannedTemplates")
+
+
 async def test_canvases_sections_lookup(mcp_client, slack_stub):
     criteria = {"section_types": ["any_header"]}
     result = await mcp_client.call_tool(
