@@ -608,7 +608,7 @@ async def conversations_unarchive(
 
 @mcp.tool(meta={"cache_ttl": SHORT_TTL})
 async def conversations_bulk_reacji_triggers(
-    channel_ids: list,
+    channel_ids: list[str],
     client: SlackClient = Depends(slack_client),
 ) -> dict:
     """Get reacji (emoji-reaction workflow) triggers for multiple channels.
