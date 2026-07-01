@@ -29,6 +29,49 @@ async def slack_lists_get_my_items(
 
 
 @mcp.tool
+async def slack_lists_templates(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List the available Slack List templates (undocumented session endpoint).
+
+    Surfaces the templates a user can start a new list from — the built-in
+    starter templates, workspace/user-authored templates, and their backing
+    files. Takes no arguments.
+
+    Returns a dict with:
+        templates: User- and workspace-authored list templates.
+        starter_templates: Slack's built-in starter templates.
+        template_files: File objects backing the templates.
+    """
+    return await client.session_call("lists.templates")
+
+
+@mcp.tool
+async def slack_lists_records_list(
+    list_id: str,
+    archived: bool | None = None,
+    include_subtasks: bool | None = None,
+    include_suggested: bool | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List the records (rows) of a Slack List (undocumented session endpoint).
+
+    Args:
+        list_id: ID of the list (a file ID) whose records to return (e.g. ``F0123``).
+        archived: When ``True``, return archived records instead of active ones.
+        include_subtasks: When ``True``, include subtask records nested under parent items.
+        include_suggested: When ``True``, include suggested (AI/automation-proposed) records.
+    """
+    return await client.session_call(
+        "lists.records.list",
+        list_id=list_id,
+        archived=archived,
+        include_subtasks=include_subtasks,
+        include_suggested=include_suggested,
+    )
+
+
+@mcp.tool
 async def slack_lists_access_delete(
     list_id: str,
     channel_ids: list[str] | None = None,
