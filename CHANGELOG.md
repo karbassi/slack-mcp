@@ -8,24 +8,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Personal activity tools built on undocumented session endpoints the official API doesn't expose (require `xoxc`+`xoxd` tokens): `subscriptions_thread_get_view` (thread inbox with unread reply counts), `activity_feed` (mentions, reactions, replies, reminders, invites), `ai_summarize_unreads_snapshot` (AI summary of unreads), `client_dms` (open DMs and group DMs), `slack_lists_get_my_items` (assigned Slack List tasks and approvals), and `saved_get` (fetch saved-for-later items by id). ([#80], closes [#58], da7c35b)
-- File reads: `files_get_shares` (where a file is shared), `files_recently_deleted`, and `files_favorites_list`. ([#85], closes [#66], a1c2901)
-- Slack List reads: `slack_lists_templates` and `slack_lists_records_list`. ([#82], closes [#67], 33e41fd)
-- User profile reads: `users_profile_get_extras` (shared channels), `users_profile_get_sections`, and `users_custom_status_list`. ([#87], closes [#70], 401f285)
-- Channel-context reads: `conversations_team_connections`, `conversations_suggestions`, and `conversations_bulk_reacji_triggers`. ([#89], closes [#72], 381d36f)
-- Workflow reads: `functions_workflows_list` and `workflows_triggers_list`. ([#86], closes [#69], a419eb0)
-- Search: `search_inline` (channel/user-scoped quick search), `search_save`, and `enterprise_search_get_connectors`. ([#93], closes [#71], 4cae0da)
-- Calendar reads (new tool family): `calendar_get_installed_calendars` and `calendar_user_status`. ([#83], closes [#68], f9b7995)
-- `emoji_collections_list` (installed and available emoji packs). ([#81], closes [#77], 73d0580)
-- `canvases_get_canned_templates` (available canvas templates). ([#84], closes [#76], 4aa867c)
-- `today_items_list` (Today view items; gated by a per-workspace feature rollout). ([#88], closes [#74], 9d30072)
-- `ai_digest_list` (Slack's AI recaps/digests). ([#90], closes [#75], 24c4608)
-- `connect_invites_list` (pending Slack Connect invites). ([#91], closes [#78], 99d59e9)
-- `subscriptions_thread_get` (subscription state for a single thread). ([#92], closes [#73], 94dcbbb)
+- Personal activity tools built on undocumented session endpoints the official API doesn't expose (require `xoxc`+`xoxd` tokens): `subscriptions_thread_get_view` (thread inbox with unread reply counts), `activity_feed` (mentions, reactions, replies, reminders, invites), `ai_summarize_unreads_snapshot` (AI summary of unreads), `client_dms` (open DMs and group DMs), `slack_lists_get_my_items` (assigned Slack List tasks and approvals), and `saved_get` (fetch saved-for-later items by id). ([#80], closes [#58])
+- File reads: `files_get_shares` (where a file is shared), `files_recently_deleted`, and `files_favorites_list`. ([#85], closes [#66])
+- Slack List reads: `slack_lists_templates` and `slack_lists_records_list`. ([#82], closes [#67])
+- User profile reads: `users_profile_get_extras` (shared channels), `users_profile_get_sections`, and `users_custom_status_list`. ([#87], closes [#70])
+- Channel-context reads: `conversations_team_connections`, `conversations_suggestions`, and `conversations_bulk_reacji_triggers`. ([#89], closes [#72])
+- Workflow reads: `functions_workflows_list` and `workflows_triggers_list`. ([#86], closes [#69])
+- Search: `search_inline` (channel/user-scoped quick search), `search_save`, and `enterprise_search_get_connectors`. ([#93], closes [#71])
+- Calendar reads (new tool family): `calendar_get_installed_calendars` and `calendar_user_status`. ([#83], closes [#68])
+- `emoji_collections_list` (installed and available emoji packs). ([#81], closes [#77])
+- `canvases_get_canned_templates` (available canvas templates). ([#84], closes [#76])
+- `today_items_list` (Today view items; gated by a per-workspace feature rollout). ([#88], closes [#74])
+- `ai_digest_list` (Slack's AI recaps/digests). ([#90], closes [#75])
+- `connect_invites_list` (pending Slack Connect invites). ([#91], closes [#78])
+- `subscriptions_thread_get` (subscription state for a single thread). ([#92], closes [#73])
 
 ### Fixed
 
-- `subscriptions_thread_mark` now form-encodes its request and exposes the required `ts` parameter. Previously it posted a JSON body that Slack ignored, so the call always failed with `invalid_arguments`. ([#57], closes [#56], 6bbb006)
+- `subscriptions_thread_mark` now form-encodes its request and exposes the required `ts` parameter. Previously it posted a JSON body that Slack ignored, so the call always failed with `invalid_arguments`. ([#57], closes [#56])
 
 ## [3.0.0] - 2026-06-29
 
