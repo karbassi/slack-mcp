@@ -14,6 +14,7 @@ from slack_mcp.tools.undocumented import (
     client_counts,
     client_dms,
     client_user_boot,
+    connect_invites_list,
     conversations_list_prefs,
     conversations_view,
     drafts_create,
@@ -378,6 +379,18 @@ async def test_ai_digest_list_live(live_client):
     # On the test workspace this returns ok: true with digests metadata.
     result = await ai_digest_list(client=live_client)
     assert "ok" in result
+
+
+# --- Slack Connect ---
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_connect_invites_list_live(live_client):
+    # The test workspace may have no Connect invites — an empty
+    # connect_invites list is still a valid ok: true response.
+    result = await connect_invites_list(client=live_client)
+    assert result["ok"] is True
+    assert "connect_invites" in result
 
 
 # --- Activity inbox ---
