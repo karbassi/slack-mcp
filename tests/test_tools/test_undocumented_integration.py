@@ -37,6 +37,7 @@ from slack_mcp.tools.undocumented import (
     subscriptions_thread_get_view,
     subscriptions_thread_mark,
     threads_get_view,
+    today_items_list,
     users_channel_sections_list,
     users_priority_list,
 )
@@ -377,6 +378,18 @@ async def test_ai_summarize_unreads_snapshot_live(live_client):
 async def test_activity_feed_live(live_client):
     result = await activity_feed(limit=10, client=live_client)
     assert result["ok"] is True
+
+
+# --- Today view ---
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_today_items_list_live(live_client):
+    # The Today view is feature-gated/rolled-out per workspace; the free test
+    # workspace returns ok: false (unknown_method). Assert the tool round-trips
+    # and yields a well-formed Slack envelope; tolerate ok: false where gated.
+    result = await today_items_list(client=live_client)
+    assert "ok" in result
 
 
 @pytest.mark.usefixtures("requires_session_tokens")

@@ -739,3 +739,24 @@ async def activity_feed(
         mode=mode,
         is_activity_inbox=is_activity_inbox,
     )
+
+
+# --- Today view ---
+
+
+@mcp.tool
+async def today_items_list(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get the Today view items (undocumented session endpoint).
+
+    Surfaces the Today tab's suggested to-dos and highlights — the AI-curated
+    "here's what to focus on" list. Takes no arguments.
+
+    Returns ``items`` (the Today entries) and ``is_generating_focus_topics``
+    (``True`` while Slack is still computing the focus topics for the view).
+
+    May be gated by workspace features/rollout — returns ``ok: false`` with
+    ``unknown_method`` where the Today view is not enabled.
+    """
+    return await client.session_call("today.items.list")
