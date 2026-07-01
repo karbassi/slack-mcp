@@ -98,6 +98,26 @@ async def test_client_dms_with_params(mcp_client, slack_stub):
     )
 
 
+async def test_connect_invites_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("connect_invites_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "connectInvites.list")
+
+
+async def test_connect_invites_list_with_params(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "connect_invites_list",
+        {"invite_types": ["a", "b"], "only_pending_invites": True},
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "connectInvites.list",
+        invite_types=["a", "b"],
+        only_pending_invites=True,
+    )
+
+
 async def test_activity_feed(mcp_client, slack_stub):
     result = await mcp_client.call_tool("activity_feed", {})
     assert result.is_error is False

@@ -703,6 +703,34 @@ async def ai_digest_list(
     return await client.session_call("ai.alpha.digest.list")
 
 
+# --- Slack Connect ---
+
+
+@mcp.tool
+async def connect_invites_list(
+    invite_types: list[str] | None = None,
+    only_pending_invites: bool | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List the user's Slack Connect invites (undocumented session endpoint).
+
+    Surfaces cross-workspace channel and DM invites — answers "what Slack
+    Connect invites do I have". Returns ``connect_invites`` (may be empty).
+
+    Args:
+        invite_types: Filter to specific invite types. Each entry must be a
+            Slack Connect invite-type enum value; Slack rejects unknown values
+            with ``invalid_arguments``. Omit to return all invite types.
+        only_pending_invites: When ``True``, return only invites still awaiting
+            a response (not yet accepted or declined).
+    """
+    return await client.session_call(
+        "connectInvites.list",
+        invite_types=invite_types,
+        only_pending_invites=only_pending_invites,
+    )
+
+
 # --- Activity inbox ---
 
 # Every activity type the web client requests; used as the default so the tool
