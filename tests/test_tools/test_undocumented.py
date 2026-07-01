@@ -140,6 +140,12 @@ async def test_today_items_list(mcp_client, slack_stub):
     slack_stub.session_call.assert_called_once_with("today.items.list")
 
 
+async def test_ai_digest_list(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("ai_digest_list", {})
+    assert result.is_error is False
+    slack_stub.session_call.assert_called_once_with("ai.alpha.digest.list")
+
+
 async def test_drafts_list(mcp_client, slack_stub):
     result = await mcp_client.call_tool("drafts_list", {})
     assert result.is_error is False

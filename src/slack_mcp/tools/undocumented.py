@@ -686,6 +686,23 @@ async def ai_summarize_unreads_snapshot(
     return await client.session_call("ai.alpha.summarize.unreadsSnapshot")
 
 
+@mcp.tool
+async def ai_digest_list(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List Slack's AI recaps/digests for the user (undocumented session endpoint).
+
+    Answers "give me my AI recap" — surfaces the periodic AI-generated digests of
+    activity across channels. Returns ``digests`` (the list of digest objects) and
+    ``is_stale_or_empty_digest`` (whether the current digest is stale or has no
+    content). Slack also returns ``next_digest`` and ``latest_digest`` metadata.
+
+    May be gated by workspace AI features — returns ``ok: false`` where Slack AI
+    is unavailable.
+    """
+    return await client.session_call("ai.alpha.digest.list")
+
+
 # --- Activity inbox ---
 
 # Every activity type the web client requests; used as the default so the tool
