@@ -2,11 +2,11 @@
 
 Captured by driving the Slack web client (`app.slack.com`) for the **Slack MCP** test workspace through Chrome DevTools while a `fetch`/`XHR` interceptor logged every `/api/` and `/cache/` call, then probing each live with the workspace `xoxc`/`xoxd` tokens. 101 distinct endpoints observed across boot, Today, Home, Files, Later, DMs, Activity, a channel, channel-details, member list, a profile, and search.
 
-Endpoints already wrapped by this project are omitted from the action lists below (see "Already wrapped" at the bottom). All probes ran against the live test workspace; "Returns" lists the top-level response keys.
+Endpoints that were already wrapped when this catalog was first written are omitted from the tables below (see "Already wrapped" at the bottom). The Tier 1 and Tier 2 tables are kept for reference and are now marked wrapped — their endpoints also appear under "Already wrapped". All probes ran against the live test workspace; "Returns" lists the top-level response keys.
 
 > **Snapshot captured 2026-07.** Slack's undocumented endpoints change without notice — re-probe an endpoint (see "How to reproduce") to confirm its args and response shape before wrapping it.
 
-## Tier 1 — ✅ wrapped (PR #80, #58)
+## Tier 1 — ✅ wrapped (PR #80, issue #58)
 
 _All six now shipped as MCP tools; the code docstrings are the source of truth for args._
 
@@ -20,7 +20,7 @@ _All six now shipped as MCP tools; the code docstrings are the source of truth f
 | `lists.getMyItems` | `include_approvals`, `include_subtasks` | `lists`, `records`, `counts` | My Slack List tasks |
 | `saved.get` | `items` — each requires `item_id`, `item_type`, `ts`, and `item_detail` (string, may be empty) | saved-item details | Pairs with existing `saved.list` |
 
-## Tier 2 — ✅ wrapped (PRs #81–#93, #59)
+## Tier 2 — ✅ wrapped (PRs #81–#93, issue #59)
 
 _All shipped as MCP tools; code docstrings are the source of truth. Corrections found during implementation (vs the original capture) are called out below._
 
