@@ -101,21 +101,28 @@ async def test_client_dms_with_params(mcp_client, slack_stub):
 async def test_activity_feed(mcp_client, slack_stub):
     result = await mcp_client.call_tool("activity_feed", {})
     assert result.is_error is False
-    assert_api_call(slack_stub.session_call, "activity.feed")
+    # mode + types are required by Slack, so the tool always sends its defaults
+    # via the form endpoint.
+    slack_stub.session_call_form.assert_called_once()
+    args, kwargs = slack_stub.session_call_form.call_args
+    assert args[0] == "activity.feed"
+    assert kwargs["mode"] == "chrono_v1"
+    assert kwargs["types"]
 
 
 async def test_activity_feed_with_params(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "activity_feed",
-        {"limit": 10, "types": ["message", "reaction"], "unread_only": True},
+        {"limit": 10, "types": "message,reaction", "unread_only": True},
     )
     assert result.is_error is False
     assert_api_call(
-        slack_stub.session_call,
+        slack_stub.session_call_form,
         "activity.feed",
         limit=10,
-        types=["message", "reaction"],
+        types="message,reaction",
         unread_only=True,
+        mode="chrono_v1",
     )
 
 
@@ -280,7 +287,14 @@ async def test_saved_list(mcp_client, slack_stub):
 
 
 async def test_saved_get(mcp_client, slack_stub):
-    items = [{"item_id": "C123", "ts": "1234.5678", "item_type": "message"}]
+    items = [
+        {
+            "item_id": "C123",
+            "ts": "1234.5678",
+            "item_type": "message",
+            "item_detail": "",
+        }
+    ]
     result = await mcp_client.call_tool("saved_get", {"items": items})
     assert result.is_error is False
     assert_api_call(slack_stub.session_call, "saved.get", items=items)

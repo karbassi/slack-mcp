@@ -373,9 +373,10 @@ async def saved_get(
     items rather than re-listing everything.
 
     Args:
-        items: Saved items to fetch, each identifying one item by its container
-            and timestamp, e.g.
-            ``[{"item_id": "C0123", "ts": "1700000000.000100", "item_type": "message"}]``.
+        items: Saved items to fetch. Each item must include ``item_id``,
+            ``item_type``, ``ts``, and ``item_detail`` (all required by Slack;
+            ``item_detail`` may be an empty string), e.g.
+            ``[{"item_id": "C0123", "item_type": "message", "ts": "1700000000.000100", "item_detail": ""}]``.
     """
     return await client.session_call("saved.get", items=items)
 
@@ -687,15 +688,26 @@ async def ai_summarize_unreads_snapshot(
 
 # --- Activity inbox ---
 
+# Every activity type the web client requests; used as the default so the tool
+# returns a full inbox without the caller having to know the type vocabulary.
+_ACTIVITY_TYPES = (
+    "at_user,at_user_group,at_channel,at_everyone,keyword,"
+    "list_record_assigned,list_user_mentioned,list_todo_notification,"
+    "list_approval_request,list_approval_reviewed,unjoined_channel_mention,"
+    "thread_v2,message_reaction,bot_dm_bundle,dm,internal_channel_invite,"
+    "external_channel_invite,external_dm_invite,channel,saved_reminder,"
+    "list_record_edited"
+)
+
 
 @mcp.tool
 async def activity_feed(
     limit: int | None = None,
-    types: list[str] | None = None,
+    types: str = _ACTIVITY_TYPES,
     unread_only: bool | None = None,
     priority_only: bool | None = None,
     archive_only: bool | None = None,
-    mode: str | None = None,
+    mode: str = "chrono_v1",
     is_activity_inbox: bool | None = None,
     client: SlackClient = Depends(slack_client),
 ) -> dict:
@@ -704,16 +716,20 @@ async def activity_feed(
     Surfaces mentions, reactions, thread replies, reminders, DM bundles, and
     invites — answers "what needs my attention". Returns ``items``.
 
+    Slack requires ``mode`` and ``types``; both default to the values the web
+    client sends, so calling with no args returns the full inbox.
+
     Args:
         limit: Maximum number of activity items to return.
-        types: Activity types to include (e.g. ``["message", "reaction"]``); omit for all.
+        types: Comma-separated activity types to include (e.g.
+            ``"dm,message_reaction,thread_v2"``). Defaults to every known type.
         unread_only: When ``True``, return only unread activity items.
         priority_only: When ``True``, return only priority/important items.
         archive_only: When ``True``, return only archived activity items.
-        mode: Activity feed mode selecting which inbox view to render.
+        mode: Feed ordering mode. Slack's only accepted value is ``"chrono_v1"``.
         is_activity_inbox: When ``True``, fetch the activity-inbox variant of the feed.
     """
-    return await client.session_call(
+    return await client.session_call_form(
         "activity.feed",
         limit=limit,
         types=types,
