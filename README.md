@@ -172,7 +172,7 @@ Plus `resolve_names` (bulk ID→name resolution) and `cache_clear` (bust the res
 
 ### Beyond the Official API
 
-71 undocumented and legacy endpoints — the same internal APIs that Slack's own apps use. Requires session tokens (`xoxc`+`xoxd`).
+68 undocumented and legacy endpoints — the same internal APIs that Slack's own apps use. Requires session tokens (`xoxc`+`xoxd`).
 
 <details>
 <summary><strong>Session endpoints</strong> — workspace state the official API doesn't expose</summary>
