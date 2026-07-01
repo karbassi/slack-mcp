@@ -179,6 +179,32 @@ async def subscriptions_thread_get_view(
     )
 
 
+@mcp.tool
+async def subscriptions_thread_get(
+    channel: str,
+    thread_ts: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get the subscription state for a single thread (undocumented session endpoint).
+
+    Fetches whether the current user is subscribed to (following) one specific
+    thread. Complements ``subscriptions_thread_get_view`` (lists all followed
+    threads) and ``subscriptions_thread_mark`` (marks a thread read/unread).
+
+    Returns ``subscriptions``: a list of subscription records for the thread —
+    empty when the user is not following it.
+
+    Args:
+        channel: ID of the channel containing the thread (e.g. ``C0123``).
+        thread_ts: Timestamp of the parent thread message (e.g. ``1700000000.000100``).
+    """
+    return await client.session_call(
+        "subscriptions.thread.get",
+        channel=channel,
+        thread_ts=thread_ts,
+    )
+
+
 def _pad_draft_ts(ts: str) -> str:
     """Pad a draft timestamp to 7 decimal places (required by Slack)."""
     if "." in ts:

@@ -36,6 +36,7 @@ from slack_mcp.tools.undocumented import (
     search_modules_messages,
     search_modules_people,
     session_test,
+    subscriptions_thread_get,
     subscriptions_thread_get_view,
     subscriptions_thread_mark,
     threads_get_view,
@@ -280,6 +281,30 @@ async def test_subscriptions_thread_mark_live(live_client, temp_channel):
         client=live_client,
     )
     assert "ok" in result
+
+
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_subscriptions_thread_get_live(live_client, temp_channel):
+    """Post a thread and fetch its subscription state."""
+    parent = await chat_post_message(
+        channel=temp_channel, text="Thread parent", client=live_client
+    )
+    assert parent["ok"] is True
+    thread_ts = parent["ts"]
+
+    reply = await chat_post_message(
+        channel=temp_channel,
+        text="Thread reply",
+        thread_ts=thread_ts,
+        client=live_client,
+    )
+    assert reply["ok"] is True
+
+    result = await subscriptions_thread_get(
+        channel=temp_channel, thread_ts=thread_ts, client=live_client
+    )
+    assert result["ok"] is True
+    assert "subscriptions" in result
 
 
 # --- Search modules ---
