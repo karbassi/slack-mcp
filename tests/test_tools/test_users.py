@@ -80,6 +80,54 @@ async def test_users_profile_get(mcp_client, slack_stub):
     assert_api_call(slack_stub.api_call, "users.profile.get")
 
 
+async def test_users_profile_get_extras(mcp_client, slack_stub):
+    slack_stub.session_call.return_value = {
+        "ok": True,
+        "channels": [],
+        "shared_channels": [],
+        "full_member_channels": [],
+        "onboarding_complete": True,
+    }
+    result = await mcp_client.call_tool("users_profile_get_extras", {"user": "U123"})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "users.profile.getExtras", user="U123")
+
+
+async def test_users_profile_get_extras_self(mcp_client, slack_stub):
+    slack_stub.session_call.return_value = {"ok": True, "channels": []}
+    result = await mcp_client.call_tool("users_profile_get_extras", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "users.profile.getExtras")
+
+
+async def test_users_profile_get_sections(mcp_client, slack_stub):
+    slack_stub.session_call_form.return_value = {"ok": True, "result": []}
+    result = await mcp_client.call_tool(
+        "users_profile_get_sections", {"user": "U123"}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call_form, "users.profile.getSections", user="U123"
+    )
+
+
+async def test_users_custom_status_list(mcp_client, slack_stub):
+    slack_stub.session_call.return_value = {
+        "ok": True,
+        "statuses": [],
+        "scheduled_statuses": [],
+    }
+    result = await mcp_client.call_tool(
+        "users_custom_status_list", {"statuses_count_per_section": 5}
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "users.customStatus.list",
+        statuses_count_per_section=5,
+    )
+
+
 async def test_users_profile_set(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "users_profile_set", {"profile": {"status_text": "busy"}}

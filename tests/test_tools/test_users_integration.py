@@ -3,6 +3,7 @@ import pytest
 from slack_mcp.tools.auth import auth_test
 from slack_mcp.tools.users import (
     users_conversations,
+    users_custom_status_list,
     users_delete_photo,
     users_discoverable_contacts_lookup,
     users_get_presence,
@@ -11,6 +12,8 @@ from slack_mcp.tools.users import (
     users_list,
     users_lookup_by_email,
     users_profile_get,
+    users_profile_get_extras,
+    users_profile_get_sections,
     users_profile_set,
     users_set_photo,
     users_set_presence,
@@ -133,6 +136,46 @@ async def test_users_profile_set_live(live_client):
 
         restore = json.dumps({"status_text": old_text, "status_emoji": old_emoji})
         await users_profile_set(profile=restore, client=live_client)
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_users_profile_get_extras_live(live_client):
+    """Get extended profile info for our own user (session endpoint)."""
+    auth = await auth_test(client=live_client)
+    user_id = auth["user_id"]
+
+    result = await users_profile_get_extras(user=user_id, client=live_client)
+    assert result["ok"] is True
+    assert "channels" in result
+    assert "shared_channels" in result
+    assert "full_member_channels" in result
+    assert "onboarding_complete" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_users_profile_get_sections_live(live_client):
+    """Get profile sections for our own user (session endpoint, user required)."""
+    auth = await auth_test(client=live_client)
+    user_id = auth["user_id"]
+
+    result = await users_profile_get_sections(user=user_id, client=live_client)
+    assert result["ok"] is True
+    assert "result" in result
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_users_custom_status_list_live(live_client):
+    """List the caller's saved custom statuses (session endpoint)."""
+    result = await users_custom_status_list(client=live_client)
+    assert result["ok"] is True
+    assert "statuses" in result
+    assert "scheduled_statuses" in result
 
 
 @pytest.mark.integration

@@ -165,6 +165,76 @@ async def users_profile_get(
     )
 
 
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def users_profile_get_extras(
+    keys: str | None = None,
+    user: str | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get a user's extended profile info: channel memberships and onboarding state.
+
+    Undocumented session endpoint (requires xoxc/xoxd tokens).
+
+    Args:
+        keys: Comma-separated subset of extras to return (e.g. ``channels,shared_channels``);
+            omit to return all extras.
+        user: ID of the user to fetch extras for; defaults to the authenticated user if omitted (e.g. ``U0123``).
+
+    Returns:
+        A dict with ``ok`` plus:
+        - ``channels``: channel IDs the user is a full member of and can be seen in.
+        - ``shared_channels``: IDs of Slack Connect / externally shared channels the user belongs to.
+        - ``full_member_channels``: IDs of channels the user is a full (non-guest) member of.
+        - ``onboarding_complete``: whether the user has finished workspace onboarding.
+    """
+    return await client.session_call(
+        "users.profile.getExtras", keys=keys, user=user
+    )
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def users_profile_get_sections(
+    user: str,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get a user's profile sections (the grouped fields shown on their profile).
+
+    Undocumented session endpoint (requires xoxc/xoxd tokens).
+
+    Args:
+        user: ID of the user whose profile sections to fetch; required (e.g. ``U0123``).
+
+    Returns:
+        A dict with ``ok`` and ``result``, the ordered list of profile sections
+        (each with its label, type, and the profile fields it groups).
+    """
+    return await client.session_call_form("users.profile.getSections", user=user)
+
+
+@mcp.tool(meta={"cache_ttl": SHORT_TTL})
+async def users_custom_status_list(
+    statuses_count_per_section: int | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List the authenticated user's saved and scheduled custom statuses.
+
+    Undocumented session endpoint (requires xoxc/xoxd tokens).
+
+    Args:
+        statuses_count_per_section: Maximum number of statuses to return per section;
+            omit to use Slack's default.
+
+    Returns:
+        A dict with ``ok`` plus:
+        - ``statuses``: the user's saved custom statuses (text, emoji, expiration).
+        - ``scheduled_statuses``: custom statuses queued to activate at a future time.
+    """
+    return await client.session_call(
+        "users.customStatus.list",
+        statuses_count_per_section=statuses_count_per_section,
+    )
+
+
 @mcp.tool
 async def users_profile_set(
     name: str | None = None,
