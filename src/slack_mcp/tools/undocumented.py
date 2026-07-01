@@ -84,6 +84,36 @@ async def client_user_boot(
 
 
 @mcp.tool
+async def client_dms(
+    count: int | None = None,
+    exclude_bots: bool | None = None,
+    include_channel: bool | None = None,
+    include_closed: bool | None = None,
+    priority_mode: bool | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """List the user's open DMs and multi-person DMs (undocumented session endpoint).
+
+    Returns ``ims`` (1:1 direct messages) and ``mpims`` (group DMs).
+
+    Args:
+        count: Maximum number of conversations to return.
+        exclude_bots: When ``True``, omit direct messages with bot users.
+        include_channel: When ``True``, include the full channel object for each conversation.
+        include_closed: When ``True``, include closed/hidden DMs.
+        priority_mode: When ``True``, order results by priority (interaction frequency).
+    """
+    return await client.session_call(
+        "client.dms",
+        count=count,
+        exclude_bots=exclude_bots,
+        include_channel=include_channel,
+        include_closed=include_closed,
+        priority_mode=priority_mode,
+    )
+
+
+@mcp.tool
 async def subscriptions_thread_mark(
     channel: str,
     thread_ts: str,
@@ -121,6 +151,32 @@ async def threads_get_view(
         current_ts: Timestamp anchoring the thread view to page from (e.g. ``1700000000.000100``).
     """
     return await client.session_call("threads.getView", current_ts=current_ts)
+
+
+@mcp.tool
+async def subscriptions_thread_get_view(
+    limit: int | None = None,
+    priority_mode: bool | None = None,
+    fetch_threads_state: bool | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get the user's thread view with unread reply counts (undocumented session endpoint).
+
+    Lists every thread the user is involved in — answers "catch me up on my
+    threads". Returns ``threads``, ``total_unread_replies``,
+    ``new_threads_count``, ``has_more``, and ``max_ts``.
+
+    Args:
+        limit: Maximum number of threads to return.
+        priority_mode: When ``True``, order threads by priority (importance/interaction).
+        fetch_threads_state: When ``True``, include per-thread read/unread state.
+    """
+    return await client.session_call(
+        "subscriptions.thread.getView",
+        limit=limit,
+        priority_mode=priority_mode,
+        fetch_threads_state=fetch_threads_state,
+    )
 
 
 def _pad_draft_ts(ts: str) -> str:
@@ -304,6 +360,25 @@ async def saved_list(
         detailed: Return the full, uncompacted response instead of the compacted summary.
     """
     return await client.session_call("saved.list", cursor=cursor, limit=limit)
+
+
+@mcp.tool
+async def saved_get(
+    items: list[dict[str, Any]],
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Fetch specific saved-for-later items by id (undocumented session endpoint).
+
+    Completes ``saved_list``: use it to hydrate full details for known saved
+    items rather than re-listing everything.
+
+    Args:
+        items: Saved items to fetch. Each item must include ``item_id``,
+            ``item_type``, ``ts``, and ``item_detail`` (all required by Slack;
+            ``item_detail`` may be an empty string), e.g.
+            ``[{"item_id": "C0123", "item_type": "message", "ts": "1700000000.000100", "item_detail": ""}]``.
+    """
+    return await client.session_call("saved.get", items=items)
 
 
 @mcp.tool
@@ -597,3 +672,70 @@ async def ai_apps_list(
 ) -> dict:
     """List AI apps in the workspace (undocumented session endpoint)."""
     return await client.session_call("aiApps.list")
+
+
+@mcp.tool
+async def ai_summarize_unreads_snapshot(
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get Slack's AI summary of the user's unread messages (undocumented session endpoint).
+
+    Answers "summarize what I missed" and returns a ``summary``. May be gated by
+    workspace AI features — returns ``ok: false`` where Slack AI is unavailable.
+    """
+    return await client.session_call("ai.alpha.summarize.unreadsSnapshot")
+
+
+# --- Activity inbox ---
+
+# Every activity type the web client requests; used as the default so the tool
+# returns a full inbox without the caller having to know the type vocabulary.
+_ACTIVITY_TYPES = (
+    "at_user,at_user_group,at_channel,at_everyone,keyword,"
+    "list_record_assigned,list_user_mentioned,list_todo_notification,"
+    "list_approval_request,list_approval_reviewed,unjoined_channel_mention,"
+    "thread_v2,message_reaction,bot_dm_bundle,dm,internal_channel_invite,"
+    "external_channel_invite,external_dm_invite,channel,saved_reminder,"
+    "list_record_edited"
+)
+
+
+@mcp.tool
+async def activity_feed(
+    limit: int | None = None,
+    types: str = _ACTIVITY_TYPES,
+    unread_only: bool | None = None,
+    priority_only: bool | None = None,
+    archive_only: bool | None = None,
+    mode: str = "chrono_v1",
+    is_activity_inbox: bool | None = None,
+    client: SlackClient = Depends(slack_client),
+) -> dict:
+    """Get the Activity inbox (undocumented session endpoint).
+
+    Surfaces mentions, reactions, thread replies, reminders, DM bundles, and
+    invites — answers "what needs my attention". Returns ``items``.
+
+    Slack requires ``mode`` and ``types``; both default to the values the web
+    client sends, so calling with no args returns the full inbox.
+
+    Args:
+        limit: Maximum number of activity items to return.
+        types: Comma-separated activity types to include (e.g.
+            ``"dm,message_reaction,thread_v2"``). Defaults to every known type.
+        unread_only: When ``True``, return only unread activity items.
+        priority_only: When ``True``, return only priority/important items.
+        archive_only: When ``True``, return only archived activity items.
+        mode: Feed ordering mode. Slack's only accepted value is ``"chrono_v1"``.
+        is_activity_inbox: When ``True``, fetch the activity-inbox variant of the feed.
+    """
+    return await client.session_call_form(
+        "activity.feed",
+        limit=limit,
+        types=types,
+        unread_only=unread_only,
+        priority_only=priority_only,
+        archive_only=archive_only,
+        mode=mode,
+        is_activity_inbox=is_activity_inbox,
+    )

@@ -56,6 +56,84 @@ async def test_threads_get_view(mcp_client, slack_stub):
     assert_api_call(slack_stub.session_call, "threads.getView")
 
 
+async def test_subscriptions_thread_get_view(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("subscriptions_thread_get_view", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "subscriptions.thread.getView")
+
+
+async def test_subscriptions_thread_get_view_with_params(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "subscriptions_thread_get_view",
+        {"limit": 20, "priority_mode": True, "fetch_threads_state": True},
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "subscriptions.thread.getView",
+        limit=20,
+        priority_mode=True,
+        fetch_threads_state=True,
+    )
+
+
+async def test_client_dms(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("client_dms", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "client.dms")
+
+
+async def test_client_dms_with_params(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "client_dms",
+        {"count": 50, "exclude_bots": True, "include_closed": False},
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "client.dms",
+        count=50,
+        exclude_bots=True,
+        include_closed=False,
+    )
+
+
+async def test_activity_feed(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("activity_feed", {})
+    assert result.is_error is False
+    # mode + types are required by Slack, so the tool always sends its defaults
+    # via the form endpoint.
+    slack_stub.session_call_form.assert_called_once()
+    args, kwargs = slack_stub.session_call_form.call_args
+    assert args[0] == "activity.feed"
+    assert kwargs["mode"] == "chrono_v1"
+    assert kwargs["types"]
+
+
+async def test_activity_feed_with_params(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "activity_feed",
+        {"limit": 10, "types": "message,reaction", "unread_only": True},
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call_form,
+        "activity.feed",
+        limit=10,
+        types="message,reaction",
+        unread_only=True,
+        mode="chrono_v1",
+    )
+
+
+async def test_ai_summarize_unreads_snapshot(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("ai_summarize_unreads_snapshot", {})
+    assert result.is_error is False
+    slack_stub.session_call.assert_called_once_with(
+        "ai.alpha.summarize.unreadsSnapshot"
+    )
+
+
 async def test_drafts_list(mcp_client, slack_stub):
     result = await mcp_client.call_tool("drafts_list", {})
     assert result.is_error is False
@@ -206,6 +284,20 @@ async def test_saved_list(mcp_client, slack_stub):
     result = await mcp_client.call_tool("saved_list", {"limit": 10})
     assert result.is_error is False
     assert_api_call(slack_stub.session_call, "saved.list", limit=10)
+
+
+async def test_saved_get(mcp_client, slack_stub):
+    items = [
+        {
+            "item_id": "C123",
+            "ts": "1234.5678",
+            "item_type": "message",
+            "item_detail": "",
+        }
+    ]
+    result = await mcp_client.call_tool("saved_get", {"items": items})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "saved.get", items=items)
 
 
 async def test_saved_add(mcp_client, slack_stub):

@@ -9,6 +9,7 @@ from slack_mcp.tools.slack_lists import (
     slack_lists_create,
     slack_lists_download_get,
     slack_lists_download_start,
+    slack_lists_get_my_items,
     slack_lists_items_create,
     slack_lists_items_delete,
     slack_lists_items_delete_multiple,
@@ -17,6 +18,15 @@ from slack_mcp.tools.slack_lists import (
     slack_lists_items_update,
     slack_lists_update,
 )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.usefixtures("requires_session_tokens")
+async def test_slack_lists_get_my_items_live(live_client):
+    """lists.getMyItems is an undocumented session endpoint — needs xoxc/xoxd."""
+    result = await slack_lists_get_my_items(client=live_client)
+    assert result["ok"] is True
 
 
 @pytest.mark.integration

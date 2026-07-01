@@ -1,6 +1,26 @@
 from tests.conftest import assert_api_call
 
 
+async def test_slack_lists_get_my_items(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("slack_lists_get_my_items", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "lists.getMyItems")
+
+
+async def test_slack_lists_get_my_items_with_params(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "slack_lists_get_my_items",
+        {"include_approvals": True, "include_subtasks": False},
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "lists.getMyItems",
+        include_approvals=True,
+        include_subtasks=False,
+    )
+
+
 async def test_slack_lists_access_delete(mcp_client, slack_stub):
     result = await mcp_client.call_tool(
         "slack_lists_access_delete", {"list_id": "L123", "user_ids": ["U123"]}
