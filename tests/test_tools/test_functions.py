@@ -37,3 +37,30 @@ async def test_functions_complete_success_requires_outputs(mcp_client):
         raise_on_error=False,
     )
     assert result.is_error is True
+
+
+async def test_functions_workflows_list_no_args(mcp_client, slack_stub):
+    result = await mcp_client.call_tool("functions_workflows_list", {})
+    assert result.is_error is False
+    assert_api_call(slack_stub.session_call, "functions.workflows.list")
+
+
+async def test_functions_workflows_list_with_args(mcp_client, slack_stub):
+    result = await mcp_client.call_tool(
+        "functions_workflows_list",
+        {
+            "limit": 5,
+            "filter_options": {"source": "workflow_builder"},
+            "sort_options": {"key": "name", "direction": "asc"},
+            "workflow_builder_only": True,
+        },
+    )
+    assert result.is_error is False
+    assert_api_call(
+        slack_stub.session_call,
+        "functions.workflows.list",
+        limit=5,
+        filter_options={"source": "workflow_builder"},
+        sort_options={"key": "name", "direction": "asc"},
+        workflow_builder_only=True,
+    )
