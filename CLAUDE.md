@@ -17,7 +17,7 @@ mise run check             # all checks (test + lint + typecheck + security)
 - `.env` is authoritative: `load_dotenv(override=True)` means a local `.env` wins over any inherited/exported `SLACK_XOX*` env var, so a stray exported token can't silently redirect tests to the wrong workspace.
 - Run integration tests after adding or modifying any tool — but only once `.env` is confirmed to point at the throwaway workspace.
 - Tests that need a channel must create a temp channel and archive it after — see `temp_channel` fixture in `test_chat_integration.py`
-- ~68 integration tests are skipped — these require a bot token (xoxb), Slack Connect, interactive triggers, or would be destructive. Adding a bot token is a future TODO
+- Many integration tests are skipped — they require a bot token (xoxb), Slack Connect, or interactive triggers, or would mutate a live workspace (see the skip `reason` on each). Adding a bot token is a future TODO
 
 ## Code Layout
 
