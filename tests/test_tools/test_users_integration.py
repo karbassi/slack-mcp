@@ -68,16 +68,24 @@ async def test_users_profile_get_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_users_set_presence_live(live_client):
-    """Set presence to auto (safe, idempotent)."""
+    """Set presence to auto."""
     result = await users_set_presence(presence="auto", client=live_client)
     assert result["ok"] is True
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: users.deletePhoto removes the user's profile photo and "
+    "Slack cannot restore it. Never run against a real account."
+)
 async def test_users_delete_photo_live(live_client):
-    """Delete user's profile photo (safe on test workspace)."""
+    """Delete the user's profile photo — DESTRUCTIVE, irreversible (skipped)."""
     result = await users_delete_photo(client=live_client)
     assert result["ok"] is True
 
@@ -114,6 +122,10 @@ async def test_users_lookup_by_email_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_users_profile_set_live(live_client):
     """Set status text then restore it."""
     # Read current status

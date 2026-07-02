@@ -19,6 +19,10 @@ async def test_dnd_info_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_dnd_snooze_lifecycle_live(live_client):
     """Set snooze, check info, then end snooze."""
     # Set snooze for 1 minute

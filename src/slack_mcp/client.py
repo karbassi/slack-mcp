@@ -8,7 +8,11 @@ from slack_sdk.web.async_client import AsyncWebClient
 
 from slack_mcp.errors import is_auth_failure
 
-load_dotenv()
+# override=True: values in a local .env override inherited/exported env vars.
+# This is per-variable — a token var ABSENT from .env still falls back to the
+# environment, so .env must define every SLACK_XOX* it means to control.
+# No-op when there's no .env (e.g. production deploys that use real env vars).
+load_dotenv(override=True)
 
 _SLACK_BASE_URL = "https://slack.com/api/"
 

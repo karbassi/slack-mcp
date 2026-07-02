@@ -22,16 +22,27 @@ async def test_reminders_list_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_reminders_add_live(live_client):
-    """Create a reminder."""
+    """Create a reminder; the reminders_delete cleanup does not clear it from
+    Slack's "Later" view, so this leaves state behind."""
     added = await reminders_add(
         text="integration test reminder", time="in 1 hour", client=live_client
     )
     assert added["ok"] is True
+    with contextlib.suppress(SlackApiError, KeyError):
+        await reminders_delete(reminder=added["reminder"]["id"], client=live_client)
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_reminders_info_live(live_client):
     """Create a reminder and retrieve its info."""
     post_at = int(time.time()) + 3600
@@ -55,6 +66,10 @@ async def test_reminders_info_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_reminders_complete_live(live_client):
     """Create a reminder and mark it as complete."""
     post_at = int(time.time()) + 3600
@@ -77,6 +92,10 @@ async def test_reminders_complete_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_reminders_delete_live(live_client):
     """Create a reminder and delete it."""
     post_at = int(time.time()) + 3600

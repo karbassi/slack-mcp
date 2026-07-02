@@ -23,6 +23,10 @@ async def test_usergroups_list_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_usergroups_lifecycle_live(live_client):
     """Create a usergroup, update it, manage users, disable it."""
     handle = f"test-{uuid.uuid4().hex[:8]}"

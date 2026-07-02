@@ -86,6 +86,10 @@ async def test_conversations_list_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_create_and_archive_live(live_client):
     """Create a temp channel, exercise operations, then archive it."""
     name = f"test-{uuid.uuid4().hex[:8]}"
@@ -138,6 +142,10 @@ async def test_conversations_create_and_archive_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_unarchive_live(live_client):
     """Create, archive, unarchive, then re-archive."""
     name = f"test-{uuid.uuid4().hex[:8]}"
@@ -155,6 +163,10 @@ async def test_conversations_unarchive_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_join_and_leave_live(live_client):
     """Create a public channel, leave it, rejoin it, then archive."""
     name = f"test-{uuid.uuid4().hex[:8]}"
@@ -244,6 +256,10 @@ async def test_conversations_request_shared_invite_deny_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_canvases_create_live(live_client, temp_channel):
     """Create a canvas in a channel."""
     result = await conversations_canvases_create(
@@ -254,6 +270,10 @@ async def test_conversations_canvases_create_live(live_client, temp_channel):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_close_live(live_client):
     """Open a DM with ourselves and then close it."""
     from slack_mcp.tools.auth import auth_test
@@ -271,6 +291,10 @@ async def test_conversations_close_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_invite_live(live_client):
     """Invite ourselves to a channel we left, verifying the API call works."""
     name = f"test-inv-{uuid.uuid4().hex[:8]}"
@@ -307,6 +331,10 @@ async def test_conversations_invite_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_kick_live(live_client):
     """Kick requires a second user; verify the API responds."""
     name = f"test-kick-{uuid.uuid4().hex[:8]}"
@@ -350,6 +378,10 @@ async def test_conversations_list_connect_invites_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_mark_live(live_client, temp_channel):
     """Set the read cursor in a channel."""
     # Post a message to get a valid timestamp
@@ -376,6 +408,10 @@ async def test_conversations_mark_live(live_client, temp_channel):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_open_live(live_client):
     """Open a DM with ourselves."""
     from slack_mcp.tools.auth import auth_test
@@ -390,6 +426,10 @@ async def test_conversations_open_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_replies_live(live_client, temp_channel):
     """Post a message and fetch its thread replies."""
     posted = await chat_post_message(

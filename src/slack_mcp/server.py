@@ -2,7 +2,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# override=True: a local .env is authoritative over inherited process env (see
+# client.py for rationale). No-op when there's no .env.
+load_dotenv(override=True)
 
 import hashlib
 import os

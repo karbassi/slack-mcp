@@ -111,6 +111,10 @@ async def test_client_dms_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_drafts_lifecycle_live(live_client, temp_channel):
     """Create, list, update, delete a draft."""
     # Create
@@ -146,6 +150,10 @@ async def test_drafts_lifecycle_live(live_client, temp_channel):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_drafts_delete_auto_lookup_live(live_client, temp_channel):
     """Delete a draft without passing client_last_updated_ts."""
     result = await drafts_create(
@@ -162,6 +170,10 @@ async def test_drafts_delete_auto_lookup_live(live_client, temp_channel):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_saved_lifecycle_live(live_client, temp_channel):
     """Save a message, list it, then unsave it."""
     from slack_mcp.tools.chat import chat_post_message
@@ -214,6 +226,10 @@ async def test_emoji_admin_list_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_emoji_add_tool_live(live_client):
     """Add a custom emoji via emoji_add (URL-based), then remove it."""
     name = f"test_{uuid.uuid4().hex[:8]}"
@@ -230,6 +246,10 @@ async def test_emoji_add_tool_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_emoji_add_remove_live(live_client):
     """Add a custom emoji from a local PNG then remove it."""
     from pathlib import Path
@@ -254,6 +274,10 @@ async def test_emoji_add_remove_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_subscriptions_thread_mark_live(live_client, temp_channel):
     """Post a thread and mark it as read."""
     from slack_mcp.tools.chat import chat_post_message
@@ -284,8 +308,12 @@ async def test_subscriptions_thread_mark_live(live_client, temp_channel):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_subscriptions_thread_get_live(live_client, temp_channel):
-    """Post a thread and fetch its subscription state."""
+    """Post a thread reply, then fetch its subscription state."""
     parent = await chat_post_message(
         channel=temp_channel, text="Thread parent", client=live_client
     )
@@ -344,6 +372,10 @@ async def test_search_modules_dms_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_conversations_view_live(live_client, temp_channel):
     result = await conversations_view(channel=temp_channel, client=live_client)
     assert "ok" in result
@@ -440,6 +472,10 @@ async def test_today_items_list_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_messages_list_live(live_client, temp_channel):
     """Post a message, then batch-fetch it back by channel + ts."""
     posted = await chat_post_message(

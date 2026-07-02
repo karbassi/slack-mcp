@@ -13,10 +13,11 @@ mise run check             # all checks (test + lint + typecheck + security)
 
 ## Testing
 
-- Run integration tests after adding or modifying any tool
-- Tokens for the test workspace ("Slack MCP") live in `.env`
+- ⚠️ **Integration tests hit a LIVE Slack workspace and mutate it** (create channels, messages, reminders, files, user groups, …) as the owner of the tokens in `.env`. There is NO sandbox. NEVER point `.env` at a workspace you use — only a dedicated throwaway workspace.
+- `.env` is authoritative **for the tokens it defines**: `load_dotenv(override=True)` overrides inherited/exported values, but only per-variable. Define all of `SLACK_XOXP_TOKEN`/`SLACK_XOXC_TOKEN`/`SLACK_XOXD_TOKEN` in `.env` — a var missing from `.env` still falls back to the exported environment and could point at the wrong workspace.
+- Run integration tests after adding or modifying any tool — but only once `.env` is confirmed to point at the throwaway workspace.
 - Tests that need a channel must create a temp channel and archive it after — see `temp_channel` fixture in `test_chat_integration.py`
-- ~68 integration tests are skipped — these require a bot token (xoxb), Slack Connect, interactive triggers, or would be destructive. Adding a bot token is a future TODO
+- Many integration tests are skipped — they require a bot token (xoxb), Slack Connect, or interactive triggers, or would mutate a live workspace (see the skip `reason` on each). Adding a bot token is a future TODO
 
 ## Code Layout
 

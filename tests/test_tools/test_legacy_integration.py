@@ -52,8 +52,12 @@ async def test_users_prefs_get_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_chat_command_live(live_client):
-    """Execute /shrug in a temp channel (harmless, just posts a message)."""
+    """Execute /shrug in a temp channel; creates and archives a channel."""
     name = f"test-cmd-{uuid.uuid4().hex[:8]}"
     created = await conversations_create(name=name, client=live_client)
     channel_id = created["channel"]["id"]
@@ -67,6 +71,10 @@ async def test_chat_command_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_files_edit_live(live_client):
     """Upload a file via v2 flow, edit its title, then delete it."""
     content = b"files.edit integration test"
@@ -89,6 +97,10 @@ async def test_files_edit_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_files_share_legacy_live(live_client):
     """Upload a file and share it to a temp channel."""
     name = f"test-share-{uuid.uuid4().hex[:8]}"
@@ -117,6 +129,10 @@ async def test_files_share_legacy_live(live_client):
 
 
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_users_prefs_set_live(live_client):
     """Set a preference then restore it."""
     prefs = await users_prefs_get(client=live_client)

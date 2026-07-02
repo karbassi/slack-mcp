@@ -56,6 +56,10 @@ async def test_slack_lists_get_my_items_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_slack_lists_lifecycle_live(live_client):
     """Create a list, exercise all operations, clean up."""
     auth = await auth_test(client=live_client)
