@@ -8,8 +8,9 @@ from slack_sdk.web.async_client import AsyncWebClient
 
 from slack_mcp.errors import is_auth_failure
 
-# override=True: a local .env is authoritative over inherited process env, so a
-# stray exported token (e.g. for another workspace) can't silently take over.
+# override=True: values in a local .env override inherited/exported env vars.
+# This is per-variable — a token var ABSENT from .env still falls back to the
+# environment, so .env must define every SLACK_XOX* it means to control.
 # No-op when there's no .env (e.g. production deploys that use real env vars).
 load_dotenv(override=True)
 
