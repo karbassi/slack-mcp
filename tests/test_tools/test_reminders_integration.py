@@ -23,11 +23,13 @@ async def test_reminders_list_live(live_client):
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_reminders_add_live(live_client):
-    """Create a reminder."""
+    """Create a reminder, then delete it so nothing is left behind."""
     added = await reminders_add(
         text="integration test reminder", time="in 1 hour", client=live_client
     )
     assert added["ok"] is True
+    with contextlib.suppress(SlackApiError, KeyError):
+        await reminders_delete(reminder=added["reminder"]["id"], client=live_client)
 
 
 @pytest.mark.integration

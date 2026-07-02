@@ -76,8 +76,12 @@ async def test_users_set_presence_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: users.deletePhoto removes the user's profile photo and "
+    "Slack cannot restore it. Never run against a real account."
+)
 async def test_users_delete_photo_live(live_client):
-    """Delete user's profile photo (safe on test workspace)."""
+    """Delete the user's profile photo — DESTRUCTIVE, irreversible (skipped)."""
     result = await users_delete_photo(client=live_client)
     assert result["ok"] is True
 
