@@ -9,6 +9,10 @@ from slack_mcp.tools.pins import pins_add, pins_list, pins_remove
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_pins_lifecycle_live(live_client):
     """Post a message, pin it, list pins, unpin it, then clean up."""
     name = f"test-pins-{uuid.uuid4().hex[:8]}"

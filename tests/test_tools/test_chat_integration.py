@@ -37,6 +37,10 @@ async def temp_channel(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_chat_post_message_and_delete_live(live_client, temp_channel):
     """Post a message, get permalink, update it, then delete it."""
     # Post
@@ -66,6 +70,10 @@ async def test_chat_post_message_and_delete_live(live_client, temp_channel):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_chat_me_message_live(live_client, temp_channel):
     """Post a /me message and clean up the channel."""
     result = await chat_me_message(
@@ -76,6 +84,10 @@ async def test_chat_me_message_live(live_client, temp_channel):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_chat_schedule_and_delete_live(live_client, temp_channel):
     """Schedule a message, list it, then delete it before it sends."""
     post_at = int(time.time()) + 3600  # 1 hour from now
@@ -141,6 +153,10 @@ async def test_chat_unfurl_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_chat_post_ephemeral_live(live_client, temp_channel):
     """Post an ephemeral message to ourselves."""
     from slack_mcp.tools.auth import auth_test

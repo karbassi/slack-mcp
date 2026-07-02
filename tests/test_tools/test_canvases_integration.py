@@ -23,6 +23,10 @@ async def test_canvases_get_canned_templates_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_canvases_lifecycle_live(live_client):
     """Create a canvas, edit, sections_lookup, access set/delete, then delete."""
     auth = await auth_test(client=live_client)

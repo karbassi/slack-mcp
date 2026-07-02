@@ -66,6 +66,10 @@ async def test_files_get_shares_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_files_v2_upload_lifecycle_live(live_client):
     """Upload via v2 flow, get info, toggle public URL, then delete."""
     content = b"integration test file content"

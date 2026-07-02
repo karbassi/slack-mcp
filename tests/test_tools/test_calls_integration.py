@@ -16,6 +16,10 @@ from slack_mcp.tools.calls import (
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_calls_lifecycle_live(live_client):
     """Register a call, get info, update it, then end it."""
     ext_id = f"test-call-{uuid.uuid4().hex[:8]}"
@@ -47,6 +51,10 @@ async def test_calls_lifecycle_live(live_client):
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_calls_participants_add_remove_live(live_client):
     """Register a call, add participants, remove them, then end it."""
     ext_id = f"test-call-{uuid.uuid4().hex[:8]}"

@@ -69,9 +69,12 @@ async def test_search_inline_requires_one_scope(live_client):
 @pytest.mark.integration
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("requires_session_tokens")
+@pytest.mark.skip(
+    reason="destructive: mutates a live Slack workspace as the token owner; "
+    "enable only against a dedicated throwaway workspace"
+)
 async def test_search_save_live(live_client):
-    # WRITE: saves a throwaway search, then removes it via search.delete so the
-    # workspace is left clean.
+    # WRITE: saves a throwaway search, then removes it via search.delete.
     terms = "slackmcp_integration_test_71"
     try:
         result = await search_save(terms=terms, type="message", client=live_client)
