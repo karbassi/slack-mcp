@@ -2,11 +2,14 @@
 
 Captured by driving the Slack web client (`app.slack.com`) for the **Slack MCP** test workspace through Chrome DevTools while a `fetch`/`XHR` interceptor logged every `/api/` and `/cache/` call, then probing each live with the workspace `xoxc`/`xoxd` tokens. 101 distinct endpoints observed across boot, Today, Home, Files, Later, DMs, Activity, a channel, channel-details, member list, a profile, and search.
 
-Endpoints already wrapped by this project are omitted from the action lists below (see "Already wrapped" at the bottom). All probes ran against the live test workspace; "Returns" lists the top-level response keys.
+Endpoints that were already wrapped when this catalog was first written are omitted from the tables below (see "Already wrapped" at the bottom). The Tier 1 and Tier 2 tables are kept for reference and are now marked wrapped — their endpoints also appear under "Already wrapped". All probes ran against the live test workspace; "Returns" lists the top-level response keys.
 
 > **Snapshot captured 2026-07.** Slack's undocumented endpoints change without notice — re-probe an endpoint (see "How to reproduce") to confirm its args and response shape before wrapping it.
 
-## Tier 1 — recommended (clear MCP value, read-only, confirmed working)
+## Tier 1 — ✅ wrapped (PR #80, issue #58)
+
+_All six now shipped as MCP tools; the code docstrings are the source of truth for args._
+
 
 | Endpoint | Args | Returns | Tool idea |
 | --- | --- | --- | --- |
@@ -17,30 +20,32 @@ Endpoints already wrapped by this project are omitted from the action lists belo
 | `lists.getMyItems` | `include_approvals`, `include_subtasks` | `lists`, `records`, `counts` | My Slack List tasks |
 | `saved.get` | `items` — each requires `item_id`, `item_type`, `ts`, and `item_detail` (string, may be empty) | saved-item details | Pairs with existing `saved.list` |
 
-## Tier 2 — useful, niche (all return `ok: true`)
+## Tier 2 — ✅ wrapped (PRs #81–#93, issue #59)
+
+_All shipped as MCP tools; code docstrings are the source of truth. Corrections found during implementation (vs the original capture) are called out below._
 
 | Endpoint | Args | Returns |
 | --- | --- | --- |
-| `connectInvites.list` | `invite_types`, `only_pending_invites` | `connect_invites` |
-| `conversations.teamConnections` | `channel` | `connections`, `pending_connections`, `previous_connections` |
-| `files.getShares` | `file_id` | `conversation_shares`, `file_channel_shares`, `tab_shares`, `viewer_count` |
+| `connectInvites.list` | `invite_types` (enum-string list; Slack rejects unknown values — vocab undetermined), `only_pending_invites` | `connect_invites` |
+| `conversations.teamConnections` | **form-encoded.** `channel` (required) | `connections`, `pending_connections`, `previous_connections` |
+| `files.getShares` | `file_id` | `conversation_shares`, `file_channel_shares`, `tab_shares`, `viewer_count` (omitted when unshared) |
 | `files.recentlyDeleted` | — | `files` |
-| `files.favorites.list` | `type` | favorited files |
+| `files.favorites.list` | `type` (**required**, not optional) | favorited files |
 | `functions.workflows.list` | `limit`, `filter_options`, `sort_options`, `workflow_builder_only` | `workflows`, `workflow_triggers` |
 | `workflows.triggers.list` | `app_ids` | `triggers`, `rejected_triggers` |
-| `today.items.list` | — | `items`, `is_generating_focus_topics` |
+| `today.items.list` | — | `items`, `is_generating_focus_topics` — **feature-gated: returns `unknown_method` where the Today view isn't rolled out** |
 | `ai.alpha.digest.list` | — | `digests`, `is_stale_or_empty_digest` |
 | `users.customStatus.list` | `statuses_count_per_section` | `statuses`, `scheduled_statuses` |
-| `users.profile.getExtras` | `user`, `keys` | `channels`, `shared_channels`, `full_member_channels`, `onboarding_complete` |
-| `users.profile.getSections` | `user` | profile sections |
+| `users.profile.getExtras` | `user` (optional; defaults to caller), `keys` | `channels`, `shared_channels`, `full_member_channels`, `onboarding_complete` |
+| `users.profile.getSections` | **form-encoded.** `user` (required) | profile sections under key **`result`** (not `sections`) |
 | `calendar.getInstalledCalendars` | — | `gcal`, `ocal` |
 | `calendar.user.status` | — | `status` |
 | `lists.templates` | — | `templates`, `starter_templates`, `template_files` |
-| `lists.records.list` | `list_id`, `archived`, `include_subtasks`, `include_suggested` | list records |
+| `lists.records.list` | `list_id` (required), `archived`, `include_subtasks`, `include_suggested` | list records |
 | `canvases.getCannedTemplates` | — | `files` |
 | `enterpriseSearch.getConnectors` | — | `connectors` |
 | `conversations.suggestions` | — | `status`, `suggestion_types_tried` |
-| `search.inline` | `query`, `count`, `channel`/`user` (required) | inline search results |
+| `search.inline` | **form-encoded.** `query`, `count`, `channel`/`user` (exactly one required) | inline search results |
 | `search.save` | `terms`, `type` | saves a search (write) |
 
 ## Write actions (driven live in the test workspace; params confirmed)
@@ -78,6 +83,10 @@ Common args: `enterprise_token` (required on enterprise grids), plus per-endpoin
 ## Already wrapped (captured and confirmed live)
 
 `aiApps.list`, `api.features`, `bookmarks.list`, `client.counts`, `client.userBoot`, `conversations.history`, `conversations.listPrefs`, `conversations.mark`, `conversations.view`, `dnd.info`, `dnd.teamInfo`, `drafts.list`, `experiments.getByUser`, `files.info`, `files.list`, `messages.list`, `saved.list`, `search.modules.channels`, `search.modules.dms`, `search.modules.files`, `search.modules.messages`, `search.modules.people`, `team.info`, `team.profile.get`, `users.channelSections.list`, `users.prefs.get`, `users.prefs.set`, `users.priority.list`, `users.profile.get`
+
+Tier 1 (PR #80): `subscriptions.thread.getView`, `activity.feed`, `ai.alpha.summarize.unreadsSnapshot`, `client.dms`, `lists.getMyItems`, `saved.get`
+
+Tier 2 (PRs #81–#93): `emoji.collections.list`, `lists.templates`, `lists.records.list`, `calendar.getInstalledCalendars`, `calendar.user.status`, `canvases.getCannedTemplates`, `files.getShares`, `files.recentlyDeleted`, `files.favorites.list`, `functions.workflows.list`, `workflows.triggers.list`, `users.profile.getExtras`, `users.profile.getSections`, `users.customStatus.list`, `today.items.list`, `conversations.teamConnections`, `conversations.suggestions`, `conversations.bulkReacjiTriggers`, `ai.alpha.digest.list`, `connectInvites.list`, `subscriptions.thread.get`, `search.inline`, `search.save`, `enterpriseSearch.getConnectors`
 
 ## How to reproduce
 
