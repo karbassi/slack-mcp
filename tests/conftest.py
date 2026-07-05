@@ -131,7 +131,7 @@ def mock_client() -> SlackClient:
 
 
 @pytest.fixture
-async def live_client() -> SlackClient:
+async def live_client() -> AsyncIterator[SlackClient]:
     """Return a real SlackClient from .env for integration tests.
 
     Skips the test if SLACK_XOXP_TOKEN is not set, and HARD-FAILS if the token
@@ -149,15 +149,20 @@ async def live_client() -> SlackClient:
             "Set it in .env to the test team's ID (from auth.test)."
         )
     client = SlackClient()
-    auth = await client.api_call("auth.test")
-    team_id = auth.get("team_id")
-    if team_id != expected_team:
-        pytest.fail(
-            f"Refusing to run integration tests: auth.test resolved to team "
-            f"{team_id!r} ({auth.get('team')!r}), not the expected test "
-            f"workspace {expected_team!r}. Point .env at the test workspace."
-        )
-    return client
+    # yield inside try so the client's httpx session is closed even when the
+    # team guard fails (pytest.fail raises) or a test errors mid-run.
+    try:
+        auth = await client.api_call("auth.test")
+        team_id = auth.get("team_id")
+        if team_id != expected_team:
+            pytest.fail(
+                f"Refusing to run integration tests: auth.test resolved to team "
+                f"{team_id!r} ({auth.get('team')!r}), not the expected test "
+                f"workspace {expected_team!r}. Point .env at the test workspace."
+            )
+        yield client
+    finally:
+        await client.close()
 
 
 @pytest.fixture
