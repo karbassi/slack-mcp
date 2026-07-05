@@ -8,12 +8,10 @@ from slack_sdk.web.async_client import AsyncWebClient
 
 from slack_mcp.errors import is_auth_failure
 
-# override=False: injected/exported env wins over .env, so an MCP host can aim
-# the server at any workspace via ${SLACK_XOXP_TOKEN}. .env only fills vars that
-# are ABSENT from the environment, keeping a local dev run (only a .env) working.
-# Tests re-pin to the test workspace: conftest.py loads .env with override=True
-# and the live_client fixture asserts auth.test resolves to the test team_id.
-# No-op when there's no .env.
+# The MCP host owns which workspace the server talks to, injecting creds into the
+# process env (${SLACK_XOXP_TOKEN} in .mcp.json), so the environment must win over
+# a stray local .env. Test-workspace pinning lives in the test layer instead
+# (conftest.py + the live_client team guard), not in a runtime override.
 load_dotenv(override=False)
 
 _SLACK_BASE_URL = "https://slack.com/api/"

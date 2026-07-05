@@ -17,11 +17,11 @@ from slack_mcp.resolve import set_cache_store
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
-# The runtime loads .env with override=False (injected/exported env wins) so an
-# MCP host can aim the server at any workspace. Tests must NOT inherit an ambient
-# SLACK_XOX* that points at a real workspace — a mutating integration test there
-# is destructive (a prior run deleted a real profile photo). Re-pin to the test
-# workspace's .env authoritatively, and guard the team in live_client.
+# Integration tests hit a live workspace as the token owner with no sandbox — an
+# ambient SLACK_XOX* pointing at a real workspace is destructive (a prior run
+# deleted a real profile photo). The runtime lets the environment win so an MCP
+# host can pick the workspace; tests need the opposite, pinning to the test .env
+# regardless of what's exported. The live_client team guard is the hard backstop.
 load_dotenv(override=True)
 
 # Point the Response cache's DiskStore (wired at server import from

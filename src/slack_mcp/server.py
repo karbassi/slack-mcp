@@ -2,11 +2,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# override=False: injected/exported env wins (so an MCP host can point the
-# server at any workspace via ${SLACK_XOXP_TOKEN}); .env only fills ABSENT vars,
-# keeping a plain local dev run working. Tests re-pin to the test workspace via
-# load_dotenv(override=True) in conftest.py plus a team_id guard in live_client.
-# No-op when there's no .env.
+# The MCP host owns which workspace the server talks to, injecting creds into the
+# process env (${SLACK_XOXP_TOKEN} in .mcp.json), so the environment must win over
+# a stray local .env. Test-workspace pinning lives in the test layer instead
+# (conftest.py + the live_client team guard), not in a runtime override.
 load_dotenv(override=False)
 
 import hashlib
