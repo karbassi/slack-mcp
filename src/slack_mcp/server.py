@@ -2,9 +2,12 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# override=True: a local .env is authoritative over inherited process env (see
-# client.py for rationale). No-op when there's no .env.
-load_dotenv(override=True)
+# override=False: injected/exported env wins (so an MCP host can point the
+# server at any workspace via ${SLACK_XOXP_TOKEN}); .env only fills ABSENT vars,
+# keeping a plain local dev run working. Tests re-pin to the test workspace via
+# load_dotenv(override=True) in conftest.py plus a team_id guard in live_client.
+# No-op when there's no .env.
+load_dotenv(override=False)
 
 import hashlib
 import os

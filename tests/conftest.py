@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock
 
 import pytest
+from dotenv import load_dotenv
 from fastmcp.client import Client
 
 from slack_mcp.client import SlackClient
@@ -15,6 +16,13 @@ from slack_mcp.resolve import set_cache_store
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
+
+# The runtime loads .env with override=False (injected/exported env wins) so an
+# MCP host can aim the server at any workspace. Tests must NOT inherit an ambient
+# SLACK_XOX* that points at a real workspace — a mutating integration test there
+# is destructive (a prior run deleted a real profile photo). Re-pin to the test
+# workspace's .env authoritatively, and guard the team in live_client.
+load_dotenv(override=True)
 
 # Point the Response cache's DiskStore (wired at server import from
 # XDG_CACHE_HOME) at a throwaway dir before slack_mcp.server is first imported —
@@ -123,14 +131,33 @@ def mock_client() -> SlackClient:
 
 
 @pytest.fixture
-def live_client() -> SlackClient:
+async def live_client() -> SlackClient:
     """Return a real SlackClient from .env for integration tests.
 
-    Skips the test if SLACK_XOXP_TOKEN is not set.
+    Skips the test if SLACK_XOXP_TOKEN is not set, and HARD-FAILS if the token
+    resolves to any workspace other than the throwaway test team. This is the
+    real seatbelt against mutating a production workspace — it holds regardless
+    of load_dotenv override behavior or a stray ambient token.
     """
     if not os.getenv("SLACK_XOXP_TOKEN"):
         pytest.skip("SLACK_XOXP_TOKEN not set")
-    return SlackClient()
+    expected_team = os.getenv("SLACK_TEST_TEAM_ID")
+    if not expected_team:
+        pytest.skip(
+            "SLACK_TEST_TEAM_ID not set — can't confirm .env points at the "
+            "throwaway test workspace, so refusing to run integration tests. "
+            "Set it in .env to the test team's ID (from auth.test)."
+        )
+    client = SlackClient()
+    auth = await client.api_call("auth.test")
+    team_id = auth.get("team_id")
+    if team_id != expected_team:
+        pytest.fail(
+            f"Refusing to run integration tests: auth.test resolved to team "
+            f"{team_id!r} ({auth.get('team')!r}), not the expected test "
+            f"workspace {expected_team!r}. Point .env at the test workspace."
+        )
+    return client
 
 
 @pytest.fixture
