@@ -10,6 +10,7 @@ from unittest.mock import AsyncMock
 import pytest
 from dotenv import load_dotenv
 from fastmcp.client import Client
+from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient
 from slack_mcp.resolve import set_cache_store
@@ -169,7 +170,13 @@ async def _verify_test_workspace(client: SlackClient, expected_team: str) -> Non
     global _team_verified
     if _team_verified:
         return
-    auth = await client.api_call("auth.test")
+    try:
+        auth = await client.api_call("auth.test")
+    except SlackApiError as e:
+        # slack_sdk raises on ok:false, so a bad/expired token lands here rather
+        # than as a team mismatch — say so, don't misreport it as wrong workspace.
+        pytest.fail(f"auth.test failed ({e.response.get('error')!r}) — check the "
+                    "SLACK_XOX* tokens in .env, they may be invalid or expired.")
     team_id = auth.get("team_id")
     if team_id != expected_team:
         pytest.fail(
