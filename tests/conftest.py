@@ -152,17 +152,32 @@ async def live_client() -> AsyncIterator[SlackClient]:
     # yield inside try so the client's httpx session is closed even when the
     # team guard fails (pytest.fail raises) or a test errors mid-run.
     try:
-        auth = await client.api_call("auth.test")
-        team_id = auth.get("team_id")
-        if team_id != expected_team:
-            pytest.fail(
-                f"Refusing to run integration tests: auth.test resolved to team "
-                f"{team_id!r} ({auth.get('team')!r}), not the expected test "
-                f"workspace {expected_team!r}. Point .env at the test workspace."
-            )
+        # Verify the workspace once per session, not per test — one auth.test
+        # instead of one per fixture use. A session-scoped fixture can't hold the
+        # httpx client (pytest-asyncio's function-scoped loop closes under it), so
+        # memoize the check while the client stays function-scoped.
+        await _verify_test_workspace(client, expected_team)
         yield client
     finally:
         await client.close()
+
+
+_team_verified = False
+
+
+async def _verify_test_workspace(client: SlackClient, expected_team: str) -> None:
+    global _team_verified
+    if _team_verified:
+        return
+    auth = await client.api_call("auth.test")
+    team_id = auth.get("team_id")
+    if team_id != expected_team:
+        pytest.fail(
+            f"Refusing to run integration tests: auth.test resolved to team "
+            f"{team_id!r} ({auth.get('team')!r}), not the expected test "
+            f"workspace {expected_team!r}. Point .env at the test workspace."
+        )
+    _team_verified = True
 
 
 @pytest.fixture
