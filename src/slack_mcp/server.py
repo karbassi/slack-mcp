@@ -2,9 +2,11 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# override=True: a local .env is authoritative over inherited process env (see
-# client.py for rationale). No-op when there's no .env.
-load_dotenv(override=True)
+# The MCP host owns which workspace the server talks to, injecting creds into the
+# process env (${SLACK_XOXP_TOKEN} in .mcp.json), so the environment must win over
+# a stray local .env. Test-workspace pinning lives in the test layer instead
+# (conftest.py + the live_client team guard), not in a runtime override.
+load_dotenv(override=False)
 
 import hashlib
 import os

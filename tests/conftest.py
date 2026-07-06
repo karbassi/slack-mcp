@@ -8,13 +8,22 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock
 
 import pytest
+from dotenv import load_dotenv
 from fastmcp.client import Client
+from slack_sdk.errors import SlackApiError
 
 from slack_mcp.client import SlackClient
 from slack_mcp.resolve import set_cache_store
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
+
+# Integration tests hit a live workspace as the token owner with no sandbox — an
+# ambient SLACK_XOX* pointing at a real workspace is destructive (a prior run
+# deleted a real profile photo). The runtime lets the environment win so an MCP
+# host can pick the workspace; tests need the opposite, pinning to the test .env
+# regardless of what's exported. The live_client team guard is the hard backstop.
+load_dotenv(override=True)
 
 # Point the Response cache's DiskStore (wired at server import from
 # XDG_CACHE_HOME) at a throwaway dir before slack_mcp.server is first imported —
@@ -123,14 +132,59 @@ def mock_client() -> SlackClient:
 
 
 @pytest.fixture
-def live_client() -> SlackClient:
+async def live_client() -> AsyncIterator[SlackClient]:
     """Return a real SlackClient from .env for integration tests.
 
-    Skips the test if SLACK_XOXP_TOKEN is not set.
+    Skips the test if SLACK_XOXP_TOKEN is not set, and HARD-FAILS if the token
+    resolves to any workspace other than the throwaway test team. This is the
+    real seatbelt against mutating a production workspace — it holds regardless
+    of load_dotenv override behavior or a stray ambient token.
     """
     if not os.getenv("SLACK_XOXP_TOKEN"):
         pytest.skip("SLACK_XOXP_TOKEN not set")
-    return SlackClient()
+    expected_team = os.getenv("SLACK_TEST_TEAM_ID")
+    if not expected_team:
+        pytest.skip(
+            "SLACK_TEST_TEAM_ID not set — can't confirm .env points at the "
+            "throwaway test workspace, so refusing to run integration tests. "
+            "Set it in .env to the test team's ID (from auth.test)."
+        )
+    client = SlackClient()
+    # yield inside try so the client's httpx session is closed even when the
+    # team guard fails (pytest.fail raises) or a test errors mid-run.
+    try:
+        # Verify the workspace once per session, not per test — one auth.test
+        # instead of one per fixture use. A session-scoped fixture can't hold the
+        # httpx client (pytest-asyncio's function-scoped loop closes under it), so
+        # memoize the check while the client stays function-scoped.
+        await _verify_test_workspace(client, expected_team)
+        yield client
+    finally:
+        await client.close()
+
+
+_team_verified = False
+
+
+async def _verify_test_workspace(client: SlackClient, expected_team: str) -> None:
+    global _team_verified
+    if _team_verified:
+        return
+    try:
+        auth = await client.api_call("auth.test")
+    except SlackApiError as e:
+        # slack_sdk raises on ok:false, so a bad/expired token lands here rather
+        # than as a team mismatch — say so, don't misreport it as wrong workspace.
+        pytest.fail(f"auth.test failed ({e.response.get('error')!r}) — check the "
+                    "SLACK_XOX* tokens in .env, they may be invalid or expired.")
+    team_id = auth.get("team_id")
+    if team_id != expected_team:
+        pytest.fail(
+            f"Refusing to run integration tests: auth.test resolved to team "
+            f"{team_id!r} ({auth.get('team')!r}), not the expected test "
+            f"workspace {expected_team!r}. Point .env at the test workspace."
+        )
+    _team_verified = True
 
 
 @pytest.fixture
