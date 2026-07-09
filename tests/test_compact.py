@@ -43,9 +43,26 @@ def _bloated_message():
                 "thumb_360": "https://thumb360",
             }
         ],
+        # shared-message unfurl: content lives here, bloat surrounds it
+        "attachments": [
+            {
+                "author_subname": "Bob",
+                "text": "the shared message body",
+                "from_url": "https://slack.com/archives/C1/p1",
+                "ts": "1234560000.000000",
+                # bloat:
+                "fallback": "the shared message body",
+                "blocks": [{"type": "rich_text"}],
+                "color": "D0D0D0",
+                "footer": "Slack Conversation",
+                "work_object_entity": {"layouts": {"expanded": {}}},
+                "files": [
+                    {"id": "F9", "name": "shared.pdf", "thumb_64": "https://t64"}
+                ],
+            }
+        ],
         # bloat fields:
         "blocks": [{"type": "rich_text"}],
-        "attachments": [{"fallback": "x"}],
         "client_msg_id": "uuid",
         "team": "T123",
     }
@@ -203,9 +220,28 @@ class TestStripMessage:
         msg = _bloated_message()
         strip_message(msg)
         assert "blocks" not in msg
-        assert "attachments" not in msg
         assert "client_msg_id" not in msg
         assert "team" not in msg
+
+    def test_keeps_lean_attachment_content(self):
+        from slack_mcp.compact import strip_message
+        msg = _bloated_message()
+        strip_message(msg)
+        att = msg["attachments"][0]
+        # content survives so models don't escalate to detailed=True
+        assert att["author_subname"] == "Bob"
+        assert att["text"] == "the shared message body"
+        assert att["from_url"] == "https://slack.com/archives/C1/p1"
+        # bloat is gone
+        assert "fallback" not in att
+        assert "blocks" not in att
+        assert "color" not in att
+        assert "footer" not in att
+        assert "work_object_entity" not in att
+        # nested files are stripped, not dropped
+        f = att["files"][0]
+        assert f["id"] == "F9"
+        assert "thumb_64" not in f
 
     def test_strips_nested_files(self):
         from slack_mcp.compact import strip_message
@@ -250,6 +286,20 @@ class TestStripMessage:
         strip_message(msg)
         assert "ts" in msg
 
+    def test_attachments_non_list_is_dropped(self):
+        from slack_mcp.compact import strip_message
+        msg = {"ts": "1", "text": "hi", "attachments": None}
+        strip_message(msg)
+        assert "ts" in msg
+        # present-but-not-a-list is dropped, not emitted as attachments: None
+        assert "attachments" not in msg
+
+    def test_attachments_with_non_dict_elements(self):
+        from slack_mcp.compact import strip_message
+        msg = {"ts": "1", "text": "hi", "attachments": ["nope", None, 7]}
+        strip_message(msg)
+        assert "ts" in msg
+
 
 # -- strip_file --
 
@@ -271,6 +321,39 @@ class TestStripFile:
         assert "thumb_80" not in f
         assert "thumb_360" not in f
         assert "original_w" not in f
+
+
+# -- strip_attachment --
+
+class TestStripAttachment:
+    def test_keeps_content_strips_bloat(self):
+        from slack_mcp.compact import strip_attachment
+        a = {
+            "author_subname": "Bob",
+            "text": "shared body",
+            "from_url": "https://x/1",
+            "color": "D0D0D0",
+            "blocks": [{"type": "rich_text"}],
+        }
+        strip_attachment(a)
+        assert a["author_subname"] == "Bob"
+        assert a["text"] == "shared body"
+        assert "color" not in a
+        assert "blocks" not in a
+
+    def test_strips_nested_files(self):
+        from slack_mcp.compact import strip_attachment
+        a = {"text": "x", "files": [{"id": "F1", "name": "d.pdf", "thumb_64": "t"}]}
+        strip_attachment(a)
+        assert a["files"][0]["id"] == "F1"
+        assert "thumb_64" not in a["files"][0]
+
+    def test_files_non_list_is_dropped(self):
+        from slack_mcp.compact import strip_attachment
+        a = {"text": "x", "files": None}
+        strip_attachment(a)
+        assert a["text"] == "x"
+        assert "files" not in a
 
 
 # -- strip_channel --

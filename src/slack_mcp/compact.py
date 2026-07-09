@@ -29,7 +29,16 @@ def get_compactor(tool_name: str) -> Callable | None:
 MESSAGE_FIELDS = frozenset({
     "ts", "user", "username", "text", "type", "subtype", "thread_ts",
     "reply_count", "reply_users_count", "reactions", "permalink",
-    "bot_id", "files", "channel",
+    "bot_id", "files", "channel", "attachments",
+})
+
+# Shared/forwarded messages and link unfurls carry their content in
+# attachments. Keep author + text + link so the content survives compaction;
+# drop blocks, work_object_entity, app_icons, base64 thumbs, color, footer,
+# and fallback (which duplicates text). Nested files are stripped separately.
+ATTACHMENT_FIELDS = frozenset({
+    "author_name", "author_subname", "author_id", "text", "title",
+    "title_link", "from_url", "ts", "files",
 })
 
 FILE_FIELDS = frozenset({
@@ -90,10 +99,31 @@ def strip_message(msg: dict) -> None:
     for r in reactions:
         if isinstance(r, dict):
             _strip_to(r, REACTION_FIELDS)
+    attachments = msg.get("attachments")
+    if isinstance(attachments, list):
+        for a in attachments:
+            if isinstance(a, dict):
+                strip_attachment(a)
+    else:
+        # present-but-not-a-list (e.g. None) — drop it rather than emit an
+        # inconsistent, non-iterable shape.
+        msg.pop("attachments", None)
 
 
 def strip_file(f: dict) -> None:
     _strip_to(f, FILE_FIELDS)
+
+
+def strip_attachment(a: dict) -> None:
+    _strip_to(a, ATTACHMENT_FIELDS)
+    files = a.get("files")
+    if isinstance(files, list):
+        for f in files:
+            if isinstance(f, dict):
+                strip_file(f)
+    else:
+        # present-but-not-a-list — drop rather than retain an uncompacted value.
+        a.pop("files", None)
 
 
 def strip_channel(ch: dict) -> None:
