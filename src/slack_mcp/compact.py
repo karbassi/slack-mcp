@@ -99,12 +99,15 @@ def strip_message(msg: dict) -> None:
     for r in reactions:
         if isinstance(r, dict):
             _strip_to(r, REACTION_FIELDS)
-    attachments = msg.get("attachments", [])
-    if not isinstance(attachments, list):
-        attachments = []
-    for a in attachments:
-        if isinstance(a, dict):
-            strip_attachment(a)
+    attachments = msg.get("attachments")
+    if isinstance(attachments, list):
+        for a in attachments:
+            if isinstance(a, dict):
+                strip_attachment(a)
+    else:
+        # present-but-not-a-list (e.g. None) — drop it rather than emit an
+        # inconsistent, non-iterable shape.
+        msg.pop("attachments", None)
 
 
 def strip_file(f: dict) -> None:
@@ -113,12 +116,14 @@ def strip_file(f: dict) -> None:
 
 def strip_attachment(a: dict) -> None:
     _strip_to(a, ATTACHMENT_FIELDS)
-    files = a.get("files", [])
-    if not isinstance(files, list):
-        files = []
-    for f in files:
-        if isinstance(f, dict):
-            strip_file(f)
+    files = a.get("files")
+    if isinstance(files, list):
+        for f in files:
+            if isinstance(f, dict):
+                strip_file(f)
+    else:
+        # present-but-not-a-list — drop rather than retain an uncompacted value.
+        a.pop("files", None)
 
 
 def strip_channel(ch: dict) -> None:

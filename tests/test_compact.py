@@ -286,11 +286,13 @@ class TestStripMessage:
         strip_message(msg)
         assert "ts" in msg
 
-    def test_attachments_non_list_does_not_crash(self):
+    def test_attachments_non_list_is_dropped(self):
         from slack_mcp.compact import strip_message
         msg = {"ts": "1", "text": "hi", "attachments": None}
         strip_message(msg)
         assert "ts" in msg
+        # present-but-not-a-list is dropped, not emitted as attachments: None
+        assert "attachments" not in msg
 
     def test_attachments_with_non_dict_elements(self):
         from slack_mcp.compact import strip_message
@@ -319,6 +321,39 @@ class TestStripFile:
         assert "thumb_80" not in f
         assert "thumb_360" not in f
         assert "original_w" not in f
+
+
+# -- strip_attachment --
+
+class TestStripAttachment:
+    def test_keeps_content_strips_bloat(self):
+        from slack_mcp.compact import strip_attachment
+        a = {
+            "author_subname": "Bob",
+            "text": "shared body",
+            "from_url": "https://x/1",
+            "color": "D0D0D0",
+            "blocks": [{"type": "rich_text"}],
+        }
+        strip_attachment(a)
+        assert a["author_subname"] == "Bob"
+        assert a["text"] == "shared body"
+        assert "color" not in a
+        assert "blocks" not in a
+
+    def test_strips_nested_files(self):
+        from slack_mcp.compact import strip_attachment
+        a = {"text": "x", "files": [{"id": "F1", "name": "d.pdf", "thumb_64": "t"}]}
+        strip_attachment(a)
+        assert a["files"][0]["id"] == "F1"
+        assert "thumb_64" not in a["files"][0]
+
+    def test_files_non_list_is_dropped(self):
+        from slack_mcp.compact import strip_attachment
+        a = {"text": "x", "files": None}
+        strip_attachment(a)
+        assert a["text"] == "x"
+        assert "files" not in a
 
 
 # -- strip_channel --
