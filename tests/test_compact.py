@@ -286,6 +286,18 @@ class TestStripMessage:
         strip_message(msg)
         assert "ts" in msg
 
+    def test_attachments_non_list_does_not_crash(self):
+        from slack_mcp.compact import strip_message
+        msg = {"ts": "1", "text": "hi", "attachments": None}
+        strip_message(msg)
+        assert "ts" in msg
+
+    def test_attachments_with_non_dict_elements(self):
+        from slack_mcp.compact import strip_message
+        msg = {"ts": "1", "text": "hi", "attachments": ["nope", None, 7]}
+        strip_message(msg)
+        assert "ts" in msg
+
 
 # -- strip_file --
 
