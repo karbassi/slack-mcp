@@ -43,9 +43,26 @@ def _bloated_message():
                 "thumb_360": "https://thumb360",
             }
         ],
+        # shared-message unfurl: content lives here, bloat surrounds it
+        "attachments": [
+            {
+                "author_subname": "Bob",
+                "text": "the shared message body",
+                "from_url": "https://slack.com/archives/C1/p1",
+                "ts": "1234560000.000000",
+                # bloat:
+                "fallback": "the shared message body",
+                "blocks": [{"type": "rich_text"}],
+                "color": "D0D0D0",
+                "footer": "Slack Conversation",
+                "work_object_entity": {"layouts": {"expanded": {}}},
+                "files": [
+                    {"id": "F9", "name": "shared.pdf", "thumb_64": "https://t64"}
+                ],
+            }
+        ],
         # bloat fields:
         "blocks": [{"type": "rich_text"}],
-        "attachments": [{"fallback": "x"}],
         "client_msg_id": "uuid",
         "team": "T123",
     }
@@ -203,9 +220,28 @@ class TestStripMessage:
         msg = _bloated_message()
         strip_message(msg)
         assert "blocks" not in msg
-        assert "attachments" not in msg
         assert "client_msg_id" not in msg
         assert "team" not in msg
+
+    def test_keeps_lean_attachment_content(self):
+        from slack_mcp.compact import strip_message
+        msg = _bloated_message()
+        strip_message(msg)
+        att = msg["attachments"][0]
+        # content survives so models don't escalate to detailed=True
+        assert att["author_subname"] == "Bob"
+        assert att["text"] == "the shared message body"
+        assert att["from_url"] == "https://slack.com/archives/C1/p1"
+        # bloat is gone
+        assert "fallback" not in att
+        assert "blocks" not in att
+        assert "color" not in att
+        assert "footer" not in att
+        assert "work_object_entity" not in att
+        # nested files are stripped, not dropped
+        f = att["files"][0]
+        assert f["id"] == "F9"
+        assert "thumb_64" not in f
 
     def test_strips_nested_files(self):
         from slack_mcp.compact import strip_message
