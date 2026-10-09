@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastmcp.server.middleware.middleware import MiddlewareContext
-from fastmcp.tools.tool import ToolResult
+from fastmcp.tools.base import ToolResult
 from mcp.types import CallToolRequestParams, TextContent
 
 from slack_mcp.server import NameResolutionMiddleware, _lookup_tool

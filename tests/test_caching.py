@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 from fastmcp.server.middleware.middleware import MiddlewareContext
-from fastmcp.tools.tool import ToolResult
+from fastmcp.tools.base import ToolResult
 from key_value.aio.stores.memory import MemoryStore
 from mcp.types import CallToolRequestParams, TextContent
 

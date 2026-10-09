@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Optional shared HTTP transport: set `SLACK_MCP_TRANSPORT=http` (with `SLACK_MCP_HOST`/`SLACK_MCP_PORT`) to run one server for many clients. stdio stays the default.
 - Personal activity tools built on undocumented session endpoints the official API doesn't expose (require `xoxc`+`xoxd` tokens): `subscriptions_thread_get_view` (thread inbox with unread reply counts), `activity_feed` (mentions, reactions, replies, reminders, invites), `ai_summarize_unreads_snapshot` (AI summary of unreads), `client_dms` (open DMs and group DMs), `slack_lists_get_my_items` (assigned Slack List tasks and approvals), and `saved_get` (fetch saved-for-later items by id). ([#80], closes [#58])
 - File reads: `files_get_shares` (where a file is shared), `files_recently_deleted`, and `files_favorites_list`. ([#85], closes [#66])
 - Slack List reads: `slack_lists_templates` and `slack_lists_records_list`. ([#82], closes [#67])
@@ -22,6 +23,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `ai_digest_list` (Slack's AI recaps/digests). ([#90], closes [#75])
 - `connect_invites_list` (pending Slack Connect invites). ([#91], closes [#78])
 - `subscriptions_thread_get` (subscription state for a single thread). ([#92], closes [#73])
+
+### Changed
+
+- Upgraded to FastMCP 4.1 (MCP SDK 2.3). Response and thread caches now use `CacheableToolResult`.
 
 ### Fixed
 
