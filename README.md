@@ -150,10 +150,7 @@ Add to your VS Code `settings.json`:
 Run one long-lived server that every client shares, instead of one stdio process per session:
 
 ```bash
-SLACK_MCP_TRANSPORT=http SLACK_MCP_HOST=127.0.0.1 SLACK_MCP_PORT=8501 \
-FASTMCP_HTTP_HOST_ORIGIN_PROTECTION=true \
-FASTMCP_HTTP_ALLOWED_HOSTS='["127.0.0.1:*","localhost:*"]' \
-slack-mcp
+SLACK_MCP_TRANSPORT=http SLACK_MCP_PORT=8501 slack-mcp
 ```
 
 ```json
@@ -164,7 +161,7 @@ slack-mcp
 }
 ```
 
-The server has no auth of its own: keep it on loopback (or behind a reverse proxy you control) and always enable Host/Origin protection, which FastMCP leaves off by default. Add your proxy's hostname to `FASTMCP_HTTP_ALLOWED_HOSTS` and `FASTMCP_HTTP_ALLOWED_ORIGINS`.
+The server has no auth of its own, so it only binds to loopback (`SLACK_MCP_HOST` must be `127.0.0.1`, `localhost`, or `::1`) and always turns on FastMCP's Host/Origin (DNS-rebinding) protection, which FastMCP leaves off by default. To reach it from elsewhere, put a reverse proxy you control in front and add the proxy's hostname to `FASTMCP_HTTP_ALLOWED_HOSTS` (and its origin to `FASTMCP_HTTP_ALLOWED_ORIGINS`), e.g. `FASTMCP_HTTP_ALLOWED_HOSTS='["mcp.example.com"]'`.
 
 </details>
 
