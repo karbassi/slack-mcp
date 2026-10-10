@@ -4,7 +4,7 @@ import json
 
 import pytest
 from fastmcp.server.middleware.middleware import MiddlewareContext
-from fastmcp.tools.tool import ToolResult
+from fastmcp.tools.base import ToolResult
 from mcp.types import CallToolRequestParams, TextContent
 
 from slack_mcp.server import CachingMiddleware, SlackErrorMiddleware, mcp

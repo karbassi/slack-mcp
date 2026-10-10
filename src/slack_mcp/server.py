@@ -19,7 +19,7 @@ from typing import Any
 import pydantic_core
 from fastmcp import FastMCP
 from fastmcp.dependencies import Depends
-from fastmcp.server.middleware.caching import CachableToolResult
+from fastmcp.server.middleware.caching import CacheableToolResult
 from fastmcp.server.middleware.middleware import CallNext, Middleware, MiddlewareContext
 from fastmcp.tools import ToolResult
 from key_value.aio.stores.disk import DiskStore
@@ -147,13 +147,13 @@ class CachingMiddleware(Middleware):
             key=cache_key, collection=RESPONSE_CACHE_COLLECTION
         )
         if cached is not None:
-            return CachableToolResult.model_validate(cached).unwrap()
+            return CacheableToolResult.model_validate(cached).unwrap()
 
         result: ToolResult = await call_next(context)
-        cachable = CachableToolResult.wrap(result)
+        cacheable = CacheableToolResult.wrap(result)
         await self._store.put(
             key=cache_key,
-            value=cachable.model_dump(mode="json"),
+            value=cacheable.model_dump(mode="json"),
             collection=RESPONSE_CACHE_COLLECTION,
             ttl=ttl,
         )
@@ -221,13 +221,13 @@ class ThreadCachingMiddleware(Middleware):
             key=cache_key, collection=THREAD_CACHE_COLLECTION
         )
         if cached is not None:
-            return CachableToolResult.model_validate(cached).unwrap()
+            return CacheableToolResult.model_validate(cached).unwrap()
 
         result: ToolResult = await call_next(context)
-        cachable = CachableToolResult.wrap(result)
+        cacheable = CacheableToolResult.wrap(result)
         await self._store.put(
             key=cache_key,
-            value=cachable.model_dump(mode="json"),
+            value=cacheable.model_dump(mode="json"),
             collection=THREAD_CACHE_COLLECTION,
             ttl=ONE_HOUR,
         )
